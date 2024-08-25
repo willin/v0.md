@@ -1,9 +1,14 @@
 ---
 import BaseLayout from '@/layout/BaseLayout.astro';
+
+import { i18n } from '@/i18n';
+import { getLocale } from 'astro-i18n-aut';
+const locale = getLocale(Astro.url);
+const t = i18n(locale);
 ---
 
 <BaseLayout>
   <h1>
-    Hello World;
+    🧑‍🚀 {t('title')}
   </h1>
 </BaseLayout>
