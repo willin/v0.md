@@ -1,0 +1,17 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "extends": ["@willin/biome-config"],
+  "overrides": [
+    {
+      "include": ["*.svelte", "*.astro", "*.vue"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConst": "warn",
+            "useImportType": "warn"
+          }
+        }
+      }
+    }
+  ]
+}

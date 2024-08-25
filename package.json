@@ -7,11 +7,24 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "check": "biome check --write --no-errors-on-unmatched --unsafe .",
+    "prepare": "husky"
   },
   "dependencies": {
     "astro": "^4.14.5",
     "@astrojs/check": "^0.9.3",
     "typescript": "^5.5.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
+    "@willin/biome-config": "^0.0.0",
+    "husky": "^9.1.5",
+    "lint-staged": "^15.2.9"
+  },
+  "lint-staged": {
+    "*.+(js|jsx|mjs|json|yml|yaml|css|ts|tsx|md|graphql|mdx|astro|vue)": [
+      "npm run check"
+    ]
   }
 }
