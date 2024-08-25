@@ -1,16 +1,26 @@
 ---
 import '../styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
+import Favicon from '@/components/head/Favicon.astro';
+import { i18n } from '@/i18n';
+import { getLocale } from 'astro-i18n-aut';
+import LoadingIndicator from 'astro-loading-indicator/component';
+
+const locale = getLocale(Astro.url);
+// Do not use `Astro.props` in the layout file
 ---
 
-<html lang="en">
+<html lang={locale}>
 	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <slot name="seo" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <Favicon />
+    <ViewTransitions fallback="swap" />
+    <LoadingIndicator color="hsl(236, 100%, 81%)" />
 	</head>
-	<body>
-		<slot />
+  <body>
+    <slot />
 	</body>
 </html>

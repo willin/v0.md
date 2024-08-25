@@ -1,13 +1,19 @@
 ---
-import BaseLayout from '@/layout/BaseLayout.astro';
-
+import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts';
 import { i18n } from '@/i18n';
+import BaseLayout from '@/layout/BaseLayout.astro';
+import { getSeo } from '@/utils/seo';
 import { getLocale } from 'astro-i18n-aut';
+import { SEO } from 'astro-seo';
+
 const locale = getLocale(Astro.url);
 const t = i18n(locale);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const seoConfig = getSeo({ title: SITE_TITLE, description: SITE_DESCRIPTION });
 ---
 
 <BaseLayout>
+  <SEO {...seoConfig} canonical={Astro.url.href.replace(/\/$/, "")} slot="seo" />
   <h1>
     🧑‍🚀 {t('title')}
   </h1>
