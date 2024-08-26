@@ -1,9 +1,9 @@
 ---
+import ChangeLang from '@/components/header/ChangeLang.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts';
 import { i18n } from '@/i18n';
 import BaseLayout from '@/layout/BaseLayout.astro';
 import { getSeo } from '@/lib/seo';
-import { Icon } from 'astro-icon/components';
 import { SEO } from 'astro-seo';
 
 const t = i18n(Astro.url);
@@ -17,7 +17,7 @@ const seoConfig = getSeo({ title: SITE_TITLE, description: SITE_DESCRIPTION });
       🧑‍🚀 {t('title')}
     </h1>
     <p>
-      <Icon name="i18n" />
+      <ChangeLang />
     </p>
   </main>
 </BaseLayout>

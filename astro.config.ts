@@ -5,8 +5,6 @@ import icon from 'astro-icon';
 import { defineConfig } from 'astro/config';
 import { defaultLocale, locales } from './src/consts';
 
-import react from '@astrojs/react';
-
 // https://astro.build/config
 export default defineConfig({
   site: 'https://v0.md',
@@ -23,7 +21,6 @@ export default defineConfig({
     }
   },
   integrations: [
-    react(),
     mdx(),
     tailwind({
       applyBaseStyles: false
