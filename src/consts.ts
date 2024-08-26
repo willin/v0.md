@@ -10,3 +10,41 @@ export const locales = {
   en: 'en-US', // the `defaultLocale` value must present in `locales` keys
   zh: 'zh-CN'
 } as const;
+
+export interface NavMenu {
+  text: string;
+  link: string;
+  icon?: string;
+  vueIcon?: unknown;
+  subMenu?: NavMenu[];
+}
+
+export const navMenu: NavMenu[] = [
+  {
+    text: 'home',
+    link: '/',
+    icon: 'mingcute:home-3-line'
+  },
+  {
+    text: 'post',
+    link: '/posts/',
+    icon: 'mingcute:quill-pen-line',
+    subMenu: [
+      {
+        text: 'archives',
+        link: '/archives/',
+        icon: 'mingcute:timeline-line'
+      }
+    ]
+  },
+  {
+    text: 'project',
+    link: '/project/',
+    icon: 'mingcute:file-code-line'
+  },
+  {
+    text: 'about',
+    link: '/about/',
+    icon: 'mingcute:user-info-line'
+  }
+] as const;

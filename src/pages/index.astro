@@ -1,5 +1,4 @@
 ---
-import ChangeLang from '@/components/header/ChangeLang.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts';
 import { i18n } from '@/i18n';
 import BaseLayout from '@/layout/BaseLayout.astro';
@@ -16,8 +15,5 @@ const seoConfig = getSeo({ title: SITE_TITLE, description: SITE_DESCRIPTION });
     <h1>
       🧑‍🚀 {t('title')}
     </h1>
-    <p>
-      <ChangeLang />
-    </p>
   </main>
 </BaseLayout>

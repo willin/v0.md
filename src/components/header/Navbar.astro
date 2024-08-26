@@ -1,0 +1,43 @@
+---
+import { defaultLocale, navMenu } from '@/consts';
+import { getLocaleFromUrl } from '@/i18n';
+import ChangeLang from './ChangeLang.astro';
+import ChangeTheme from './ChangeTheme.astro';
+import NavLink from './NavLink.astro';
+import NavbarWrap from './NavbarWrap.astro';
+
+const locale = getLocaleFromUrl(Astro.url);
+const link = locale === defaultLocale ? '/' : `/${locale}/`;
+---
+
+<NavbarWrap>
+	<div class="mx-auto grid size-full grid-cols-[1fr_auto_1fr] grid-rows-1 content-center items-center px-3 py-2 sm:px-4">
+    <div class="h-8 justify-self-start md:hidden">
+      <!-- <MobileMenu /> -->
+    </div>
+    <div class="justify-self-center md:justify-self-start">
+      <a class="flex items-center text-xl" href={link}>
+        <img
+          src="/icon-96.png"
+          alt="logo"
+          class="h-8 w-8 rounded-lg"
+          width={32}
+          height={32}
+        />
+        <span class="ml-3 hidden md:inline">
+          <ruby> V0 <rp>(</rp><rt>Willin</rt><rp>)</rp></ruby>
+        </span>
+      </a>
+    </div>
+    <div class="hidden h-full items-center space-x-1 justify-self-center md:flex">
+      {navMenu.map((item) => (<NavLink item={item} />))}
+    </div>
+    <div class="flex h-fit gap-4 justify-self-end">
+      <!-- <a href="/search" aria-label="Search Button" class="size-6">
+        <Icon name="mingcute:search-3-line" class="size-6" />
+      </a> -->
+      <ChangeTheme />
+      <ChangeLang />
+    </div>
+	</div>
+</NavbarWrap>

@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { ViewTransitions } from 'astro:transitions';
 import Favicon from '@/components/head/Favicon.astro';
+import Navbar from '@/components/header/Navbar.astro';
 import LoadingIndicator from 'astro-loading-indicator/component';
 
 // Do not use `Astro.props` in the layout file
@@ -19,6 +20,7 @@ import LoadingIndicator from 'astro-loading-indicator/component';
 	</head>
   <body class="bg-fixed">
     <div class="container-max-lg">
+      <Navbar />
       <slot />
     </div>
 	</body>
