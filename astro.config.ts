@@ -1,8 +1,11 @@
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
+import icon from 'astro-icon';
 import { defineConfig } from 'astro/config';
 import { defaultLocale, locales } from './src/consts';
+
+import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
@@ -20,8 +23,14 @@ export default defineConfig({
     }
   },
   integrations: [
-    tailwind(),
+    react(),
     mdx(),
+    tailwind({
+      applyBaseStyles: false
+    }),
+    icon({
+      iconDir: 'src/assets/icons'
+    }),
     sitemap({
       i18n: {
         locales,

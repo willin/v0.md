@@ -1,9 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import { SITE_DESCRIPTION, SITE_TITLE, defaultLocale } from '@/consts';
+import { SITE_DESCRIPTION } from '@/consts';
 import { i18n } from '@/i18n';
 import BaseLayout from '@/layout/BaseLayout.astro';
-import { getSeo } from '@/utils/seo';
+import { getSeo } from '@/lib/seo';
 import { SEO } from 'astro-seo';
 
 export async function getStaticPaths() {
@@ -43,7 +43,7 @@ const seoConfig = getSeo({
     <h1>
       🧑‍🚀 {t('title')}
     </h1>
-    <article>
+    <article class="prose">
       <Content />
     </article>
   </main>

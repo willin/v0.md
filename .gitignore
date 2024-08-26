@@ -1,4 +1,5 @@
 # build output
+demo/
 dist/
 # generated types
 .astro/

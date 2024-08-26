@@ -15,5 +15,8 @@
   "editor.linkedEditing": true,
   "javascript.format.enable": false,
   "javascript.preferences.quoteStyle": "single",
-  "typescript.validate.enable": false
+  "typescript.validate.enable": false,
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  }
 }
