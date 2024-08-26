@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import { SITE_DESCRIPTION, SITE_TITLE, defaultLocale } from '@/consts';
+import { i18n } from '@/i18n';
+import BaseLayout from '@/layout/BaseLayout.astro';
+import { getSeo } from '@/utils/seo';
+import { getLocale } from 'astro-i18n-aut';
+import { SEO } from 'astro-seo';
+
+export async function getStaticPaths() {
+  const blogEntries = await getCollection('posts', ({ data }) => {
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
+
+  const a = blogEntries.map((entry) => {
+    // const [lang, slug] = entry.slug.split('/');
+    // const postslug = !slug ? `post/${lang}/` : `${lang}/post/${slug}/`;
+    return {
+      params: { slug: entry.slug },
+      props: { entry }
+    };
+  });
+  return a;
+}
+
+const { entry } = Astro.props;
+
+const { Content } = await entry.render();
+
+const locale = getLocale(Astro.url);
+const t = i18n(locale);
+const seoConfig = getSeo({
+  title: entry.data.title,
+  description: entry.data.description || SITE_DESCRIPTION
+});
+---
+
+<BaseLayout>
+  <SEO {...seoConfig} canonical={new URL(Astro.url.pathname, Astro.site)} slot="seo" />
+  <main>
+    <h1>
+      🧑‍🚀 {t('title')}
+    </h1>
+    <article>
+      <Content />
+    </article>
+  </main>
+</BaseLayout>

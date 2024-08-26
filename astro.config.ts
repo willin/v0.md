@@ -9,6 +9,7 @@ import { defaultLocale, locales } from './src/consts';
 export default defineConfig({
   site: 'https://v0.md',
   output: 'static',
+  trailingSlash: 'always',
   build: {
     format: 'directory'
   },
@@ -26,5 +27,8 @@ export default defineConfig({
       },
       filter: filterSitemapByDefaultLocale({ defaultLocale })
     })
-  ]
+  ],
+  devToolbar: {
+    enabled: false
+  }
 });

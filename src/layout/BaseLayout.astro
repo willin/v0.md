@@ -20,7 +20,9 @@ const locale = getLocale(Astro.url);
     <ViewTransitions fallback="swap" />
     <LoadingIndicator color="hsl(236, 100%, 81%)" />
 	</head>
-  <body>
-    <slot />
+  <body class="bg-fixed">
+    <div class="container-max-lg">
+      <slot />
+    </div>
 	</body>
 </html>

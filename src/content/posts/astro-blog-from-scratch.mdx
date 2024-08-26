@@ -1,0 +1,410 @@
+---
+title: 从 0 到 1 搭建一个 Astro 博客
+description: 集成 Tailwind CSS、i18n、MDX、RSS、评论系统等
+published: 2024-09-01
+category: 开发笔记
+tags:
+  - Astro
+  - Tailwind CSS
+  - i18n
+  - MDX
+---
+
+export const refs = [
+  {
+    site: 'https://innei.in/',
+    repo: 'https://github.com/Innei/Shiro'
+  },
+  {
+    site: 'https://fuwari.vercel.app/',
+    repo: 'https://github.com/saicaca/fuwari'
+  },
+  {
+    site: 'https://yfi.moe',
+    repo: 'https://github.com/yy4382/yfi.moe'
+  },
+  {
+    site: 'https://kai.bi/',
+    repo: 'https://github.com/ccbikai/astro-aria'
+  }
+];
+
+## 目录及当前进展
+
+- [x] 初始化项目及配置
+  - [x] Linter 及基本配置
+  - [x] 静态化网站输出
+  - [x] 添加官方集成
+  - [x] 创建第一个 Layout
+- [x] i18n 国际化支持
+  - [x] 安装配置
+  - [x] 翻译文本示例
+  - [x] 语言链接
+- [ ] 基础布局、样式、动画
+  - [x] 页面切换动画配置
+  - [ ] 语言切换组件
+  - [ ] 主题 Dark 模式组件
+  - [ ] Search 组件（限样式）
+- [ ] 文章 Collection
+  - [ ] MDX 内容增强
+  - [ ] TOC、阅读进度
+  - [ ] 字数、阅读时间
+  - [ ] Github 卡片
+  - [ ] 代码高亮
+- [ ] RSS
+- [ ] 评论系统
+- [ ] 性能优化
+- [ ] 英语切换提示
+- [ ] 统计分析、广告
+
+## 喜欢的几个网站参考
+
+<ul>
+  {refs.map((item) => (
+    <li>
+      <a href={item.site} rel="nofollow">{item.site}</a> | Repo: &nbsp;
+      <a href={item.repo} rel="nofollow">{item.repo}</a>
+    </li>
+  ))}
+</ul>
+
+## 初始化项目及配置
+
+创建一个空白项目开始：
+
+```bash
+# 可以用其他 package manager 进行创建
+❯ bun create astro@latest
+
+ astro   Launch sequence initiated.
+
+   dir   Where should we create your new project?
+         ./v0.md
+
+  tmpl   How would you like to start your new project?
+         Empty
+
+    ts   Do you plan to write TypeScript?
+         Yes
+
+   use   How strict should TypeScript be?
+         Strict
+
+  deps   Install dependencies?
+         No
+      ◼  No problem! Remember to install dependencies after setup.
+
+   git   Initialize a new git repository?
+         Yes
+
+      ✔  Project initialized!
+         ■ Template copied
+         ■ TypeScript customized
+         ■ Git initialized
+
+  next   Liftoff confirmed. Explore your project!
+
+         Enter your project directory using cd ./v0.md
+         Run bun run dev to start the dev server. CTRL+C to stop.
+         Add frameworks like react or tailwind using astro add.
+
+         Stuck? Join us at https://astro.build/chat
+
+╭─────╮  Houston:
+│ ◠ ◡ ◠  Good luck out there, astronaut! 🚀
+╰─────╯
+```
+
+### Linter 及基本配置
+
+- 创建 `.editorconfig`
+- 安装 Linter
+```bash
+bun add -D @biomejs/biome @willin/biome-config
+```
+- 创建 `biome.json` Linter 配置文件
+```json
+{
+  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+  "extends": ["@willin/biome-config"],
+  "overrides": [
+    {
+      "include": ["*.svelte", "*.astro", "*.vue"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConst": "warn",
+            "useImportType": "warn"
+          }
+        }
+      }
+    }
+  ]
+}
+```
+- 添加 `pre commit` 校验
+```bash
+bun add -D husky lint-staged
+# 创建钩子
+npx husky
+```
+
+### 静态化网站输出
+
+部署为静态页面，并进行上链，所以首先需要配置输出为 `static`：
+
+```ts
+// astro.config.ts
+import { defineConfig } from "astro/config";
+
+// https://astro.build/config
+export default defineConfig({
+	site: "https://v0.md",
+	output: "static",
+	build: {
+		format: "directory"
+	}
+});
+```
+
+### 添加官方集成
+
+```bash
+bunx astro add tailwind
+bunx astro add mdx
+bunx astro add sitemap
+```
+
+### 创建第一个 Layout
+
+创建以下两个文件。
+
+`src/styles/global.css`：
+
+```css
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+`src/layout/BaseLayout.astro`：
+
+```astro
+---
+import '../styles/global.css';
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<slot />
+	</body>
+</html>
+```
+
+看看效果：
+
+```bash
+bun dev
+```
+
+然后访问： http://localhost:4321
+
+## i18n 国际化支持
+
+### 安装配置
+
+`astro-i18n-aut` 是一个很好的 i18n 路由框架，但是不提供文本翻译功能，所以我们需要自己实现。
+
+实现的部分可以参考我之前的插件 [Remix i18n](https://github.com/willin/remix-i18n/blob/main/src/i18n.ts)
+
+```bash
+bun add astro-i18n-aut dlv templite
+bun add -D @types/dlv
+```
+
+添加 `src/const.ts` 配置项文件：
+
+```ts
+// Place any global data in this file.
+// You can import this data from anywhere in your site by using the `import` keyword.
+
+export const SITE_TITLE = 'Willin Wang (v0)' as const;
+export const SITE_DESCRIPTION = 'To be Willin is to be Willing.' as const;
+export const SITE_DOMAIN = 'https://v0.md' as const;
+
+export const defaultLocale = 'zh' as const;
+export const locales = {
+  en: 'en-US', // the `defaultLocale` value must present in `locales` keys
+  zh: 'zh-CN'
+} as const;
+```
+
+和 `src/i18n/index.ts`：
+
+```ts
+import dlv from 'dlv';
+import tmpl, { type Values } from 'templite';
+import type { locales } from '../consts';
+import en from './en.json';
+import zh from './zh.json';
+
+const messages = {
+  zh,
+  en
+};
+
+export const i18n =
+  (lang: string) =>
+  (key: string, params: Values = {}): string => {
+    const val = dlv(messages?.[lang as keyof typeof locales], key, '');
+    if (typeof val === 'function') return val(params);
+    if (typeof val === 'string') return tmpl(val, params);
+    return val;
+  };
+```
+
+添加 i18n 集成，并注意 `Sitemap` 插件需要调整以支持多语言：
+
+```ts
+import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
+import tailwind from '@astrojs/tailwind';
+import { filterSitemapByDefaultLocale, i18n } from 'astro-i18n-aut/integration';
+import { defineConfig } from 'astro/config';
+import { defaultLocale, locales } from './src/consts';
+
+// https://astro.build/config
+export default defineConfig({
+  site: 'https://v0.md',
+  integrations: [
+    tailwind(),
+    i18n({
+      locales,
+      defaultLocale
+    }),
+    icon(),
+    sitemap({
+      i18n: {
+        locales,
+        defaultLocale
+      },
+      filter: filterSitemapByDefaultLocale({ defaultLocale })
+    })
+  ],
+  output: 'static',
+  build: {
+    format: 'directory'
+  }
+});
+```
+
+### 翻译文本示例
+
+```astro
+---
+import { i18n } from '@/i18n';
+import { getLocale } from 'astro-i18n-aut';
+
+const locale = getLocale(Astro.url);
+const t = i18n(locale);
+---
+
+<h1>🧑‍🚀 {t('title')}</h1>
+
+// -.- 其他内容
+```
+
+### 语言链接
+
+`astro-i18n-aut` 提供了很多有用的方法来辅助生成、判断链接
+
+```ts
+import {
+  getAllLocaleUrls,
+  getLocaleUrl,
+  getLocaleUrlPrefix,
+  getUrlWithoutLocale
+ } from 'astro-i18n-aut';
+
+// @example: `en` 为 default locale
+getAllLocaleUrls("/es/about")
+// { en: "/about", "es": "/es/about" }
+getAllLocaleUrls("/about")
+// { en: "/about", "es": "/es/about" }
+
+
+getLocaleUrl("/es/about", "en")
+// "/about"
+getLocaleUrl("/about", "es")
+// "/es/about"
+getLocaleUrl("/es/about", "fr")
+// "/fr/about"
+
+
+getLocaleUrlPrefix("/es/about")
+// "/es"
+getLocaleUrlPrefix("/about")
+// ""
+
+
+getUrlWithoutLocale("/es/about")
+// "/about"
+```
+
+## 基础布局、样式、动画
+
+### 页面切换动画配置
+
+用到了 Astro 自带的 `ViewTransitions` 和 `astro-loading-indicator` （加载进度条）组件。可以插入到 `BaseLayout` 的 `head` 中。
+
+```astro
+---
+import { ViewTransitions } from 'astro:transitions';
+import LoadingIndicator from 'astro-loading-indicator/component';
+---
+
+<head>
+  <ViewTransitions fallback="swap" />
+  <LoadingIndicator color="#f06" />
+</head>
+
+// -.- 其他内容
+```
+
+### 语言切换组件
+
+### 主题 Dark 模式组件
+
+### Search 组件（限样式）
+
+## 文章 Collection
+
+## MDX 内容增强
+
+### TOC、阅读进度
+
+### 字数、阅读时间
+
+### Github 卡片
+
+### 代码高亮
+
+## RSS
+
+## 评论系统
+
+## 性能优化
+
+## 英语切换提示
+
+## 统计分析、广告
+
+

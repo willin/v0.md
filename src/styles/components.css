@@ -1,0 +1,15 @@
+@layer components {
+  .container-max-lg {
+    @apply w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl 2xl:max-w-screen-2xl;
+    @apply mx-auto h-full min-h-screen p-[var(--edge-padding)] grid grid-cols-1 grid-rows-[auto_1fr_auto] place-items-center gap-4;
+  }
+
+  .main-card-onload {
+    @apply animate-onload opacity-0;
+    --inner-card-delay: 100ms;
+    @supports (view-transition-name: none) {
+      @apply !opacity-100;
+      --inner-card-delay: 0ms;
+    }
+  }
+}
