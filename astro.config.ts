@@ -12,6 +12,13 @@ export default defineConfig({
   build: {
     format: 'directory'
   },
+  i18n: {
+    defaultLocale,
+    locales: Object.keys(locales),
+    routing: {
+      prefixDefaultLocale: false
+    }
+  },
   integrations: [
     tailwind(),
     mdx(),

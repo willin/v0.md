@@ -1,0 +1,11 @@
+---
+// Duplicated pages are not supported in Astro yet, so we need to use a workaround
+import { locales } from '@/consts';
+import Page from '../index.astro';
+
+export async function getStaticPaths() {
+  return Object.keys(locales).map((lang) => ({ params: { lang } }));
+}
+---
+
+<Page />

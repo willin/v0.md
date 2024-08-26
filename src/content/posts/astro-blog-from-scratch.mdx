@@ -36,10 +36,9 @@ export const refs = [
   - [x] 静态化网站输出
   - [x] 添加官方集成
   - [x] 创建第一个 Layout
-- [ ] i18n 国际化支持
-  - [ ] 安装配置
-  - [ ] 翻译文本示例
-  - [ ] 语言链接
+- [x] i18n 国际化支持
+  - [x] 安装配置
+  - [x] 翻译文本示例
 - [ ] 基础布局、样式、动画
   - [x] 页面切换动画配置
   - [ ] 语言切换组件
@@ -220,14 +219,70 @@ bun dev
 ## i18n 国际化支持
 
 - ~~使用 `astro-i18n-aut` 实现 i18n~~
+- 手搓一个
 
 ### 安装配置
+
+```bash
+bun add dlv templite
+bun add -D @types/dlv
+```
+
+实现 Message 翻译其实很简单，其中参考了我在 [Remix i18n](https://github.com/willin/remix-i18n/blob/main/src/i18n.ts) 的实现：
+
+```ts
+import dlv from 'dlv';
+import tmpl, { type Values } from 'templite';
+import { defaultLocale, locales } from '../consts';
+import en from './en.json';
+import zh from './zh.json';
+
+const messages = {
+  zh,
+  en
+};
+
+const langs = Object.keys(locales);
+
+export const i18n =
+  (url: URL) =>
+  (key: string, params: Values = {}): string => {
+    const lang = getLocaleFromUrl(url);
+    const val = dlv(messages?.[lang as keyof typeof locales], key, '');
+    if (typeof val === 'function') return val(params);
+    if (typeof val === 'string') return tmpl(val, params);
+    return val;
+  };
+
+export function getLocaleFromUrl(url: URL): string {
+  const parts = url.pathname.split('/').filter((el) => el !== '');
+  let match = '';
+  for (const part of parts) {
+    if (langs.includes(part)) match = part;
+  }
+  if (match) return match;
+  return defaultLocale;
+}
+```
 
 
 ### 翻译文本示例
 
+```astro
+---
+import { i18n } from '@/i18n';
 
-### 语言链接
+const t = i18n(Astro.url);
+---
+
+<main>
+  <h1>
+    🧑‍🚀 {t('title')}
+  </h1>
+</main>
+// ...
+```
+
 
 ## 基础布局、样式、动画
 
@@ -246,10 +301,12 @@ import LoadingIndicator from 'astro-loading-indicator/component';
   <LoadingIndicator color="#f06" />
 </head>
 
-// -.- 其他内容
+// ...
 ```
 
 ### 语言切换组件
+
+
 
 ### 主题 Dark 模式组件
 

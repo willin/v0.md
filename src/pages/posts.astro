@@ -5,7 +5,7 @@ import BaseLayout from '@/layout/BaseLayout.astro';
 import { getSeo } from '@/utils/seo';
 import { SEO } from 'astro-seo';
 
-const t = i18n(Astro.currentLocale);
+const t = i18n(Astro.url);
 const seoConfig = getSeo({ title: SITE_TITLE, description: SITE_DESCRIPTION });
 ---
 
