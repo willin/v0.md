@@ -36,10 +36,10 @@ export const refs = [
   - [x] 静态化网站输出
   - [x] 添加官方集成
   - [x] 创建第一个 Layout
-- [x] i18n 国际化支持
-  - [x] 安装配置
-  - [x] 翻译文本示例
-  - [x] 语言链接
+- [ ] i18n 国际化支持
+  - [ ] 安装配置
+  - [ ] 翻译文本示例
+  - [ ] 语言链接
 - [ ] 基础布局、样式、动画
   - [x] 页面切换动画配置
   - [ ] 语言切换组件
@@ -219,145 +219,15 @@ bun dev
 
 ## i18n 国际化支持
 
+- ~~使用 `astro-i18n-aut` 实现 i18n~~
+
 ### 安装配置
 
-`astro-i18n-aut` 是一个很好的 i18n 路由框架，但是不提供文本翻译功能，所以我们需要自己实现。
-
-实现的部分可以参考我之前的插件 [Remix i18n](https://github.com/willin/remix-i18n/blob/main/src/i18n.ts)
-
-```bash
-bun add astro-i18n-aut dlv templite
-bun add -D @types/dlv
-```
-
-添加 `src/const.ts` 配置项文件：
-
-```ts
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
-
-export const SITE_TITLE = 'Willin Wang (v0)' as const;
-export const SITE_DESCRIPTION = 'To be Willin is to be Willing.' as const;
-export const SITE_DOMAIN = 'https://v0.md' as const;
-
-export const defaultLocale = 'zh' as const;
-export const locales = {
-  en: 'en-US', // the `defaultLocale` value must present in `locales` keys
-  zh: 'zh-CN'
-} as const;
-```
-
-和 `src/i18n/index.ts`：
-
-```ts
-import dlv from 'dlv';
-import tmpl, { type Values } from 'templite';
-import type { locales } from '../consts';
-import en from './en.json';
-import zh from './zh.json';
-
-const messages = {
-  zh,
-  en
-};
-
-export const i18n =
-  (lang: string) =>
-  (key: string, params: Values = {}): string => {
-    const val = dlv(messages?.[lang as keyof typeof locales], key, '');
-    if (typeof val === 'function') return val(params);
-    if (typeof val === 'string') return tmpl(val, params);
-    return val;
-  };
-```
-
-添加 i18n 集成，并注意 `Sitemap` 插件需要调整以支持多语言：
-
-```ts
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
-import tailwind from '@astrojs/tailwind';
-import { filterSitemapByDefaultLocale, i18n } from 'astro-i18n-aut/integration';
-import { defineConfig } from 'astro/config';
-import { defaultLocale, locales } from './src/consts';
-
-// https://astro.build/config
-export default defineConfig({
-  site: 'https://v0.md',
-  integrations: [
-    tailwind(),
-    i18n({
-      locales,
-      defaultLocale
-    }),
-    icon(),
-    sitemap({
-      i18n: {
-        locales,
-        defaultLocale
-      },
-      filter: filterSitemapByDefaultLocale({ defaultLocale })
-    })
-  ],
-  output: 'static',
-  build: {
-    format: 'directory'
-  }
-});
-```
 
 ### 翻译文本示例
 
-```astro
----
-import { i18n } from '@/i18n';
-import { getLocale } from 'astro-i18n-aut';
-
-const locale = getLocale(Astro.url);
-const t = i18n(locale);
----
-
-<h1>🧑‍🚀 {t('title')}</h1>
-
-// -.- 其他内容
-```
 
 ### 语言链接
-
-`astro-i18n-aut` 提供了很多有用的方法来辅助生成、判断链接
-
-```ts
-import {
-  getAllLocaleUrls,
-  getLocaleUrl,
-  getLocaleUrlPrefix,
-  getUrlWithoutLocale
- } from 'astro-i18n-aut';
-
-// @example: `en` 为 default locale
-getAllLocaleUrls("/es/about")
-// { en: "/about", "es": "/es/about" }
-getAllLocaleUrls("/about")
-// { en: "/about", "es": "/es/about" }
-
-
-getLocaleUrl("/es/about", "en")
-// "/about"
-getLocaleUrl("/about", "es")
-// "/es/about"
-getLocaleUrl("/es/about", "fr")
-// "/fr/about"
-
-
-getLocaleUrlPrefix("/es/about")
-// "/es"
-getLocaleUrlPrefix("/about")
-// ""
-
-
-getUrlWithoutLocale("/es/about")
-// "/about"
-```
 
 ## 基础布局、样式、动画
 

@@ -17,7 +17,6 @@
     "@astrojs/sitemap": "^3.1.6",
     "@astrojs/tailwind": "^5.1.0",
     "astro": "^4.14.5",
-    "astro-i18n-aut": "^0.7.0",
     "astro-loading-indicator": "^0.5.0",
     "astro-seo": "^0.8.4",
     "dlv": "^1.1.3",

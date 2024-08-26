@@ -3,11 +3,9 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts';
 import { i18n } from '@/i18n';
 import BaseLayout from '@/layout/BaseLayout.astro';
 import { getSeo } from '@/utils/seo';
-import { getLocale } from 'astro-i18n-aut';
 import { SEO } from 'astro-seo';
 
-const locale = getLocale(Astro.url);
-const t = i18n(locale);
+const t = i18n(Astro.currentLocale);
 const seoConfig = getSeo({ title: SITE_TITLE, description: SITE_DESCRIPTION });
 ---
 

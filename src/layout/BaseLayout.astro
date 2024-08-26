@@ -3,14 +3,12 @@ import '../styles/global.css';
 import { ViewTransitions } from 'astro:transitions';
 import Favicon from '@/components/head/Favicon.astro';
 import { i18n } from '@/i18n';
-import { getLocale } from 'astro-i18n-aut';
 import LoadingIndicator from 'astro-loading-indicator/component';
 
-const locale = getLocale(Astro.url);
 // Do not use `Astro.props` in the layout file
 ---
 
-<html lang={locale}>
+<html lang={Astro.currentLocale}>
 	<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
