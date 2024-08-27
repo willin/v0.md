@@ -1,0 +1,24 @@
+@tailwind base;
+
+@layer base {
+  :root {
+    --primary-hue-gradient: calc(
+      var(--primary-hue) + 20
+    ); /* Oh no, Safari doesn't support calc() in oklch(from) */
+
+    --bg-page: oklch(85% 0.02 1);
+  }
+
+  html.dark {
+    --bg-page: oklch(15% 0.02 var(--primary-hue));
+  }
+
+  body {
+    background-color: var(--bg-page);
+    background-image: linear-gradient(
+      to bottom right,
+      oklch(from var(--bg-page) l c var(--primary-hue-gradient)),
+      var(--bg-page)
+    );
+  }
+}

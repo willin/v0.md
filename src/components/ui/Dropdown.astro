@@ -2,8 +2,9 @@
 interface Props {
   className?: string;
   trigger?: 'click' | 'hover' | 'both';
+  ariaLabel?: string;
 }
-const { className = '', trigger = 'click' } = Astro.props;
+const { trigger = 'click', ariaLabel = '', className = 'w-24' } = Astro.props;
 
 const triggerClass = {
   hover:
@@ -13,10 +14,10 @@ const triggerClass = {
 };
 ---
 <div class="inline group relative">
-  <button>
+  <button aria-label={ariaLabel}>
     <slot />
   </button>
-  <nav tabindex="0" class:list={["border text-heading shadow backdrop-blur-lg bg-card right-0 w-24 rounded invisible absolute top-full transition-all opacity-0 *:p-2", className, trigger === 'both' ? [triggerClass.click,triggerClass.hover].join(' ') : triggerClass[trigger]]}>
+  <nav tabindex="0" class:list={["border text-heading shadow backdrop-blur-lg bg-card right-0 rounded invisible absolute top-full transition-all opacity-0 *:p-2", className, trigger === 'both' ? [triggerClass.click,triggerClass.hover].join(' ') : triggerClass[trigger]]}>
     <slot name="dropdown" />
   </nav>
 </div>

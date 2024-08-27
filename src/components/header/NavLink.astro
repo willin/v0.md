@@ -19,11 +19,13 @@ const isActive =
 
 <a href={link} class:list={['flex h-full w-24 font-medium center', {'text-primary': isActive, 'text-heading': !isActive }]}>
   <span class="z-1 inline-flex select-none items-center gap-1 self-center align-middle capitalize">
-    <Icon
-      name={item.icon}
-      class:list={['h-5 w-5', {'hidden': !isActive }]}
-      style="view-transition-name: nav-item-icon"
-    />
+    <span class="h-5 w-5">
+      <Icon
+        name={item.icon}
+        class:list={['h-5 w-5', {'hidden': !isActive }]}
+        style="view-transition-name: nav-item-icon"
+      />
+    </span>
     <span style={`view-transition-name: nav-item-text-${item.text}`}>
       {t(`nav.${item.text}`) || item.text}
     </span>

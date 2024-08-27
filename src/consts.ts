@@ -56,3 +56,5 @@ export const navMenu: NavMenu[] = [
     icon: 'mingcute:user-info-line'
   }
 ] as const;
+
+export const primaryHue = 280;

@@ -1,7 +1,48 @@
 ---
+import { primaryHue } from '@/consts';
+import { i18n } from '@/i18n';
 import { Icon } from 'astro-icon/components';
+import Dropdown from '../ui/Dropdown.astro';
+
+const t = i18n(Astro.url);
 ---
 
-<a href="#" class="">
+<Dropdown className="w-64" ariaLabel={t('nav.theme')}>
   <Icon name="mingcute:paint-brush-ai-line" class="size-6" />
-</a>
+  <div slot="dropdown">
+    demo
+  </div>
+</Dropdown>
+
+<script is:inline define:vars={{ primaryHue }}>
+function getHue() {
+  return +localStorage.getItem('hue') || primaryHue;
+}
+function setHue(hue) {
+  localStorage.setItem('hue', hue);
+  document.documentElement.style.setProperty('--primary-hue', hue);
+}
+
+function loadDarkMode() {
+  let darkMode = localStorage.getItem("theme");
+  if (darkMode === null) {
+    localStorage.setItem("theme", "auto");
+    darkMode = "auto";
+  }
+  if (darkMode === "dark") {
+    document.documentElement.classList.add("dark");
+  }
+  if (
+    darkMode === "auto" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    document.documentElement.classList.add("dark");
+  }
+}
+function init() {
+  setHue(getHue());
+  loadDarkMode();
+}
+init();
+document.addEventListener("astro:after-swap", init);
+</script>

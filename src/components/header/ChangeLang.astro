@@ -1,15 +1,16 @@
 ---
 import { languages } from '@/consts';
-import { getLocaleFromUrl } from '@/i18n';
+import { getLocaleFromUrl, i18n } from '@/i18n';
 import { Icon } from 'astro-icon/components';
 import Dropdown from '../ui/Dropdown.astro';
 import LocaleLink from '../ui/LocaleLink.astro';
 
 const url = Astro.url.pathname;
 const locale = getLocaleFromUrl(Astro.url);
+const t = i18n(Astro.url);
 ---
 
-<Dropdown className="w-32">
+<Dropdown className="w-32" ariaLabel={t('nav.language')}>
   <Icon name="i18n" class="size-5" />
   <ul slot="dropdown">
     {Object.entries(languages).map(([code,{name, flag, unicode}]) => (
