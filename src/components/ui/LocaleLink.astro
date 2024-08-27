@@ -1,0 +1,19 @@
+---
+import { defaultLocale, type locales } from '@/consts';
+import { getLocaleFromUrl, getLocaleUrl, i18n } from '@/i18n';
+
+type Props = {
+  href: string;
+  className?: string;
+  locale?: keyof typeof locales;
+};
+
+const { href, className, locale } = Astro.props;
+
+const currentLocale = locale || getLocaleFromUrl(Astro.url);
+const link = getLocaleUrl(href, currentLocale);
+---
+
+<a href={link} class:list={[className]}>
+  <slot />
+</a>

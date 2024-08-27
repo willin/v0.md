@@ -1,7 +1,31 @@
 ---
+import { languages } from '@/consts';
+import { getLocaleFromUrl } from '@/i18n';
 import { Icon } from 'astro-icon/components';
+import Dropdown from '../ui/Dropdown.astro';
+import LocaleLink from '../ui/LocaleLink.astro';
+
+const url = Astro.url;
+const locale = getLocaleFromUrl(Astro.url);
 ---
 
-<a href="#" class="inline-flex items-center leading-6">
+<Dropdown className="w-32">
   <Icon name="i18n" class="size-5" />
-</a>
+  <ul slot="dropdown">
+    {Object.entries(languages).map(([code,{name, flag, unicode}]) => (
+      <li>
+        <LocaleLink href={url} locale={code} className={locale === code ? 'active flex' : 'flex'}>
+          <img
+            loading="lazy"
+            width="20"
+            height="20"
+            alt={flag}
+            src={`https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/${unicode}.svg`}
+          />
+          <span class="flex flex-1 justify-between pl-2">{name}</span>
+        </LocaleLink>
+      </li>
+    ))}
+  </ul>
+</Dropdown>
+
