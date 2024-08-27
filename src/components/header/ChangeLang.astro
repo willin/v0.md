@@ -5,7 +5,7 @@ import { Icon } from 'astro-icon/components';
 import Dropdown from '../ui/Dropdown.astro';
 import LocaleLink from '../ui/LocaleLink.astro';
 
-const url = Astro.url;
+const url = Astro.url.pathname;
 const locale = getLocaleFromUrl(Astro.url);
 ---
 

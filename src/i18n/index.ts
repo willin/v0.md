@@ -59,7 +59,7 @@ export function getRelativeUrlWithoutLocale(url: URL | string): string {
  */
 export function getLocaleUrl(
   url: URL | string,
-  locale: keyof typeof locales
+  locale: string = defaultLocale
 ): string {
   const u = getRelativeUrlWithoutLocale(url);
   return locale === defaultLocale ? u : `/${locale}${u}`;
