@@ -41,7 +41,7 @@ export const refs = [
   - [x] 翻译文本示例
 - [ ] 基础布局、样式、动画
   - [x] 页面切换动画配置
-  - [ ] 语言切换组件
+  - [x] 语言切换组件
   - [ ] 主题 Dark 模式组件
   - [ ] Search 组件（限样式）
 - [ ] 文章 Collection
@@ -306,9 +306,121 @@ import LoadingIndicator from 'astro-loading-indicator/component';
 
 ### 语言切换组件
 
+为语言切换组件写了几个工具类，可以参考一下：
 
+```ts
+
+const langs = Object.keys(locales);
+/**
+ * Get Locale from URL
+ * @param url
+ * @returns zh | en
+ */
+export function getLocaleFromUrl(url: URL | string): string {
+  const parts = (typeof url === 'string' ? url : url.pathname)
+    .split('/')
+    .filter((el) => el !== '');
+  let match = '';
+  for (const part of parts) {
+    if (langs.includes(part)) match = part;
+  }
+  if (match) return match;
+  return defaultLocale;
+}
+
+/**
+ * Get Relative URL without Locale
+ * @param url sth like: /zh/about/
+ * @returns /about/
+ */
+export function getRelativeUrlWithoutLocale(url: URL | string): string {
+  const parts = (typeof url === 'string' ? url : url.pathname)
+    .split('/')
+    .filter((el) => el !== '');
+  const newParts = parts.filter((el) => !langs.includes(el));
+  const u = `/${newParts.join('/')}`;
+  return u.endsWith('/') ? u : `${u}/`;
+}
+
+/**
+ * Get Locale URL
+ * @param url /about/
+ * @param locale zh | en
+ * @returns /en/about/
+ */
+export function getLocaleUrl(
+  url: URL | string,
+  locale: keyof typeof locales
+): string {
+  const u = getRelativeUrlWithoutLocale(url);
+  return locale === defaultLocale ? u : `/${locale}${u}`;
+}
+```
+
+然后创建了一个 `LocleLink` 组件：
+
+```astro
+---
+import { defaultLocale, type locales } from '@/consts';
+import { getLocaleFromUrl, getLocaleUrl, i18n } from '@/i18n';
+
+type Props = {
+  href: string;
+  className?: string;
+  locale?: keyof typeof locales;
+};
+
+const { href, className, locale } = Astro.props;
+
+const currentLocale = locale || getLocaleFromUrl(Astro.url);
+const link = getLocaleUrl(href, currentLocale);
+---
+
+<a href={link} class:list={[className]}>
+  <slot />
+</a>
+// ...
+```
+
+切换语言的时候，下拉菜单中加入 `LoacleLink`：
+
+```astro
+---
+import { languages } from '@/consts';
+import { getLocaleFromUrl } from '@/i18n';
+import { Icon } from 'astro-icon/components';
+import Dropdown from '../ui/Dropdown.astro';
+import LocaleLink from '../ui/LocaleLink.astro';
+
+const url = Astro.url;
+const locale = getLocaleFromUrl(Astro.url);
+---
+
+<Dropdown className="w-32">
+  <Icon name="i18n" class="size-5" />
+  <ul slot="dropdown">
+    {Object.entries(languages).map(([code,{name, flag, unicode}]) => (
+      <li>
+        <LocaleLink href={url} locale={code} className={locale === code ? 'active flex' : 'flex'}>
+          <img
+            loading="lazy"
+            width="20"
+            height="20"
+            alt={flag}
+            src={`https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/${unicode}.svg`}
+          />
+          <span class="flex flex-1 justify-between pl-2">{name}</span>
+        </LocaleLink>
+      </li>
+    ))}
+  </ul>
+</Dropdown>
+// ...
+```
 
 ### 主题 Dark 模式组件
+
+
 
 ### Search 组件（限样式）
 

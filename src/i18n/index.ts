@@ -20,6 +20,11 @@ export const i18n =
   };
 
 const langs = Object.keys(locales);
+/**
+ * Get Locale from URL
+ * @param url
+ * @returns zh | en
+ */
 export function getLocaleFromUrl(url: URL | string): string {
   const parts = (typeof url === 'string' ? url : url.pathname)
     .split('/')
@@ -32,6 +37,11 @@ export function getLocaleFromUrl(url: URL | string): string {
   return defaultLocale;
 }
 
+/**
+ * Get Relative URL without Locale
+ * @param url sth like: /zh/about/
+ * @returns /about/
+ */
 export function getRelativeUrlWithoutLocale(url: URL | string): string {
   const parts = (typeof url === 'string' ? url : url.pathname)
     .split('/')
@@ -41,6 +51,12 @@ export function getRelativeUrlWithoutLocale(url: URL | string): string {
   return u.endsWith('/') ? u : `${u}/`;
 }
 
+/**
+ * Get Locale URL
+ * @param url /about/
+ * @param locale zh | en
+ * @returns /en/about/
+ */
 export function getLocaleUrl(
   url: URL | string,
   locale: keyof typeof locales
