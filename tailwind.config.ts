@@ -1,15 +1,28 @@
 import typography from '@tailwindcss/typography';
-import type { CSSRuleObject, PluginAPI } from 'tailwindcss/types/config';
+import type { Config } from 'tailwindcss/types/config';
 
 /** @type {import('tailwindcss').Config} */
-export default {
+const config: Config = {
   darkMode: ['selector'],
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
-    colors: {
-      transparent: 'transparent',
-      current: 'currentColor'
+    extend: {
+      colors: () => ({
+        transparent: 'transparent',
+        current: 'currentColor',
+        heading: {
+          DEFAULT: 'var(--text-primary)'
+        },
+        primary: {
+          DEFAULT: 'oklch(var(--text-card) / <alpha-value>)'
+        },
+        card: {
+          DEFAULT: 'oklch(var(--bg-card) / <alpha-value>)'
+        }
+      })
     }
   },
   plugins: [typography]
 };
+
+export default config;

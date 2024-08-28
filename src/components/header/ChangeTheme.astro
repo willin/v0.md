@@ -4,17 +4,43 @@ import { i18n } from '@/i18n';
 import { Icon } from 'astro-icon/components';
 import Dropdown from '../ui/Dropdown.astro';
 
+const themes = ['light', 'dark', 'auto'];
+const themeIcons = [
+  'mingcute:sun-line',
+  'mingcute:moon-line',
+  'mingcute:computer-line'
+];
+
 const t = i18n(Astro.url);
 ---
 
-<Dropdown className="w-64" ariaLabel={t('nav.theme')}>
+<Dropdown className="w-64 bg-card" ariaLabel={t('nav.theme')}>
   <Icon name="mingcute:paint-brush-ai-line" class="size-6" />
   <div slot="dropdown">
-    demo
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center justify-between text-heading">
+        <span class="inline-flex items-center gap-2 text-lg font-medium">
+          {t('theme.banner')}
+        </span>
+        <span class="current-theme text-sm text-gray-500 dark:text-gray-400">
+          {t('theme.auto')}
+        </span>
+      </div>
+      <div class="w-full">
+        <div class="m-2 flex flex-row rounded-md outline outline-2 outline-primary/40 bg-gray-100 divide-x divide-blue-500 text-base text-blue-600 leading-5">
+          {themes.map((theme, i) => (
+            <button data-id={theme} class="theme-button py-2 cursor-pointer bg-blue-400 text-white hover:bg-blue-400 transition duration-200 ease-in-out flex justify-center items-center basis-4/12">
+              <Icon name={themeIcons[i]} />
+              <span class="ml-2">{t(`theme.${theme}`)}</span>
+          </button>
+          ))}
+        </div>
+      </div>
+    </div>
   </div>
 </Dropdown>
 
-<script is:inline define:vars={{ primaryHue }}>
+<script is:inline define:vars={{ primaryHue, themes}}>
 function getHue() {
   return +localStorage.getItem('hue') || primaryHue;
 }
@@ -29,6 +55,9 @@ function loadDarkMode() {
     localStorage.setItem("theme", "auto");
     darkMode = "auto";
   }
+  if (darkMode === "light" || darkMode === "auto") {
+    document.documentElement.classList.remove("dark");
+  }
   if (darkMode === "dark") {
     document.documentElement.classList.add("dark");
   }
@@ -39,10 +68,42 @@ function loadDarkMode() {
     document.documentElement.classList.add("dark");
   }
 }
+
+function dispatchClick() {
+  const darkMode = localStorage.getItem("theme");
+  const buttons = document.querySelectorAll('button.theme-button');
+
+  buttons.forEach((button) => {
+    if (button.dataset.id === darkMode) {
+      button.classList.add('active');
+      document.querySelector('span.current-theme')?.setHTMLUnsafe(button.querySelector('span').innerHTML);
+    } else {
+      button.classList.remove('active');
+    }
+    const click = () => {
+      localStorage.setItem('theme', button.dataset.id);
+      buttons.forEach((b)=> b.classList.remove('active'));
+      button.classList.add('active');
+      document.querySelector('span.current-theme')?.setHTMLUnsafe(button.innerText);
+      loadDarkMode();
+    };
+    button.removeEventListener('click', click);
+    button.addEventListener('click', click);
+  });
+}
+
 function init() {
   setHue(getHue());
   loadDarkMode();
+  dispatchClick();
 }
 init();
 document.addEventListener("astro:after-swap", init);
 </script>
+
+<style>
+.theme-button.active {
+  /* TODO: TBD */
+  @apply text-red-500;
+}
+</style>

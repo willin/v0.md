@@ -42,8 +42,8 @@ export const refs = [
 - [ ] 基础布局、样式、动画
   - [x] 页面切换动画配置
   - [x] 语言切换组件
-  - [ ] 主题 Dark 模式组件
-  - [ ] Search 组件（限样式）
+  - [x] 主题 Dark 模式组件
+  - [ ] Search 组件
 - [ ] 文章 Collection
   - [ ] MDX 内容增强
   - [ ] TOC、阅读进度
@@ -420,6 +420,78 @@ const locale = getLocaleFromUrl(Astro.url);
 
 ### 主题 Dark 模式组件
 
+主要包含两部分功能：
+
+- 切换明暗主题： `light`、`dark`、`auto` 三种模式
+- 调整主题色调： `hue` 0 - 360
+
+```ts
+function getHue() {
+  return +localStorage.getItem('hue') || primaryHue;
+}
+function setHue(hue) {
+  localStorage.setItem('hue', hue);
+  document.documentElement.style.setProperty('--primary-hue', hue);
+}
+
+function loadDarkMode() {
+  let darkMode = localStorage.getItem("theme");
+  if (darkMode === null) {
+    localStorage.setItem("theme", "auto");
+    darkMode = "auto";
+  }
+  if (darkMode === "light" || darkMode === "auto") {
+    document.documentElement.classList.remove("dark");
+  }
+  if (darkMode === "dark") {
+    document.documentElement.classList.add("dark");
+  }
+  if (
+    darkMode === "auto" &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    document.documentElement.classList.add("dark");
+  }
+}
+
+function dispatchClick() {
+  const darkMode = localStorage.getItem("theme");
+  const buttons = document.querySelectorAll('button.theme-button');
+
+  buttons.forEach((button) => {
+    if (button.dataset.id === darkMode) {
+      button.classList.add('active');
+      document.querySelector('span.current-theme')?.setHTMLUnsafe(button.querySelector('span').innerHTML);
+    } else {
+      button.classList.remove('active');
+    }
+    const click = () => {
+      localStorage.setItem('theme', button.dataset.id);
+      buttons.forEach((b)=> b.classList.remove('active'));
+      button.classList.add('active');
+      document.querySelector('span.current-theme')?.setHTMLUnsafe(button.innerText);
+      loadDarkMode();
+    };
+    button.removeEventListener('click', click);
+    button.addEventListener('click', click);
+  });
+}
+
+function init() {
+  setHue(getHue());
+  loadDarkMode();
+  dispatchClick();
+}
+init();
+document.addEventListener("astro:after-swap", init);
+```
+
+设置页面的主色调（通过 `hue` 调节）：
+
+- 主字体颜色
+- 主背景颜色
+- 次字体颜色
+- 次背景色
 
 
 ### Search 组件（限样式）

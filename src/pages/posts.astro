@@ -12,7 +12,7 @@ const seoConfig = getSeo({ title: SITE_TITLE, description: SITE_DESCRIPTION });
 <BaseLayout>
   <SEO {...seoConfig} canonical={new URL(Astro.url.pathname, Astro.site)} slot="seo" />
   <main>
-    <h1>
+    <h1 class="text-primary">
       🧑‍🚀 {t('title')}
     </h1>
   </main>

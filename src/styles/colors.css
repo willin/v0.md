@@ -7,10 +7,15 @@
     ); /* Oh no, Safari doesn't support calc() in oklch(from) */
 
     --bg-page: oklch(85% 0.02 1);
+    --text-primary: #111827;
+    --text-card: 74.22% .1398 var(--primary-hue);
+    --bg-card: 100 0 var(--primary-hue);
   }
 
   html.dark {
+    --text-primary: #f3f4f6;
     --bg-page: oklch(15% 0.02 var(--primary-hue));
+    --bg-card: 25% 0.025 var(--primary-hue);
   }
 
   body {
