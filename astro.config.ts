@@ -17,7 +17,9 @@ export default defineConfig({
     defaultLocale,
     locales: Object.keys(locales),
     routing: {
-      prefixDefaultLocale: false
+      prefixDefaultLocale: false,
+      strategy: 'pathname',
+      fallbackType: 'rewrite'
     }
   },
   integrations: [
