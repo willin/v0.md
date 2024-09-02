@@ -39,17 +39,17 @@ export const refs = [
 - [x] i18n 国际化支持
   - [x] 安装配置
   - [x] 翻译文本示例
-- [ ] 基础布局、样式、动画
+- [x] 基础布局、样式、动画
   - [x] 页面切换动画配置
   - [x] 语言切换组件
   - [x] 主题 Dark 模式组件
-  - [ ] Search 组件
-- [ ] 文章 Collection
+- [x] 文章 Collection
   - [ ] MDX 内容增强
   - [ ] TOC、阅读进度
   - [ ] 字数、阅读时间
   - [ ] Github 卡片
   - [ ] 代码高亮
+- [ ] Search 组件
 - [ ] RSS
 - [ ] 评论系统
 - [ ] 性能优化
@@ -493,12 +493,80 @@ document.addEventListener("astro:after-swap", init);
 - 次字体颜色
 - 次背景色
 
-
-### Search 组件（限样式）
-
 ## 文章 Collection
 
-## MDX 内容增强
+配置字段：
+
+```ts
+import { defineCollection, z } from 'astro:content';
+
+const posts = defineCollection({
+  type: 'content',
+  // Type-check frontmatter using a schema
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    tags: z.array(z.string()).optional().default([]),
+    category: z.string().optional().default(''),
+    image: z.string().optional().default(''),
+    // Transform string to Date object
+    published: z.coerce.date(),
+    updated: z.coerce.date().optional()
+  })
+});
+
+export const collections = { posts };
+```
+
+按照语言来获取 Collection 内容：
+
+```ts
+import { type CollectionEntry, getCollection } from 'astro:content';
+import { getLocaleFromUrl } from '@/i18n';
+
+export async function getLocaleCollection(
+  locale: string,
+  collection = 'posts',
+  sort = 'reverseChronological'
+): Promise<CollectionEntry<'posts'>[]> {
+  const entries = await getCollection(collection);
+
+  const result =
+    locale === ''
+      ? entries
+      : entries.filter((entry) => getLocaleFromUrl(entry.slug) === locale);
+
+  if (sort === 'reverseChronological') {
+    return result.sort(
+      (a: CollectionEntry<'posts'>, b: CollectionEntry<'posts'>) =>
+        a.data.published.valueOf() < b.data.published.valueOf() ? 1 : -1
+    );
+  }
+  return result;
+}
+```
+
+页面中获取 Collection 内容：
+
+```ts
+import { getLocaleFromUrl, getRelativeUrlWithoutLocale } from '@/i18n';
+import { getLocaleCollection } from '@/lib/collection';
+
+export async function getStaticPaths() {
+  const posts = await getLocaleCollection('', 'posts', '');
+  return posts.map((post) => {
+    return {
+      params: {
+        lang: getLocaleFromUrl(post.slug),
+        slug: getRelativeUrlWithoutLocale(post.slug)
+      },
+      props: { entry: post }
+    };
+  });
+}
+```
+
+### MDX 内容增强
 
 ### TOC、阅读进度
 
@@ -507,6 +575,8 @@ document.addEventListener("astro:after-swap", init);
 ### Github 卡片
 
 ### 代码高亮
+
+## Search 组件
 
 ## RSS
 
