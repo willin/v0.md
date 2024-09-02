@@ -13,5 +13,9 @@
     "dark": "Dark",
     "auto": "System",
     "banner": "Theme"
+  },
+  "color": {
+    "reset": "Reset",
+    "banner": "Theme Color"
   }
 }

@@ -9,6 +9,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
+* {
+  cursor: url('/default.cur'),default;
+}
+
+a, a *, button, button * {
+  cursor: url('/pointer.cur'),pointer !important;
+}
+
 @layer base {
   :root {
     @apply scroll-smooth font-normal;

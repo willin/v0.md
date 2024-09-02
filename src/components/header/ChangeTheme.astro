@@ -20,18 +20,37 @@ const t = i18n(Astro.url);
     <div class="flex flex-col gap-2">
       <div class="flex items-center justify-between text-heading">
         <span class="inline-flex items-center gap-2 text-lg font-medium">
+          {t('color.banner')}
+          <button
+            arial-label={t('color.reset')}
+            class="reset-button flex size-7 rounded-md bg-primary/25 p-1 transition-colors center hover:bg-primary/35"
+          >
+            <Icon name="mingcute:back-line" class="flex size-6 self-center" />
+          </button>
+        </span>
+        <input
+          type="number"
+          value={primaryHue}
+          class="hue-input h-7 w-10 rounded-md bg-primary/25 p-1 text-center"
+        />
+      </div>
+      <input class="hue-input" type="range" min="0" max="360" step="5" value={primaryHue} />
+    </div>
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center justify-between text-heading">
+        <span class="inline-flex items-center gap-2 text-lg font-medium">
           {t('theme.banner')}
         </span>
         <span class="current-theme text-sm text-gray-500 dark:text-gray-400">
           {t('theme.auto')}
         </span>
       </div>
-      <div class="w-full">
-        <div class="m-2 flex flex-row rounded-md outline outline-2 outline-primary/40 bg-gray-100 divide-x divide-blue-500 text-base text-blue-600 leading-5">
+      <div class="w-full rounded-md outline outline-2 outline-primary/40">
+        <div class="flex justify-between gap-0.5">
           {themes.map((theme, i) => (
-            <button data-id={theme} class="theme-button py-2 cursor-pointer bg-blue-400 text-white hover:bg-blue-400 transition duration-200 ease-in-out flex justify-center items-center basis-4/12">
-              <Icon name={themeIcons[i]} />
-              <span class="ml-2">{t(`theme.${theme}`)}</span>
+            <button data-id={theme} class="theme-button inline-flex items-center gap-1">
+              <Icon name={themeIcons[i]} class="size-6" />
+              <span class="text-content">{t(`theme.${theme}`)}</span>
           </button>
           ))}
         </div>
@@ -47,6 +66,9 @@ function getHue() {
 function setHue(hue) {
   localStorage.setItem('hue', hue);
   document.documentElement.style.setProperty('--primary-hue', hue);
+  document.querySelectorAll('input.hue-input')?.forEach((input) => {
+    input.value = hue;
+  });
 }
 
 function loadDarkMode() {
@@ -69,7 +91,8 @@ function loadDarkMode() {
   }
 }
 
-function dispatchClick() {
+function dispatchEvent() {
+  // Dark Mode
   const darkMode = localStorage.getItem("theme");
   const buttons = document.querySelectorAll('button.theme-button');
 
@@ -90,20 +113,104 @@ function dispatchClick() {
     button.removeEventListener('click', click);
     button.addEventListener('click', click);
   });
+  // Hue
+  const resetButton = document.querySelector('button.reset-button');
+  const resetHue = () => {
+    setHue(primaryHue);
+  };
+  const changeHue = (e) => {
+    setHue(e.target.value);
+  };
+  resetButton.removeEventListener('click', resetHue);
+  resetButton.addEventListener('click', resetHue);
+  document.querySelectorAll('input.hue-input')?.forEach((input) => {
+    input.removeEventListener('input', changeHue);
+    input.addEventListener('input', changeHue);
+  });
 }
 
 function init() {
   setHue(getHue());
   loadDarkMode();
-  dispatchClick();
+  dispatchEvent();
 }
 init();
 document.addEventListener("astro:after-swap", init);
 </script>
 
 <style>
-.theme-button.active {
-  /* TODO: TBD */
-  @apply text-red-500;
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none; /* Add the standard appearance property */
+  width: 15rem;
+  height: 1.5rem;
+  @apply rounded-md px-1;
+  background: linear-gradient(
+    to right in oklch,
+    oklch(64.78% 0.1472 0),
+    oklch(64.78% 0.1472 60),
+    oklch(64.78% 0.1472 120),
+    oklch(64.78% 0.1472 180),
+    oklch(64.78% 0.1472 240),
+    oklch(64.78% 0.1472 300),
+    oklch(64.78% 0.1472 360)
+  );
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 1rem;
+    width: 0.5rem;
+    border-radius: 0.125rem;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: none;
+    &:hover {
+      background: rgba(255, 255, 255, 0.8);
+    }
+    &:active {
+      background: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  &::-moz-range-thumb {
+    -webkit-appearance: none;
+    appearance: none; /* Add the standard appearance property */
+    height: 1rem;
+    width: 0.5rem;
+    border-radius: 0.125rem;
+    border-width: 0;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: none;
+    &:hover {
+      background: rgba(255, 255, 255, 0.8);
+    }
+    &:active {
+      background: rgba(255, 255, 255, 0.6);
+    }
+  }
+
+  &::-ms-thumb {
+    -webkit-appearance: none;
+    appearance: none; /* Add the standard appearance property */
+    height: 1rem;
+    width: 0.5rem;
+    border-radius: 0.125rem;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: none;
+    &:hover {
+      background: rgba(255, 255, 255, 0.8);
+    }
+    &:active {
+      background: rgba(255, 255, 255, 0.6);
+    }
+  }
+}
+
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 </style>

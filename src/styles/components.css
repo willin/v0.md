@@ -12,4 +12,22 @@
       --inner-card-delay: 0ms;
     }
   }
+
+
+  .theme-button, .lang-button {
+    @apply relative px-2 py-1 text-heading transition-transform active:scale-[95%];
+    &::before {
+      @apply absolute inset-0 scale-50 rounded-md bg-primary/25 opacity-0 transition-[transform,opacity] content-[""];
+    }
+    &:hover::before,
+    &.active::before {
+      @apply scale-100;
+    }
+    &:hover::before {
+      @apply opacity-60;
+    }
+    &.active::before {
+      @apply opacity-100;
+    }
+  }
 }

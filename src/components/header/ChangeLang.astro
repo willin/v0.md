@@ -15,7 +15,7 @@ const t = i18n(Astro.url);
   <ul slot="dropdown">
     {Object.entries(languages).map(([code,{name, flag, unicode}]) => (
       <li>
-        <LocaleLink href={url} locale={code} className={locale === code ? 'active flex' : 'flex'}>
+        <LocaleLink href={url} locale={code} className={locale === code ? 'active flex lang-button' : 'flex lang-button'}>
           <img
             loading="lazy"
             width="20"

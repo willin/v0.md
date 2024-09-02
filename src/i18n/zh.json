@@ -12,6 +12,10 @@
     "light": "明亮",
     "dark": "暗黑",
     "auto": "系统",
-    "banner": "主题"
+    "banner": "配色方案"
+  },
+  "color": {
+    "reset": "重置",
+    "banner": "主题色"
   }
 }

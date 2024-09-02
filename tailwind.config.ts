@@ -19,7 +19,10 @@ const config: Config = {
         card: {
           DEFAULT: 'oklch(var(--bg-card) / <alpha-value>)'
         }
-      })
+      }),
+      borderRadius: {
+        card: '0.75rem' // rounded-xl
+      }
     }
   },
   plugins: [typography]
