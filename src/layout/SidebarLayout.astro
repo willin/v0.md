@@ -1,4 +1,5 @@
 ---
+import Sidebar from '@/components/sidebar/Sidebar.astro';
 import BaseLayout from './BaseLayout.astro';
 
 // Do not use `Astro.props` in the layout file
@@ -6,5 +7,14 @@ import BaseLayout from './BaseLayout.astro';
 
 <BaseLayout>
   <slot name="seo" slot="seo" />
-
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_70%]">
+    <div class="order-10">
+      <slot />
+    </div>
+    <aside>
+      <slot name="sidebar">
+        <Sidebar />
+      </slot>
+    </aside>
+  </div>
 </BaseLayout>

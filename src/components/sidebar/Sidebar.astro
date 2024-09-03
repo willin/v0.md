@@ -1,0 +1,20 @@
+---
+import type { MarkdownHeading } from 'astro';
+interface Props {
+  toc?: MarkdownHeading[];
+}
+const { toc } = Astro.props;
+---
+
+<div class="mb-4 flex flex-col gap-4">
+  test
+  <!-- <AuthorCard />
+  <Tags /> -->
+</div>
+<div
+  class="sticky top-[calc(var(--navbar-height)+var(--navbar-top-margin)+1rem)] flex flex-col gap-4"
+>
+  <!-- {toc && <SideCardToc client:load headings={toc} />}
+  {seriesID && <SideCardSeries id={seriesID} />}
+  <SideCardRecent /> -->
+</div>

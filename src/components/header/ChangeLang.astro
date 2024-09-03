@@ -10,12 +10,12 @@ const locale = getLocaleFromUrl(Astro.url);
 const t = i18n(Astro.url);
 ---
 
-<Dropdown className="w-32" ariaLabel={t('nav.language')}>
+<Dropdown class="w-32" ariaLabel={t('nav.language')}>
   <Icon name="i18n" class="size-5" />
   <ul slot="dropdown">
     {Object.entries(languages).map(([code,{name, flag, unicode}]) => (
       <li>
-        <LocaleLink href={url} locale={code} className={locale === code ? 'active flex lang-button' : 'flex lang-button'}>
+        <LocaleLink href={url} locale={code} class={locale === code ? 'active flex lang-button' : 'flex lang-button'}>
           <img
             loading="lazy"
             width="20"

@@ -1,10 +1,14 @@
 ---
 interface Props {
-  className?: string;
+  class?: string;
   trigger?: 'click' | 'hover' | 'both';
   ariaLabel?: string;
 }
-const { trigger = 'click', ariaLabel = '', className = 'w-24' } = Astro.props;
+const {
+  trigger = 'click',
+  ariaLabel = '',
+  class: className = 'w-24'
+} = Astro.props;
 
 const triggerClass = {
   hover:

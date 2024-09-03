@@ -4,7 +4,7 @@ import { SITE_TITLE } from '@/consts';
 import { SITE_DESCRIPTION } from '@/consts';
 import { getLocaleFromUrl, getRelativeUrlWithoutLocale } from '@/i18n';
 import { i18n } from '@/i18n';
-import BaseLayout from '@/layout/BaseLayout.astro';
+import SidebarLayout from '@/layout/SidebarLayout.astro';
 import { CollectionType, getLocaleCollection } from '@/lib/collection';
 import { getSeo } from '@/lib/seo';
 import { SEO } from 'astro-seo';
@@ -32,14 +32,18 @@ const seoConfig = getSeo({
 });
 ---
 
-<BaseLayout>
+<SidebarLayout>
   <SEO {...seoConfig} titleTemplate={`%s - ${SITE_TITLE}`} canonical={new URL(Astro.url.pathname, Astro.site)} slot="seo" />
-  <main>
-    <h1>
-      🧑‍🚀 {t('title')}
-    </h1>
-    <article class="prose">
+  <main class="bg-card shape-card p-6 sm:p-8 main-card-onload rounded-card">
+    <article class="prose w-full max-w-full dark:prose-invert">
+      <header class="relative py-10">
+        <h1 class="post-header" data-first-letter={entry.data.title[0]}>
+          {entry.data.title}
+        </h1>
+      </header>
+
       <Content />
     </article>
   </main>
-</BaseLayout>
+</SidebarLayout>
+

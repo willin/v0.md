@@ -44,11 +44,11 @@ export const refs = [
   - [x] 语言切换组件
   - [x] 主题 Dark 模式组件
 - [x] 文章 Collection
-  - [ ] MDX 内容增强
-  - [ ] TOC、阅读进度
-  - [ ] 字数、阅读时间
-  - [ ] Github 卡片
-  - [ ] 代码高亮
+  - [x] MDX 内容增强
+  - [x] TOC、阅读进度
+  - [x] 字数、阅读时间
+  - [x] Github 卡片
+  - [x] 代码高亮
 - [ ] Search 组件
 - [ ] RSS
 - [ ] 评论系统
@@ -366,11 +366,11 @@ import { getLocaleFromUrl, getLocaleUrl, i18n } from '@/i18n';
 
 type Props = {
   href: string;
-  className?: string;
+  class?: string;
   locale?: keyof typeof locales;
 };
 
-const { href, className, locale } = Astro.props;
+const { href, class:className, locale } = Astro.props;
 
 const currentLocale = locale || getLocaleFromUrl(Astro.url);
 const link = getLocaleUrl(href, currentLocale);
@@ -396,12 +396,12 @@ const url = Astro.url;
 const locale = getLocaleFromUrl(Astro.url);
 ---
 
-<Dropdown className="w-32">
+<Dropdown class="w-32">
   <Icon name="i18n" class="size-5" />
   <ul slot="dropdown">
     {Object.entries(languages).map(([code,{name, flag, unicode}]) => (
       <li>
-        <LocaleLink href={url} locale={code} className={locale === code ? 'active flex' : 'flex'}>
+        <LocaleLink href={url} locale={code} class={locale === code ? 'active flex' : 'flex'}>
           <img
             loading="lazy"
             width="20"
@@ -568,13 +568,26 @@ export async function getStaticPaths() {
 
 ### MDX 内容增强
 
-### TOC、阅读进度
+修改配置 `astro.config.ts`，加入:
 
-### 字数、阅读时间
+```ts
+markdown: {
+  remarkPlugins: [],
+  rehypePlugins: []
+}
+```
 
-### Github 卡片
 
-### 代码高亮
+:::tip
+测试一下 Markdown 增强及卡片
+:::
+
+
+::github{repo="willin/v0.md"}
+
+```markdown
+::github{repo="willin/v0.md"}
+```
 
 ## Search 组件
 

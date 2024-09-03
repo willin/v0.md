@@ -3,11 +3,11 @@ import { getLocaleFromUrl, getLocaleUrl } from '@/i18n';
 
 type Props = {
   href: string;
-  className?: string;
+  class?: string;
   locale?: string;
 };
 
-const { href, className, locale } = Astro.props;
+const { href, class: className, locale } = Astro.props;
 
 const currentLocale = locale || getLocaleFromUrl(Astro.url);
 const link = getLocaleUrl(href, currentLocale);
