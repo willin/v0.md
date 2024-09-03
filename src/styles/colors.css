@@ -10,20 +10,34 @@
     --text-primary: #111827;
     --text-card: 74.22% .1398 var(--primary-hue);
     --bg-card: 100 0 var(--primary-hue);
+
+    --content-50: theme("colors.gray.600");
+    --content-100: theme("colors.gray.700");
+    --content-200: theme("colors.gray.900");
+    --content-primary: #111827;
   }
 
   html.dark {
     --text-primary: #f3f4f6;
     --bg-page: oklch(15% 0.02 var(--primary-hue));
     --bg-card: 25% 0.025 var(--primary-hue);
+
+    --content-50: theme("colors.gray.400");
+    --content-100: theme("colors.gray.300");
+    --content-200: theme("colors.gray.100");
+    --content-primary: #f3f4f6;
   }
 
   body {
+    color: #000;
     background-color: var(--bg-page);
     background-image: linear-gradient(
       to bottom right,
       oklch(from var(--bg-page) l c var(--primary-hue-gradient)),
       var(--bg-page)
     );
+  }
+  .dark body{
+    color: #fff;
   }
 }

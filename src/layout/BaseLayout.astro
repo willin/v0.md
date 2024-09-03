@@ -21,7 +21,18 @@ import LoadingIndicator from 'astro-loading-indicator/component';
   <body class="bg-fixed">
     <div class="container-max-lg">
       <Navbar />
-      <slot />
+      <div class="w-full place-self-stretch">
+        <div class="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_30%]">
+          <div class="">
+            <slot />
+          </div>
+          <aside>
+            <slot name="sidebar">
+              <!-- <SideBar /> -->
+            </slot>
+          </aside>
+        </div>
+      </div>
     </div>
 	</body>
 </html>

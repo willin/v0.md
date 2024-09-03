@@ -1,0 +1,20 @@
+---
+interface Props {
+  href: string;
+  title: string;
+}
+const { href, title } = Astro.props;
+---
+
+<li class:list={["timeline-dot-item group py-2", "select-none rounded-lg text-content transition-colors bg-transparent hover:bg-primary/20 active:bg-primary/30"]}>
+  <a class="flex flex-col gap-1" href={href}>
+    <slot name="title">
+      <span
+        class="truncate text-left text-sm text-heading transition group-hover:translate-x-1 md:text-base"
+      >
+        {title}
+      </span>
+    </slot>
+    <slot />
+  </a>
+</li>

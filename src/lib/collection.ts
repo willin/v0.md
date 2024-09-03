@@ -1,5 +1,6 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
-import { getLocaleFromUrl } from '@/i18n';
+import { defaultLocale } from '@/consts';
+import { getLocaleFromUrl, getRelativeUrlWithoutLocale } from '@/i18n';
 
 export enum CollectionType {
   Posts = 'posts'
@@ -24,4 +25,40 @@ export async function getLocaleCollection(
     );
   }
   return result;
+}
+
+export function groupingEntries<T>(posts: T[], getYear: (arg0: T) => number) {
+  const groupedPosts = posts.reduce((grouped: Record<string, T[]>, post: T) => {
+    const year = getYear(post);
+    if (!grouped[year]) {
+      grouped[year] = [];
+    }
+    grouped[year].push(post);
+    return grouped;
+  }, {});
+
+  // convert the object to an array
+  const groupedPostsArray = Object.keys(groupedPosts).map((key) => ({
+    year: key,
+    posts: groupedPosts[key]
+  }));
+
+  // sort years by latest first
+  groupedPostsArray.sort(
+    (a, b) => Number.parseInt(b.year) - Number.parseInt(a.year)
+  );
+  return groupedPostsArray;
+}
+
+export function getPostUrl(
+  entryOrSlug: CollectionEntry<'posts'> | string | undefined
+) {
+  if (entryOrSlug === undefined) return '';
+  if (typeof entryOrSlug === 'string') {
+    const locale = getLocaleFromUrl(entryOrSlug);
+    return locale === defaultLocale
+      ? `/blog${getRelativeUrlWithoutLocale(entryOrSlug)}`
+      : `/${locale}/blog${getRelativeUrlWithoutLocale(entryOrSlug)}`;
+  }
+  return getPostUrl(entryOrSlug.slug);
 }

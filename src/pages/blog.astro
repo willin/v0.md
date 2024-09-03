@@ -1,0 +1,43 @@
+---
+import AchieveAttr from '@/components/blog/AchieveAttr.astro';
+import EntryListItem from '@/components/blog/EntryListItem.astro';
+import EntryListYear from '@/components/blog/EntryListYear.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '@/consts';
+import BaseLayout from '@/layout/BaseLayout.astro';
+import {
+  CollectionType,
+  getLocaleCollection,
+  getPostUrl,
+  groupingEntries
+} from '@/lib/collection';
+import { getSeo } from '@/lib/seo';
+import { SEO } from 'astro-seo';
+
+const locale = Astro.currentLocale as string;
+const seoConfig = getSeo({ title: SITE_TITLE, description: SITE_DESCRIPTION });
+
+const entries = await getLocaleCollection(locale, CollectionType.Posts, '');
+
+const groups = groupingEntries(entries, (post) =>
+  post.data.published.getFullYear()
+);
+---
+
+<BaseLayout>
+  <SEO {...seoConfig} canonical={new URL(Astro.url.pathname, Astro.site)} slot="seo" />
+  <main class="bg-card shape-card p-6 sm:p-8 main-card-onload rounded-card">
+    {
+      groups.map((group,order) => (
+        <EntryListYear year={group.year} order={order+1}>
+          {
+            group.posts.map((post) => (
+              <EntryListItem  href={getPostUrl(post.slug)} title={post.data.title}>
+                <AchieveAttr post={post} />
+              </EntryListItem>
+            ))
+          }
+        </EntryListYear>
+      ))
+    }
+  </main>
+</BaseLayout>

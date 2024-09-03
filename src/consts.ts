@@ -34,8 +34,8 @@ export const navMenu: NavMenu[] = [
     icon: 'mingcute:home-3-line'
   },
   {
-    text: 'post',
-    link: '/posts/',
+    text: 'blog',
+    link: '/blog/',
     icon: 'mingcute:quill-pen-line',
     subMenu: [
       {
