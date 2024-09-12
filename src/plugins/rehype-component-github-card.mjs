@@ -52,7 +52,7 @@ export function GithubCardComponent(properties, children) {
 
   const nStars = h(`div#${cardUuid}-stars`, { class: 'gc-stars' }, '00K');
   const nForks = h(`div#${cardUuid}-forks`, { class: 'gc-forks' }, '0K');
-  const nLicense = h(`div#${cardUuid}-license`, { class: 'gc-license' }, '0K');
+  const nLicense = h(`div#${cardUuid}-license`, { class: 'gc-license' }, 'None');
 
   const nScript = h(
     `script#${cardUuid}-script`,

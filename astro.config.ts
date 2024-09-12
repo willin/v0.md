@@ -35,7 +35,8 @@ export default defineConfig({
   integrations: [
     mdx(),
     tailwind({
-      applyBaseStyles: false
+      applyBaseStyles: false,
+      nesting: true
     }),
     icon({
       iconDir: 'src/assets/icons'

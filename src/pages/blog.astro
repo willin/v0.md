@@ -16,7 +16,7 @@ import { SEO } from 'astro-seo';
 const locale = Astro.currentLocale as string;
 const seoConfig = getSeo({ title: SITE_TITLE, description: SITE_DESCRIPTION });
 
-const entries = await getLocaleCollection(locale, CollectionType.Posts, '');
+const entries = await getLocaleCollection(locale, CollectionType.Posts);
 
 const groups = groupingEntries(entries, (post) =>
   post.data.published.getFullYear()
