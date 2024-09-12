@@ -37,6 +37,32 @@
   }
 
 
+  .prose h1,h2,h3,h4,h5,h6 {
+    .anchor {
+      @apply select-none opacity-0 !no-underline p-0.5 !ml-1;
+      transition: opacity 0.15s ease-in-out, background 0.15s ease-in-out !important;
+    }
+
+    &:hover .anchor {
+      @apply opacity-100 bg-[var(--bg-page)];
+    }
+
+    .anchor .anchor-icon {
+      @apply mx-[0.45ch];
+    }
+  }
+
+  .prose a:not(.no-styling) {
+    @apply relative mt-[-0.25rem] mr-[-0.25rem] mb-[-0.25rem] ml-[-0.25rem] font-medium text-[color:var(--primary)] underline decoration-[color:var(--link-underline)] decoration-2 decoration-dashed underline-offset-4 p-1 rounded-md hover:decoration-[color:var(--link-hover)] active:decoration-[color:var(--link-active)];
+    background: none;
+  }
+  .prose a:not(.no-styling):hover {
+    @apply bg-[var(--bg-page)];
+  }
+  .prose a:not(.no-styling):active {
+    @apply bg-primary;
+  }
+
   a.card-github {
     @apply block relative text-[color:var(--tw-prose-body)] rounded-lg decoration-0 no-underline mx-0 my-2 px-6 py-[1.1rem] bg-[var(--bg-page)] hover:bg-primary active:bg-primary;
 
@@ -197,5 +223,4 @@
       opacity: 0.15;
     }
   }
-
 }

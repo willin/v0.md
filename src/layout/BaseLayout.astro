@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { ViewTransitions } from 'astro:transitions';
+import Footer from '@/components/Footer.astro';
 import Favicon from '@/components/head/Favicon.astro';
 import Navbar from '@/components/header/Navbar.astro';
 import LoadingIndicator from 'astro-loading-indicator/component';
@@ -24,6 +25,7 @@ import LoadingIndicator from 'astro-loading-indicator/component';
       <div class="w-full place-self-stretch">
         <slot />
       </div>
+      <Footer />
     </div>
 	</body>
 </html>

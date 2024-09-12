@@ -1,0 +1,29 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+<div class="mx-auto w-full bg-card shape-card p-5 main-card-onload rounded-card">
+  <div class="flex w-full">
+    <div class="flex flex-shrink flex-grow flex-col items-center md:items-start">
+      <span class="inline-flex items-center gap-x-1 text-sm text-comment">
+        <span class="inline-flex gap-0.5 center">
+          <Icon name="mingcute:copyright-line" class="self-center" /> 2024-{new Date().getFullYear()} <span><a href={Astro.site} class="text-primary">Willin Wang</a>.</span>
+        </span>
+        <span class="opacity-70">|</span>
+        <a href="https://github.com/willin/v0.md" class="inline-flex gap-0.5 center"> <Icon name="mingcute:github-line" class="self-center" />Source Code</a>
+      </span>
+      <span class="inline-flex items-center gap-1 text-sm text-comment">
+        <span class="hidden md:inline">For Robots: </span>
+        <a href="/feed.xml" class="inline-flex gap-0.5 center"> <Icon name="mingcute:rss-2-line" class="self-center" />RSS</a>
+        <span class="opacity-70">|</span>
+        <a href="/sitemap-index.xml" class="inline-flex gap-0.5 center"> <Icon name="mingcute:map-line" class="self-center" />Site Map</a>
+      </span>
+      <span class="text-sm text-comment">
+        Powered by
+        <a href="https://astro.build" class="text-primary">Astro</a>.
+      </span>
+    </div>
+    <div class="hidden center md:flex w-[48px] h-[48px] self-center">
+      <img src="/icon-96.png" alt="logo" class="rounded-lg" width="48" height="48" />
+    </div>
+  </div>
+</div>
