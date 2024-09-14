@@ -1,0 +1,62 @@
+---
+import { i18n } from '@/i18n';
+import { Icon } from 'astro-icon/components';
+
+const { matter } = Astro.props;
+const t = i18n(Astro.url);
+---
+<header class="relative pt-10">
+  <div class="flex flex-row text-black/30 dark:text-white/30 gap-5 mb-3 transition onload-animation">
+    <div class="flex flex-row items-center">
+        <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2">
+            <Icon name="mingcute:align-right-line"></Icon>
+        </div>
+        <div class="text-sm">{matter.words} {t('content.words')}</div>
+    </div>
+    <div class="flex flex-row items-center">
+        <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2">
+            <Icon name="mingcute:alarm-2-line"></Icon>
+        </div>
+        <div class="text-sm">{matter.minutes} {t('content.minutes')}</div>
+    </div>
+  </div>
+  <h1 class="post-header" data-first-letter={matter.title[0]}>
+    {matter.title}
+  </h1>
+  <nav class="flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2 mb-5">
+    <div class="flex items-center">
+      <div class="meta-icon">
+          <Icon name="mingcute:calendar-line" class="text-xl"></Icon>
+      </div>
+      <span class="text-50 text-sm font-medium">{new Date(matter.published).toISOString().substring(0, 10)}</span>
+    </div>
+    <div class="flex items-center">
+      <div class="meta-icon">
+        <Icon name="mingcute:diary-line" class="text-xl"></Icon>
+      </div>
+      <div class="flex flex-row flex-nowrap items-center">
+        <a href={'/'} aria-label=`View all posts in the ${matter.category} category`
+            class="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap !no-underline">
+            {matter.category || t('content.no_category')}
+        </a>
+      </div>
+    </div>
+
+    <div class="flex items-center">
+        <div class="meta-icon">
+            <Icon name="mingcute:hashtag-line" class="text-xl"></Icon>
+        </div>
+        <div class="flex flex-row flex-nowrap items-center">
+            {(matter.tags && matter.tags.length > 0) && matter.tags.map((tag, i) => (
+                <div class:list={[{"hidden": i == 0}, "mx-1.5 text-[var(--meta-divider)] text-sm"]}>/</div>
+                <a href={`/archive/tag/${tag}/`} aria-label=`View all posts with the ${tag} tag`
+                  class="link-lg transition text-50 text-sm font-medium !no-underline
+                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
+                    {tag}
+                </a>
+            ))}
+            {!(matter.tags && matter.tags.length > 0) && <div class="transition text-50 text-sm font-medium">{t('content.no_tags')}</div>}
+        </div>
+    </div>
+  </nav>
+</header>

@@ -15,7 +15,7 @@
 
 
   .post-header::before {
-    @apply text-[12rem] z-10 absolute top-[4rem] left-[-1rem] pointer-events-none select-none uppercase opacity-20;
+    @apply text-[12rem] z-10 absolute top-[6rem] left-[-1rem] pointer-events-none select-none uppercase opacity-20;
     content: attr(data-first-letter);
     transform: translate(0, -50%);
   }
@@ -62,6 +62,10 @@
   }
   .prose a:not(.no-styling):active {
     @apply bg-primary;
+  }
+
+  .meta-icon {
+    @apply w-8 h-8 transition rounded-md flex items-center justify-center bg-primary text-content-primary mr-2 bg-opacity-30;
   }
 
   blockquote {

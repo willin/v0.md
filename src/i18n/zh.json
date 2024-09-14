@@ -17,5 +17,11 @@
   "color": {
     "reset": "重置",
     "banner": "主题色"
+  },
+  "content": {
+    "words": "字",
+    "minutes": "分钟阅读",
+    "no_category": "未分类",
+    "no_tags": "无标签"
   }
 }

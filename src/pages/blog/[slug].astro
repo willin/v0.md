@@ -1,6 +1,7 @@
 ---
+import PostHeader from '@/components/blog/PostHeader.astro';
 import { SITE_DESCRIPTION, SITE_TITLE, defaultLocale } from '@/consts';
-import { getRelativeUrlWithoutLocale, i18n } from '@/i18n';
+import { getRelativeUrlWithoutLocale } from '@/i18n';
 import SidebarLayout from '@/layout/SidebarLayout.astro';
 import { CollectionType, getLocaleCollection } from '@/lib/collection';
 import { getSeo } from '@/lib/seo';
@@ -25,9 +26,8 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 
-const { Content } = await entry.render();
+const { Content, remarkPluginFrontmatter } = await entry.render();
 
-const t = i18n(Astro.url);
 const seoConfig = getSeo({
   title: entry.data.title,
   description: entry.data.description || SITE_DESCRIPTION
@@ -38,12 +38,7 @@ const seoConfig = getSeo({
   <SEO {...seoConfig} titleTemplate={`%s - ${SITE_TITLE}`} canonical={new URL(Astro.url.pathname, Astro.site)} slot="seo" />
   <main class="bg-card shape-card p-6 sm:p-8 main-card-onload rounded-card">
     <article class="prose w-full max-w-full dark:prose-invert">
-      <header class="relative py-10">
-        <h1 class="post-header" data-first-letter={entry.data.title[0]}>
-          {entry.data.title}
-        </h1>
-      </header>
-
+      <PostHeader matter={remarkPluginFrontmatter} />
       <Content />
     </article>
   </main>

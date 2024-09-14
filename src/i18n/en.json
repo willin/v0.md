@@ -17,5 +17,11 @@
   "color": {
     "reset": "Reset",
     "banner": "Theme Color"
+  },
+  "content": {
+    "words": "words",
+    "minutes": "min read",
+    "no_category": "Uncategorized",
+    "no_tags": "No Tags"
   }
 }
