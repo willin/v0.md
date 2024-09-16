@@ -13,6 +13,9 @@
     }
   }
 
+  .badge, :hover .badge {
+    @apply text-white;
+  }
 
   .post-header::before {
     @apply text-[12rem] z-10 absolute top-[6rem] left-[-1rem] pointer-events-none select-none uppercase opacity-20;
