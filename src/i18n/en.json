@@ -19,8 +19,11 @@
     "banner": "Theme Color"
   },
   "content": {
+    "articles": "posts",
     "words": "words",
     "minutes": "min read",
+    "category": "Categories",
+    "tag": "Tags",
     "no_category": "Uncategorized",
     "no_tags": "No Tags"
   }

@@ -1,5 +1,7 @@
 ---
 import type { MarkdownHeading } from 'astro';
+import AuthorCard from './AuthorCard.astro';
+
 interface Props {
   toc?: MarkdownHeading[];
 }
@@ -7,7 +9,7 @@ const { toc } = Astro.props;
 ---
 
 <div class="mb-4 flex flex-col gap-4">
-  test
+  <AuthorCard />
   <!-- <AuthorCard />
   <Tags /> -->
 </div>

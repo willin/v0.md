@@ -19,8 +19,11 @@
     "banner": "主题色"
   },
   "content": {
+    "articles": "文章",
     "words": "字",
     "minutes": "分钟阅读",
+    "category": "分类",
+    "tag": "标签",
     "no_category": "未分类",
     "no_tags": "无标签"
   }

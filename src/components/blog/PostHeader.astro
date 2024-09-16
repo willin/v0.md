@@ -1,5 +1,5 @@
 ---
-import { i18n } from '@/i18n';
+import { getLocaleUrl, i18n } from '@/i18n';
 import { Icon } from 'astro-icon/components';
 
 const { matter } = Astro.props;
@@ -11,7 +11,7 @@ const t = i18n(Astro.url);
         <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2">
             <Icon name="mingcute:align-right-line"></Icon>
         </div>
-        <div class="text-sm">{matter.words} {t('content.words')}</div>
+        <div class="text-sm">{matter.words.toLocaleString()} {t('content.words')}</div>
     </div>
     <div class="flex flex-row items-center">
         <div class="transition h-6 w-6 rounded-md bg-black/5 dark:bg-white/10 text-black/50 dark:text-white/50 flex items-center justify-center mr-2">
@@ -35,7 +35,7 @@ const t = i18n(Astro.url);
         <Icon name="mingcute:diary-line" class="text-xl"></Icon>
       </div>
       <div class="flex flex-row flex-nowrap items-center">
-        <a href={'/'} aria-label=`View all posts in the ${matter.category} category`
+        <a href={getLocaleUrl(`/blog/category/${matter.category}/`,Astro.currentLocale)} aria-label=`View all posts in the ${matter.category} category`
             class="link-lg transition text-50 text-sm font-medium hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap !no-underline">
             {matter.category || t('content.no_category')}
         </a>
@@ -49,7 +49,7 @@ const t = i18n(Astro.url);
         <div class="flex flex-row flex-nowrap items-center">
             {(matter.tags && matter.tags.length > 0) && matter.tags.map((tag, i) => (
                 <div class:list={[{"hidden": i == 0}, "mx-1.5 text-[var(--meta-divider)] text-sm"]}>/</div>
-                <a href={`/archive/tag/${tag}/`} aria-label=`View all posts with the ${tag} tag`
+                <a href={getLocaleUrl(`/blog/tag/${tag}/`,Astro.currentLocale)} aria-label=`View all posts with the ${tag} tag`
                   class="link-lg transition text-50 text-sm font-medium !no-underline
                                 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
                     {tag}
