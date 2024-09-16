@@ -1,11 +1,44 @@
 ---
 import { i18n } from '@/i18n';
 import { getStatistics } from '@/lib/statistics';
+import { Icon } from 'astro-icon/components';
 
 const t = i18n(Astro.url);
 const { articles, words, tags, categories } = await getStatistics(
   Astro.currentLocale
 );
+
+const contactInfo: {
+  name: string;
+  icon: string;
+  link: string;
+  color: string;
+}[] = [
+  {
+    name: 'GitHub',
+    icon: 'mingcute:github-line',
+    link: 'https://github.com/willin',
+    color: '#000000'
+  },
+  {
+    name: 'Telegram',
+    icon: 'mingcute:telegram-line',
+    link: 'https://t.me/willinwang',
+    color: '#24A1DE'
+  },
+  {
+    name: 'Twitter',
+    icon: 'mingcute:twitter-line',
+    link: 'https://twitter.com/willinwang',
+    color: '#1DA1F2'
+  },
+  {
+    name: 'Email',
+    icon: 'mingcute:mail-send-line',
+    link: 'mailto:i@v0.md',
+    color: '#f87171'
+  }
+];
 ---
 
 <div class="bg-card shape-card p-6 sm:p-8 main-card-onload rounded-card">
@@ -44,11 +77,11 @@ const { articles, words, tags, categories } = await getStatistics(
             </div>
         </div>
         <div class="flex gap-2">
-            <!-- { contactInfo.map((social) => (
-            <a href="{social.link}" target="_blank" class="flex size-9 rounded-lg border border-primary/30 bg-primary/20 p-1.5 transition-all center hover:scale-105 hover:bg-primary/25" rel="noreferer">
-                <Icon name="{social.icon}" class="size-full" style="{`color:" ${social.color}`} />
-            </a>
-            )) } -->
+            { contactInfo.map((social) => (
+              <a href={social.link} target="_blank" class="flex size-9 rounded-lg border border-primary/30 bg-primary/20 p-1.5 transition-all center hover:scale-105 hover:bg-primary/25" rel="noreferer">
+                  <Icon name={social.icon} class="size-full" style={`color: ${social.color}`} />
+              </a>
+            )) }
         </div>
     </div>
   </div>
