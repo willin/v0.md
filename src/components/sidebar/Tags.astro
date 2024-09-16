@@ -1,0 +1,31 @@
+---
+
+import ButtonTag from '@/components/ui/ButtonTag.astro';
+import { i18n } from '@/i18n';
+import { getStatistics } from '@/lib/statistics';
+import { Icon } from 'astro-icon/components';
+import WidgetLayout from './WidgetLayout.astro';
+
+const { tags } = await getStatistics(Astro.currentLocale);
+
+const t = i18n(Astro.url);
+const COLLAPSED_HEIGHT = '7.5rem';
+const isCollapsed = tags.length >= 20;
+
+interface Props {
+  class?: string;
+  style?: string;
+}
+const className = Astro.props.class;
+const style = Astro.props.style;
+---
+<WidgetLayout name={t('content.tag')} id="tags" isCollapsed={isCollapsed} collapsedHeight={COLLAPSED_HEIGHT} class={className} style={style}>
+    <div class="flex gap-2 flex-wrap">
+        {tags.map(t => (
+            <ButtonTag href={`/blog/tag/${t}/`} label={t}>
+                <Icon name="mingcute:hashtag-line" />
+                {t}
+            </ButtonTag>
+        ))}
+    </div>
+</WidgetLayout>

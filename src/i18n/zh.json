@@ -25,6 +25,7 @@
     "category": "分类",
     "tag": "标签",
     "no_category": "未分类",
-    "no_tags": "无标签"
+    "no_tags": "无标签",
+    "more": "更多"
   }
 }

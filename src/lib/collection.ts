@@ -7,7 +7,7 @@ export enum CollectionType {
 }
 
 export async function getLocaleCollection(
-  locale: string,
+  locale?: string,
   collection: CollectionType = CollectionType.Posts,
   sort = 'reverseChronological'
 ): Promise<CollectionEntry<'posts'>[]> {

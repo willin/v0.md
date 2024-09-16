@@ -22,4 +22,20 @@ a, a *, button, button * {
     @apply scroll-smooth font-normal;
     --edge-padding: 1rem;
   }
+
+  @keyframes fade-in-up {
+    0% {
+        transform: translateY(2rem);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+  }
+  .onload-animation {
+    opacity: 0;
+    animation: 300ms fade-in-up;
+    animation-fill-mode: forwards;
+  }
 }

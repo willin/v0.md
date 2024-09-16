@@ -1,0 +1,14 @@
+---
+import LocaleLink from './LocaleLink.astro';
+
+interface Props {
+  size?: string;
+  href?: string;
+  label?: string;
+}
+const { size, href = '', label }: Props = Astro.props;
+---
+
+<LocaleLink href={href} aria-label={label} class="inline-flex select-none items-center text-sm text-content transition hover:text-primary">
+    <slot></slot>
+</LocaleLink>

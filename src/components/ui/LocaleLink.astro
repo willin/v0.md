@@ -7,12 +7,12 @@ type Props = {
   locale?: string;
 };
 
-const { href, class: className, locale } = Astro.props;
+const { href, class: className, locale, ...props } = Astro.props;
 
 const currentLocale = locale || getLocaleFromUrl(Astro.url);
 const link = getLocaleUrl(href, currentLocale);
 ---
 
-<a href={link} class:list={[className]}>
+<a href={link} class:list={[className]} {...props}>
   <slot />
 </a>

@@ -25,6 +25,7 @@
     "category": "Categories",
     "tag": "Tags",
     "no_category": "Uncategorized",
-    "no_tags": "No Tags"
+    "no_tags": "No Tags",
+    "more": "More"
   }
 }
