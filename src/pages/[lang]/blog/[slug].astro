@@ -1,5 +1,6 @@
 ---
 // Duplicated pages are not supported in Astro yet, so we need to use a workaround
+import Markdown from '@/components/blog/Markdown.astro';
 import PostHeader from '@/components/blog/PostHeader.astro';
 import { SITE_TITLE } from '@/consts';
 import { SITE_DESCRIPTION } from '@/consts';
@@ -37,7 +38,9 @@ const seoConfig = getSeo({
     <article class="prose w-full max-w-full dark:prose-invert">
       <PostHeader matter={remarkPluginFrontmatter}/>
 
-      <Content />
+      <Markdown class="mb-6 markdown-content onload-animation">
+        <Content />
+      </Markdown>
     </article>
   </main>
 </SidebarLayout>

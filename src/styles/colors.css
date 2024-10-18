@@ -15,6 +15,7 @@
     --content-100: theme("colors.gray.700");
     --content-200: theme("colors.gray.900");
     --content-primary: #111827;
+    /* --primary: theme("colors.gray.600"); */
 
     --admonitions-color-tip: oklch(0.7 0.14 180);
     --admonitions-color-note: oklch(0.7 0.14 250);

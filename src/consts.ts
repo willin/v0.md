@@ -57,4 +57,4 @@ export const navMenu: NavMenu[] = [
   }
 ] as const;
 
-export const primaryHue = 280;
+export const primaryHue = 350;

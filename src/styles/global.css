@@ -9,18 +9,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* * {
-  cursor: url('/default.cur'),default;
-}
-
-a, a *, button, button * {
-  cursor: url('/pointer.cur'),pointer !important;
-} */
-
 @layer base {
   :root {
-    @apply scroll-smooth font-normal;
+    @apply scroll-smooth font-normal cursor-default;
     --edge-padding: 1rem;
+  }
+
+  a, a *, button, button * {
+    @apply cursor-pointer;
   }
 
   @keyframes fade-in-up {

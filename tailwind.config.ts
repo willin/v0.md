@@ -20,6 +20,10 @@ const config: Config = {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
     extend: {
+      cursor: {
+        default: `url('/default.cur'),default`,
+        pointer: `url('/pointer.cur'),pointer`
+      },
       colors: () => ({
         transparent: 'transparent',
         current: 'currentColor',

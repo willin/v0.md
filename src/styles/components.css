@@ -143,6 +143,29 @@
     background: var(--admonitions-color-caution);
   }
 
+  .btn-regular-dark {
+    @apply flex items-center justify-center bg-[oklch(0.45_0.01_var(--primary-hue))] hover:bg-[oklch(0.50_0.01_var(--primary-hue))] active:bg-[oklch(0.55_0.01_var(--primary-hue))] dark:bg-[oklch(0.30_0.02_var(--primary-hue))] dark:hover:bg-[oklch(0.35_0.03_var(--primary-hue))] dark:active:bg-[oklch(0.40_0.03_var(--primary-hue))];
+  }
+  .btn-regular-dark.success {
+    @apply bg-[oklch(0.75_0.14_var(--primary-hue))] dark:bg-[oklch(0.75_0.14_var(--primary-hue))];
+  }
+
+  .copy-btn-icon {
+    @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2;
+  }
+  .copy-btn .copy-icon {
+    @apply opacity-100 fill-white dark:fill-white/75;
+  }
+  .copy-btn.success .copy-icon {
+    @apply opacity-0 fill-[var(--deep-text)];
+  }
+  .copy-btn .success-icon {
+    @apply opacity-0;
+  }
+  .copy-btn.success .success-icon {
+    @apply opacity-100;
+  }
+
   a.card-github {
     @apply block relative text-[color:var(--tw-prose-body)] rounded-lg decoration-0 no-underline mx-0 my-2 px-6 py-[1.1rem] bg-[var(--bg-page)] hover:bg-primary active:bg-primary;
 
