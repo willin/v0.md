@@ -1,13 +1,16 @@
 ---
+import { i18n } from '@/i18n';
 import type { MarkdownHeading } from 'astro';
 import AuthorCard from './AuthorCard.astro';
 import Categories from './Categories.astro';
+import SideCardToc from './SideCardToc';
 import Tags from './Tags.astro';
 
 interface Props {
   toc?: MarkdownHeading[];
 }
 const { toc } = Astro.props;
+const t = i18n(Astro.url);
 ---
 
 <div class="mb-4 flex flex-col gap-4">
@@ -18,7 +21,8 @@ const { toc } = Astro.props;
 <div
   class="sticky top-[calc(var(--navbar-height)+var(--navbar-top-margin)+1rem)] flex flex-col gap-4"
 >
-  <!-- {toc && <SideCardToc client:load headings={toc} />}
+  {toc && <SideCardToc client:load headings={toc} label={t('content.toc')} />}
+  <!--
   {seriesID && <SideCardSeries id={seriesID} />}
   <SideCardRecent /> -->
 </div>

@@ -15,6 +15,8 @@ import { parseDirectiveNode } from './src/plugins/remark-directive-rehype';
 import { remarkExcerpt } from './src/plugins/remark-excerpt';
 import { remarkReadingTime } from './src/plugins/remark-reading-time.mjs';
 
+import react from '@astrojs/react';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://v0.md',
@@ -32,22 +34,17 @@ export default defineConfig({
       fallbackType: 'rewrite'
     }
   },
-  integrations: [
-    mdx(),
-    tailwind({
-      applyBaseStyles: false,
-      nesting: true
-    }),
-    icon({
-      iconDir: 'src/assets/icons'
-    }),
-    sitemap({
-      i18n: {
-        locales,
-        defaultLocale
-      }
-    })
-  ],
+  integrations: [mdx(), tailwind({
+    applyBaseStyles: false,
+    nesting: true
+  }), icon({
+    iconDir: 'src/assets/icons'
+  }), sitemap({
+    i18n: {
+      locales,
+      defaultLocale
+    }
+  }), react()],
   markdown: {
     remarkPlugins: [
       remarkReadingTime,

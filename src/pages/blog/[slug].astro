@@ -1,6 +1,7 @@
 ---
 import Markdown from '@/components/blog/Markdown.astro';
 import PostHeader from '@/components/blog/PostHeader.astro';
+import Sidebar from '@/components/sidebar/Sidebar.astro';
 import { SITE_DESCRIPTION, SITE_TITLE, defaultLocale } from '@/consts';
 import { getRelativeUrlWithoutLocale } from '@/i18n';
 import SidebarLayout from '@/layout/SidebarLayout.astro';
@@ -27,7 +28,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 
-const { Content, remarkPluginFrontmatter } = await entry.render();
+const { Content, remarkPluginFrontmatter, headings } = await entry.render();
 
 const seoConfig = getSeo({
   title: entry.data.title,
@@ -46,4 +47,7 @@ const seoConfig = getSeo({
       </Markdown>
     </article>
   </main>
+  <Fragment slot="sidebar">
+    <Sidebar toc={headings} />
+  </Fragment>
 </SidebarLayout>

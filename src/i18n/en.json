@@ -19,6 +19,7 @@
     "banner": "Theme Color"
   },
   "content": {
+    "toc": "Table of Contents",
     "articles": "posts",
     "words": "words",
     "minutes": "min read",
