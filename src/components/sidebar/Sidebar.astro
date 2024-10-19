@@ -22,7 +22,5 @@ const t = i18n(Astro.url);
   class="sticky top-[calc(var(--navbar-height)+var(--navbar-top-margin)+1rem)] flex flex-col gap-4"
 >
   {toc && <SideCardToc client:load headings={toc} label={t('content.toc')} />}
-  <!--
-  {seriesID && <SideCardSeries id={seriesID} />}
-  <SideCardRecent /> -->
+  <!-- <SideCardRecent /> -->
 </div>
