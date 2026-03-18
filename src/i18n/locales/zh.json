@@ -31,5 +31,9 @@
       "minimalism": "极简主义",
       "travel": "旅居"
     }
+  },
+  "nav": {
+    "home": "首页",
+    "blog": "博客"
   }
 }

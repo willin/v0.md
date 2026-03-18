@@ -1,0 +1,407 @@
+# 博客 + RAG 知识库 - 任务清单
+
+> 创建日期：2026-03-18
+> 优先级：高
+> 状态：规划完成，待实施
+
+---
+
+## 阶段 1：博客系统基础 ✅
+
+> **目标**: 可以创建和展示博客文章，支持中英双语
+> **状态**: 已完成
+> **完成日期**: 2026-03-19
+
+### 任务清单
+- [x] 1.1 创建内容目录结构 `src/content/blog/`
+- [x] 1.2 安装 MDX 相关依赖（react-markdown, remark-gfm, rehype-slug, rehype-autolink-headings）
+- [x] 1.3 配置 `next.config.ts` 支持 MDX
+- [x] 1.4 创建博客 Frontmatter 类型定义 (`src/types/blog.ts`)
+- [x] 1.5 编写博客解析工具 `src/lib/blog.ts`（含 Git 时间戳获取）
+- [x] 1.6 创建博客列表页 (`/[locale]/blog/page.tsx`) 带侧边栏布局
+- [x] 1.7 创建博客详情页 (`/[locale]/blog/[slug]/page.tsx`) 带侧边栏
+- [x] 1.8 创建侧边栏组件（搜索框、分类列表、标签云、作者信息）
+- [x] 1.9 实现多语言翻译检测组件
+- [x] 1.10 添加 View Transitions 页面过渡动画
+
+### 验收标准
+- [x] 访问 `/zh/blog` 能看到示例文章列表（至少 1 篇中文示例）
+- [x] 点击文章能查看详情页，URL 格式为 `/zh/blog/YYYY-MM-DD-slug`
+- [x] 侧边栏显示：搜索框、分类列表、标签云、作者信息卡片
+- [x] 文章详情页侧边栏目录随页面滚动高亮当前章节
+- [x] 如果文章有另一语言版本，页面顶部显示语言切换提示
+- [x] 从首页导航到博客列表页时有 View Transitions 过渡动画
+- [x] 无封面图的文章在列表中正常显示（仅标题 + 描述）
+- [ ] 有封面图的文章在列表中显示缩略图（当前示例文章无封面图）
+- [x] 点击侧边栏分类/标签能筛选文章
+
+### 实施总结
+**新增文件**:
+- `src/components/blog/BlogCard.tsx` - 博客卡片组件
+- `src/components/blog/BlogList.tsx` - 博客列表组件（含搜索/筛选）
+- `src/components/blog/TableOfContents.tsx` - 目录组件（滚动跟随）
+- `src/components/blog/ReadingProgress.tsx` - 阅读进度条
+- `src/components/blog/BlogDetailSidebar.tsx` - 详情页侧边栏包装器
+- `src/app/[locale]/blog/page.tsx` - 博客列表页
+- `src/app/[locale]/blog/[slug]/page.tsx` - 博客详情页
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - MDX 渲染组件
+
+**修改文件**:
+- `src/app/globals.css` - 添加 prose 样式、View Transitions 动画
+- `src/components/blog/BlogSidebar.tsx` - 修复 TypeScript 类型
+- `src/lib/blog.ts` - 修复 TypeScript 类型转换问题
+
+**依赖安装**:
+```bash
+pnpm add react-markdown remark-gfm rehype-slug rehype-autolink-headings
+```
+
+### 已知问题
+- 暂无
+
+---
+
+## 阶段 1.5：博客系统优化 ✅
+
+> **目标**: 修复用户体验问题，优化侧边栏布局和功能
+> **状态**: 已完成
+> **完成日期**: 2026-03-19
+> **优先级**: 高
+
+### 任务清单
+- [x] 1.11 博客列表卡片添加链接到文章详情页
+- [x] 1.12 首页添加链接到博客列表
+- [x] 1.13 边栏用户信息卡片移到最上方，使用与首页相同的 Avatar
+- [x] 1.14 中英文标签、分类单独呈现（中文只显示中文，英文只显示英文）
+- [x] 1.15 文章 meta 信息显示字数统计
+- [x] 1.16 边栏添加统计信息（总文章数、总字数）
+
+### 验收标准
+- [x] 博客列表卡片点击任意位置可跳转到文章详情页
+- [x] 首页导航或内容区有明确链接到博客列表
+- [x] 侧边栏布局：作者信息卡片在最顶部，头像与首页一致
+- [x] 中文页面只显示中文分类和标签，英文页面只显示英文分类和标签
+- [x] 文章详情页显示字数统计（如：366 字）
+- [x] 侧边栏统计卡片显示总文章数和总字数
+
+### 实施总结
+
+**修改文件**:
+- `src/components/blog/BlogCard.tsx` - 添加 Link 包裹器和字数统计显示
+- `src/app/[locale]/page.tsx` - 添加博客链接按钮
+- `src/components/blog/BlogSidebar.tsx` - 重构：作者卡片置顶、SVG 地球头像、语言过滤、统计组件
+- `src/components/blog/BlogList.tsx` - 添加 stats 获取并传递给侧边栏
+- `src/lib/blog.ts` - 新增 `getBlogStats()` 函数
+- `src/app/[locale]/blog/[slug]/page.tsx` - 添加字数统计显示
+
+**关键实现**:
+1. 使用 Next.js `Link` 组件包裹博客卡片实现点击跳转
+2. 首页添加渐变样式的博客链接按钮，支持 View Transitions
+3. 侧边栏使用与首页相同的 SVG Globe 头像，作者信息移至顶部
+4. 通过 `containsChinese()` 正则和 `filterByLanguage()` 实现分类/标签语言过滤
+5. 字数统计使用 `reading-time` 包的 `words` 字段
+6. 统计信息通过 `getBlogStats()` 获取总文章数和总字数
+
+---
+
+## 阶段 1.6：博客体验优化
+
+> **目标**: 修复语言切换问题，添加导航 Header，优化目录和样式
+> **状态**: 已完成
+> **优先级**: 高
+> **完成日期**: 2026-03-19
+
+### 任务清单
+- [x] 1.17 修复文章详情页语言切换时 Slug 错误导致 404 的问题
+- [x] 1.18 参考首页添加语言切换和主题切换按钮
+- [x] 1.19 创建 HeaderNav 组件（带 View Transitions 动画）
+- [x] 1.20 实现 Hero 到 HeaderNav 的滚动缩放效果
+- [x] 1.21 修复锚点链接：不要新窗口打开，平滑滚动
+- [x] 1.22 优化侧边栏目录：最多三级标题，默认只显示一级，随滚动展开二三级
+- [x] 1.23 优化侧边栏目录缩进层次
+- [x] 1.24 修复文章详情页样式（一级标题比二级标题小的问题）
+- [x] 1.25 创建 MDX 示例文章展示 Markdown、代码高亮和 MDX 特性
+
+### 验收标准
+- [x] 文章详情页语言切换链接能正确跳转到对应语言的页面（不 404）
+- [x] 博客列表页和详情页顶部有 HeaderNav，包含 Logo、标题、导航链接
+- [x] HeaderNav 默认展示为 Hero 区域，滚动后缩放成固定导航
+- [x] 回到页面顶部时恢复 Hero 展示
+- [x] 点击文章内锚点链接在当前窗口平滑滚动到目标位置
+- [x] 侧边栏目录最多显示三级标题（H2、H3、H4）
+- [x] 默认只显示一级标题（H2），滚动时展开当前章节下的 H3、H4
+- [x] 目录有明显缩进层次（H2 > H3 > H4）
+- [x] 文章标题样式层级正确（H1 > H2 > H3 > H4）
+- [x] 示例文章展示：标题层级、代码块、表格、引用、列表、MDX 组件
+
+### 实施总结
+
+**新增文件**:
+- `src/components/blog/PostHero.tsx` - Hero 区域组件，带滚动缩放效果
+- `src/components/blog/HeaderNav.tsx` - 顶部导航组件（已在阶段 1.5 创建）
+- `src/content/blog/2026-03-19-mdx-demo.zh.mdx` - MDX 示例文章
+
+**修改文件**:
+- `src/app/[locale]/blog/[slug]/page.tsx` - 添加 PostHero 组件，移除重复内容
+- `src/i18n/locales/zh.json` - 添加 nav 对象
+- `src/i18n/locales/en.json` - 添加 nav 对象
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - 添加 scrollToAnchor 平滑滚动
+- `src/components/blog/TableOfContents.tsx` - 重写为滚动跟随展开模式
+
+**关键实现**:
+1. PostHero 使用 `scrollProgress` state + CSS transforms 实现 Hero 图像滚动缩放效果
+2. HeaderNav 从 dictionary 读取导航文本，支持语言/主题切换
+3. MDXContent.tsx 添加 `scrollToAnchor` 处理站内锚点链接
+4. TableOfContents.tsx 使用 IntersectionObserver 追踪当前标题，自动展开父级 H2
+5. 修复 locale JSON 缺失 `nav` 对象导致的构建错误
+
+---
+
+---
+
+## 阶段 1.7：UI/UX 改进
+
+> **目标**: 修复样式问题，优化用户体验，增强 MDX 功能
+> **状态**: 规划完成，待实施
+> **优先级**: 高
+> **预计工作量**: 约 9 小时
+
+### 背景
+
+Phase 1.6 已完成博客系统基础优化，但遗留以下 UI/UX 问题需要修复：
+1. HeaderNav 组件样式不一致
+2. 首页缺少 HeaderNav
+3. 硬编码翻译需要重构
+4. 目录组件体验优化
+5. 统计功能按语言分离
+6. MDX 功能增强
+
+### 任务清单
+
+#### HeaderNav 优化
+- [ ] 1.26 修复 HeaderNav 右侧 Toggle 按钮样式（统一高度，与首页一致）
+  - [ ] 1.26.1 分析首页 Toggle 组件样式（LocaleToggle, ThemeToggle）
+  - [ ] 1.26.2 统一 HeaderNav 中两个组件的按钮高度（建议 32px 或 36px）
+  - [ ] 1.26.3 确保边框、圆角、间距与首页一致
+  - [ ] 1.26.4 添加 View Transitions 动画效果
+- [ ] 1.27 首页添加 HeaderNav 组件，导航链接添加图标
+  - [ ] 1.27.1 在首页布局中添加 HeaderNav 组件
+  - [ ] 1.27.2 为导航链接添加图标（首页使用 Home 图标，博客使用 Book 图标）
+  - [ ] 1.27.3 添加页面间 View Transitions 过渡动画
+- [ ] 1.28 重构硬编码翻译为 dictionary 访问
+  - [ ] 1.28.1 全面扫描代码中的三元运算符翻译模式
+  - [ ] 1.28.2 创建统一的翻译键命名规范
+  - [ ] 1.28.3 更新 `zh.json` 和 `en.json` 添加缺失翻译
+  - [ ] 1.28.4 重构所有硬编码位置使用 `dictionary.xxx` 访问
+
+#### 侧边栏优化
+- [ ] 1.29 目录移到侧边栏底部，实现手风琴效果（只展开一个章节）
+  - [ ] 1.29.1 移动 TableOfContents 到 BlogSidebar 底部
+  - [ ] 1.29.2 实现手风琴效果：展开新章节时自动折叠其他章节
+  - [ ] 1.29.3 只在有子标题时显示箭头图标
+  - [ ] 1.29.4 优化点击滚动动画（平滑滚动）
+- [ ] 1.30 统计功能按语言分离（中文页面显示中文统计，英文页面显示英文统计）
+  - [ ] 1.30.1 重构 `getBlogStats()` 支持按语言过滤
+  - [ ] 1.30.2 在博客列表页传递当前语言参数
+  - [ ] 1.30.3 侧边栏统计卡片显示当前语言的统计数据
+
+#### MDX 功能增强
+- [ ] 1.31 修复代码高亮（Shiki 多色显示）
+  - [ ] 1.31.1 检查 `next.config.ts` 中 Shiki 配置
+  - [ ] 1.31.2 检查 MDXContent.tsx 中代码块渲染
+  - [ ] 1.31.3 确保加载正确的主题（github-dark / one-dark）
+  - [ ] 1.31.4 添加代码块复制按钮样式
+- [ ] 1.32 支持 GitHub 风格 Alert 块（[!NOTE], [!TIP], [!WARNING] 等）
+  - [ ] 1.32.1 创建 Alert 组件（支持 note/tip/warning/caution/important 类型）
+  - [ ] 1.32.2 添加 remark-alerts 插件或自定义 Remark 插件解析
+  - [ ] 1.32.3 在 MDXContent.tsx 中映射 Alert 组件
+  - [ ] 1.32.4 添加对应样式（边框、背景色、图标）
+- [ ] 1.33 移除 MDX 示例中的数学公式
+- [ ] 1.34 添加 Mermaid 流程图支持
+  - [ ] 1.34.1 安装 mermaid 包
+  - [ ] 1.34.2 创建 Mermaid 组件（客户端渲染）
+  - [ ] 1.34.3 添加 Remark 插件解析 mermaid 代码块
+  - [ ] 1.34.4 在 MDX 示例中添加流程图示例
+  - [ ] 1.34.5 适配深色模式
+- [ ] 1.35 修复行内代码、上标、下标、高亮样式，添加 Ruby 注音支持
+  - [ ] 1.35.1 添加 CSS 样式：`code`, `sup`, `sub`, `mark`
+  - [ ] 1.35.2 创建 Ruby 组件（支持 `<ruby>`, `<rt>`, `<rp>`）
+  - [ ] 1.35.3 在 MDXContent.tsx 中注册这些组件
+  - [ ] 1.35.4 在示例中添加展示
+
+### 验收标准
+- [ ] HeaderNav 中语言切换和主题切换按钮高度一致（目测无差异）
+- [ ] 首页和博客列表页都有 HeaderNav，导航链接带图标
+- [ ] 代码中无 `locale === 'zh' ? ... : ...` 硬编码模式
+- [ ] 目录位于侧边栏底部，展开新章节时自动折叠其他
+- [ ] 无子标题的标题不显示箭头图标
+- [ ] 中文/英文页面分别显示对应语言的统计数据
+- [ ] 代码块有多色高亮显示
+- [ ] Alert 块正确渲染（带图标和背景色）
+- [ ] Mermaid 流程图正常显示
+- [ ] 行内代码、上标、下标、高亮、Ruby 注音样式正确
+
+### 实施顺序
+
+按照依赖关系和逻辑顺序，建议按以下顺序实施：
+
+1. **优先级 1（基础修复）**:
+   - 1.26 HeaderNav 样式修复
+   - 1.27 首页添加 HeaderNav
+   - 1.28 翻译系统重构
+
+2. **优先级 2（体验优化）**:
+   - 1.29 目录组件优化
+   - 1.30 按语言统计
+
+3. **优先级 3（MDX 增强）**:
+   - 1.33 移除数学公式（快速）
+   - 1.31 代码高亮修复
+   - 1.35 文本标签支持
+   - 1.32 Alert 块支持
+   - 1.34 Mermaid 流程图支持
+
+### 文件清单
+
+**新增文件**:
+- `src/components/mdx/Alert.tsx`
+- `src/components/mdx/Mermaid.tsx`
+- `src/components/mdx/Ruby.tsx`
+- `src/lib/mdx-alerts.ts`
+- `src/lib/mdx-mermaid.ts`
+
+**修改文件**:
+- `src/components/HeaderNav.tsx`
+- `src/components/LocaleToggle.tsx`
+- `src/components/ThemeToggle.tsx`
+- `src/components/blog/BlogDetailSidebar.tsx`
+- `src/components/blog/TableOfContents.tsx`
+- `src/components/blog/BlogSidebar.tsx`
+- `src/app/[locale]/page.tsx`
+- `src/app/[locale]/blog/page.tsx`
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx`
+- `src/lib/blog.ts`
+- `src/i18n/locales/zh.json`
+- `src/i18n/locales/en.json`
+- `src/app/globals.css`
+- `src/content/blog/2026-03-19-mdx-demo.zh.mdx`
+- `package.json`
+
+---
+
+## 阶段 2：向量化管道
+
+> **目标**: 博客文章可以自动向量化并存储到 Vectorize
+> **预计**: 1 天
+
+### 任务清单
+- [ ] 2.1 创建 Cloudflare Vectorize 索引 (`wrangler vectorize create`)
+- [ ] 2.2 创建 KV 命名空间（元数据缓存）(`wrangler kv:namespace create`)
+- [ ] 2.3 更新 `wrangler.jsonc` 添加 Vectorize 和 KV 绑定
+- [ ] 2.4 编写 Embed 脚本 (`src/scripts/embed-blog.ts`)
+- [ ] 2.5 创建批量处理脚本（历史文章）
+- [ ] 2.6 配置 GitHub Actions CI/CD
+
+### 验收标准
+- [ ] 运行 `npm run embed:blog` 能将所有博客文章向量化
+- [ ] Vectorize 索引中能查询到向量数据
+- [ ] KV 中存储了博客元数据（slug、标题、关键词等）
+- [ ] 新增博客文章后，手动运行脚本能增量更新向量
+- [ ] GitHub Actions 配置完成，push 博客文件后自动触发向量化
+
+---
+
+## 阶段 3：聊天集成
+
+> **目标**: 聊天机器人能检索博客内容并标注来源
+> **预计**: 1 天
+
+### 任务清单
+- [ ] 3.1 编写 RAG 检索逻辑 `src/lib/knowledge-search.ts`
+- [ ] 3.2 实现向量检索（Top 5 候选）
+- [ ] 3.3 集成 Rerank 精排（Top 3）
+- [ ] 3.4 修改 `DigitalTwinChat.tsx` 支持混合检索
+- [ ] 3.5 添加博客链接引用功能（标注来源）
+- [ ] 3.6 测试检索准确率
+
+### 验收标准
+- [ ] 聊天时提问能触发博客知识库检索
+- [ ] 检索结果经过 Rerank 精排后返回 Top 3
+- [ ] 回答中包含相关博客文章的链接和标题
+- [ ] 来源标注格式正确，点击链接能跳转到博客原文
+- [ ] 用中文提问能检索到中文博客内容
+- [ ] 用英文提问能检索到英文博客内容
+- [ ] 预定义知识和博客知识混合检索正常工作
+
+---
+
+## 阶段 4：进阶功能
+
+> **目标**: 博客搜索、RSS、SEO 优化
+> **预计**: 1 天
+
+### 任务清单
+- [ ] 4.1 实现博客搜索功能（侧边栏搜索框）
+- [ ] 4.2 生成 RSS Feed
+- [ ] 4.3 SEO 优化（meta 标签、sitemap）
+
+### 验收标准
+- [ ] 在侧边栏搜索框输入关键词能实时过滤文章列表
+- [ ] 访问 `/feed.xml` 能生成 RSS 订阅源
+- [ ] RSS 包含最新文章标题、描述、链接
+- [ ] 博客文章页面有正确的 meta 标签（title、description、og:image）
+- [ ] 生成 sitemap.xml 包含所有博客文章
+
+---
+
+## 阶段 5：验证与部署
+
+> **目标**: 完整功能测试并部署到 Cloudflare Workers
+> **预计**: 1 天
+
+### 任务清单
+- [ ] 5.1 完整功能测试
+- [ ] 5.2 性能优化（缓存策略）
+- [ ] 5.3 部署到 Cloudflare Workers
+- [ ] 5.4 监控和日志配置
+
+### 验收标准
+- [ ] 博客列表页加载时间 < 1.5s
+- [ ] 文章详情页加载时间 < 1s
+- [ ] 聊天响应时间 < 3s（包含 Rerank）
+- [ ] Vectorize 检索时间 < 500ms
+- [ ] 部署到 Cloudflare Workers 后所有功能正常
+- [ ] Observability 日志能看到聊天和检索记录
+
+---
+
+## 待决定事项（已完成）
+
+- [x] 博客格式：MDX（支持 React 组件交互）
+- [x] 向量化触发：自动化 CI/CD 流程（GitHub Actions）
+- [x] 评论系统：移至下一次迭代
+- [x] 数学公式：不需要
+- [x] 图片优化：使用 Next.js Image（已配置 Cloudflare IMAGES）
+- [x] FrontMatter 简化：slug/date/locale/translations 自动生成
+- [x] 页面过渡动画：使用 View Transitions API
+- [x] 布局设计：侧边栏包含搜索、分类、标签云、作者信息
+
+---
+
+## 快速参考
+
+### 启动开发
+```bash
+npm run dev    # 启动开发服务器
+```
+
+### 部署
+```bash
+npm run deploy # 部署到 Cloudflare Workers
+```
+
+### 向量化命令（阶段 2 后）
+```bash
+npm run embed:blog    # 向量化所有博客
+npm run embed:latest  # 向量化最新文章
+```

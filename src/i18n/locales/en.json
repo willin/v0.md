@@ -31,5 +31,9 @@
       "minimalism": "Minimalism",
       "travel": "Travel"
     }
+  },
+  "nav": {
+    "home": "Home",
+    "blog": "Blog"
   }
 }
