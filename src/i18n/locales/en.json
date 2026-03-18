@@ -1,0 +1,35 @@
+{
+  "home": {
+    "title": "Willin Wang's Digital Presence",
+    "subtitle": "To be Willin is to be willing.",
+    "about": {
+      "name": "Willin Wang",
+      "profession": "Digital Nomad & AI Entrepreneur",
+      "interests": "Remote work, Financial independence, AI technology",
+      "bio": "Living the nomadic life while building the future with AI."
+    },
+    "chat": {
+      "title": "Digital Twin Chat",
+      "placeholder": "Ask me about digital nomadism, financial freedom, or AI entrepreneurship...",
+      "sendButton": "Send",
+      "digitalTwinName": "Willin's Digital Twin"
+    },
+    "themeToggle": {
+      "light": "Light theme",
+      "dark": "Dark theme",
+      "system": "System theme"
+    },
+    "localeToggle": {
+      "en": "English",
+      "zh": "中文"
+    },
+    "interests": {
+      "digitalNomadism": "Digital Nomadism",
+      "financialIndependence": "Financial Independence",
+      "aiTechnology": "AI Technology",
+      "remoteWork": "Remote Work",
+      "minimalism": "Minimalism",
+      "travel": "Travel"
+    }
+  }
+}
