@@ -5,13 +5,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run dev       # Start Next.js development server
-npm run build     # Build for production
-npm run lint      # Run ESLint with auto-fix
-npm run deploy    # Build and deploy to Cloudflare Workers
-npm run preview   # Preview locally using Cloudflare runtime
-npm run cf-typegen # Generate Cloudflare environment types
+pnpm run dev       # Start Next.js development server
+pnpm run build     # Build for production
+pnpm run lint      # Run ESLint with auto-fix
+pnpm run deploy    # Build and deploy to Cloudflare Workers
+pnpm run preview   # Preview locally using Cloudflare runtime
+pnpm run cf-typegen # Generate Cloudflare environment types
 ```
+
+## Development Principles
+
+### Package Manager
+- **Always use `pnpm`** instead of `npm` for all commands
+- Example: `pnpm run dev`, `pnpm add <package>`, `pnpm remove <package>`
+
+### Debugging & Testing
+- **Use `next-devtools-mcp`** for debugging Next.js applications
+- **Use Context7 MCP** (`query-docs`) to fetch library documentation
+- **Use Cloudflare MCP** for Cloudflare-related queries
+- **Avoid `curl` for testing** - Next.js apps are better tested in a real browser or with browser-based tools
+
+### Documentation Resources
+- Next.js docs: Use `next-devtools-mcp` or Context7 with "nextjs"
+- Cloudflare docs: Use Cloudflare MCP `search_cloudflare_documentation`
+- Other libraries: Use Context7 `query-docs`
 
 ## Architecture
 
@@ -92,7 +109,7 @@ A custom ESLint rule `custom/no-hardcoded-locale` is configured to catch these p
 - `locale === 'zh'` direct comparisons
 - `isZh ? ... : ...` binary ternary expressions
 
-Run `npm run lint` to check for violations.
+Run `pnpm run lint` to check for violations.
 
 #### Allowed Exceptions (Functional Logic)
 
