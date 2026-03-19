@@ -1,18 +1,6 @@
 'use client';
 
 import React from 'react';
-
-// 扩展 JSX.IntrinsicElements 以支持 HTML ruby 注音元素
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements {
-      rb: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      rt: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      rp: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-      ruby: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
-    }
-  }
-}
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkAlerts from 'remark-alerts';
@@ -24,6 +12,23 @@ import 'highlight.js/styles/atom-one-dark.css';
 import Alert from '@/components/mdx/Alert';
 import Mermaid from '@/components/mdx/Mermaid';
 import CodeBlock from '@/components/mdx/CodeBlock';
+import Callout from '@/components/mdx/Callout';
+import Stepper from '@/components/mdx/Stepper';
+
+// 扩展 JSX.IntrinsicElements 以支持 HTML ruby 注音元素
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      rb: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      rt: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      rp: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      ruby: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      callout: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { emoji?: string; title?: string; color?: 'default' | 'blue' | 'green' | 'red' | 'purple' };
+      stepper: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { steps?: string };
+      alert: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & { type?: 'note' | 'tip' | 'warning' | 'caution' | 'important' };
+    }
+  }
+}
 
 interface MDXContentProps {
   content: string;
@@ -31,17 +36,14 @@ interface MDXContentProps {
 
 // 平滑滚动到锚点
 const scrollToAnchor = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-  // 如果是站内锚点链接
   if (href.startsWith('#')) {
     e.preventDefault();
     const element = document.getElementById(href.slice(1));
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // 更新 URL 但不滚动
       window.history.pushState(null, '', href);
     }
   }
-  // 外部链接不处理，使用默认行为
 };
 
 export default function MDXContent({ content }: MDXContentProps) {
@@ -91,7 +93,6 @@ export default function MDXContent({ content }: MDXContentProps) {
             </p>
           ),
           pre: ({ node, children, ...props }) => {
-            // pre 元素只负责渲染 pre 标签，CodeBlock 由 code 处理器处理
             const preProps = props as { className?: string };
             const originalClassName = preProps?.className;
             return (
@@ -125,11 +126,9 @@ export default function MDXContent({ content }: MDXContentProps) {
           ),
           code: ({ node, inline, className, children, ...props }: { node?: any; inline?: boolean; className?: string; children?: React.ReactNode }) => {
             const match = /language-(\w+)/.exec(className || '');
-            // Handle Mermaid diagrams
             if (match && match[1] === 'mermaid') {
               return <Mermaid code={String(children)} />;
             }
-            // If no language prefix, treat as inline code (no copy button)
             if (!match) {
               return (
                 <code
@@ -140,7 +139,6 @@ export default function MDXContent({ content }: MDXContentProps) {
                 </code>
               );
             }
-            // Has language prefix - render as code block with copy button
             return (
               <CodeBlock className={className || ''}>
                 <code
@@ -163,8 +161,6 @@ export default function MDXContent({ content }: MDXContentProps) {
             <mark {...props} className="bg-yellow-200 dark:bg-yellow-800/50 px-1 py-0.5 rounded text-gray-900 dark:text-gray-100" />
           ),
           ruby: ({ node, children, ...props }) => {
-            // 将 children 分类：文本节点需要包裹在 <rb> 中，<rt>/<rp> 保持原样
-            // 同时收集 rt 文本用于创建隐形宽度占位符
             let rtText = '';
             const processedChildren = React.Children.map(children, (child) => {
               if (typeof child === 'string') {
@@ -191,7 +187,6 @@ export default function MDXContent({ content }: MDXContentProps) {
             });
             return (
               <ruby {...props}>
-                {/* 隐形占位符 - visibility hidden 贡献宽度但不显示 */}
                 <span className="invisible whitespace-nowrap block h-0" aria-hidden="true">{rtText}</span>
                 {processedChildren}
               </ruby>
@@ -249,16 +244,11 @@ export default function MDXContent({ content }: MDXContentProps) {
             />
           ),
           div: ({ node, className, children, ...props }: { node?: any; className?: string; children?: React.ReactNode }) => {
-            // Handle GitHub-style alerts from remark-alerts
             if (className?.includes('markdown-alert')) {
               const alertType = className.split(' ').find(c => c.startsWith('markdown-alert-'))?.replace('markdown-alert-', '') as 'note' | 'tip' | 'warning' | 'caution' | 'important' || 'note';
-              // Extract content from children, skipping the title paragraph from remark-alerts
               const contentArray = React.Children.toArray(children);
-              // Skip first paragraph (title with "[!NOTE]" etc.) and paragraphs that only contain SVG icons
               const content = contentArray.filter((child, index) => {
-                // Skip first paragraph (title with "[!NOTE]" etc.)
                 if (index === 0) return false;
-                // Skip paragraphs that only contain SVG icons
                 if (typeof child === 'object' && child !== null && 'type' in child && child.type === 'p') {
                   const pChildren = Array.isArray((child as any).props?.children)
                     ? (child as any).props.children
@@ -275,6 +265,39 @@ export default function MDXContent({ content }: MDXContentProps) {
               <div {...props} className={className}>
                 {children}
               </div>
+            );
+          },
+          // 自定义组件：Callout - 通过 HTML 属性解析
+          callout: ({ children, ...props }) => {
+            const emoji = props.emoji || '';
+            const title = props.title || '';
+            const color = (props.color as 'default' | 'blue' | 'green' | 'red' | 'purple') || 'default';
+            return (
+              <Callout emoji={emoji} title={title} color={color}>
+                {children}
+              </Callout>
+            );
+          },
+          // 自定义组件：Stepper - 需要特殊处理 steps 属性（JSON 字符串）
+          stepper: ({ children, ...props }) => {
+            // Stepper 组件需要 steps 属性，这是一个 JSON 字符串
+            // 在 Markdown 中无法直接使用，需要特殊处理
+            // 暂时返回一个提示
+            return (
+              <div className="my-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <p className="text-yellow-800 dark:text-yellow-300 text-sm">
+                  ⚠️ Stepper 组件需要在 MDX 文件中使用，Markdown 格式不支持。请参考示例文章了解如何使用。
+                </p>
+              </div>
+            );
+          },
+          // 自定义组件：Alert - 通过 HTML 属性解析
+          alert: ({ children, ...props }) => {
+            const type = (props.type as 'note' | 'tip' | 'warning' | 'caution' | 'important') || 'note';
+            return (
+              <Alert type={type}>
+                {children}
+              </Alert>
             );
           },
         }}
