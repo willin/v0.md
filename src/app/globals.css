@@ -188,20 +188,44 @@ body {
   display: none !important;
 }
 
-/* Ruby annotations - use proper ruby positioning */
+/* Ruby annotations - inline-block with absolute positioned rt
+ * rb sits on baseline naturally
+ * rt absolutely positioned above rb
+ * Invisible spacer expands container width for long pinyin
+ */
 .prose ruby {
-  @apply inline;
-  ruby-position: over;
-  ruby-align: center;
+  display: inline-block !important;
+  vertical-align: baseline;
+  line-height: 1;
+  position: relative;
+}
+
+/* 相邻 ruby 元素添加间距 */
+.prose ruby + ruby {
+  margin-inline-start: 0.25em;
 }
 
 .prose rt {
-  @apply text-xs text-gray-500 dark:text-gray-400;
-  ruby-align: center;
+  white-space: nowrap;
+  text-align: center;
+  /* 绝对定位让 rt 浮动在 rb 上方 */
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  /* 负 margin 减少间隙 */
+  margin-bottom: -2px;
+}
+
+.prose rb {
+  display: block;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 1.5;
 }
 
 .prose rp {
-  @apply hidden;
+  display: none !important;
 }
 
 .prose pre {
@@ -231,68 +255,6 @@ body {
 /* Override highlight.js default pre background */
 .prose pre {
   background: transparent !important;
-}
-
-/* 明亮主题下的代码高亮颜色 - 使用 atom-one-light 配色 */
-:not(.dark) .prose pre .hljs {
-  color: #383a42;
-}
-:not(.dark) .prose pre .hljs-comment,
-:not(.dark) .prose pre .hljs-quote {
-  color: #a0a1a7;
-  font-style: italic;
-}
-:not(.dark) .prose pre .hljs-doctag,
-:not(.dark) .prose pre .hljs-keyword,
-:not(.dark) .prose pre .hljs-formula {
-  color: #a626a4;
-}
-:not(.dark) .prose pre .hljs-section,
-:not(.dark) .prose pre .hljs-name,
-:not(.dark) .prose pre .hljs-selector-tag,
-:not(.dark) .prose pre .hljs-deletion {
-  color: #e45649;
-}
-:not(.dark) .prose pre .hljs-literal {
-  color: #0184bb;
-}
-:not(.dark) .prose pre .hljs-string,
-:not(.dark) .prose pre .hljs-regexp,
-:not(.dark) .prose pre .hljs-addition,
-:not(.dark) .prose pre .hljs-attribute,
-:not(.dark) .prose pre .hljs-meta-string {
-  color: #50a14f;
-}
-:not(.dark) .prose pre .hljs-built_in,
-:not(.dark) .prose pre .hljs-class .hljs-title {
-  color: #c18401;
-}
-:not(.dark) .prose pre .hljs-attr,
-:not(.dark) .prose pre .hljs-variable,
-:not(.dark) .prose pre .hljs-template-variable,
-:not(.dark) .prose pre .hljs-type,
-:not(.dark) .prose pre .hljs-selector-class,
-:not(.dark) .prose pre .hljs-selector-attr,
-:not(.dark) .prose pre .hljs-selector-pseudo,
-:not(.dark) .prose pre .hljs-number {
-  color: #986801;
-}
-:not(.dark) .prose pre .hljs-symbol,
-:not(.dark) .prose pre .hljs-bullet,
-:not(.dark) .prose pre .hljs-link,
-:not(.dark) .prose pre .hljs-meta,
-:not(.dark) .prose pre .hljs-selector-id,
-:not(.dark) .prose pre .hljs-title {
-  color: #4078f2;
-}
-:not(.dark) .prose pre .hljs-emphasis {
-  font-style: italic;
-}
-:not(.dark) .prose pre .hljs-strong {
-  font-weight: bold;
-}
-:not(.dark) .prose pre .hljs-link {
-  text-decoration: underline;
 }
 
 .prose a {

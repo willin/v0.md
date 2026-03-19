@@ -10,7 +10,6 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import 'highlight.js/styles/atom-one-dark.css';
 import Alert from '@/components/mdx/Alert';
-import Ruby from '@/components/mdx/Ruby';
 import Mermaid from '@/components/mdx/Mermaid';
 import CodeBlock from '@/components/mdx/CodeBlock';
 
@@ -74,25 +73,11 @@ export default function MDXContent({ content }: MDXContentProps) {
           h6: ({ node, ...props }) => (
             <h6 {...props} className="text-base font-semibold mt-4 mb-2 text-gray-900 dark:text-gray-100 no-underline [&>a]:no-underline [&>a]:hover:no-underline" />
           ),
-          p: ({ node, children, ...props }) => {
-            // 如果 <p> 标签内包含 <pre> 或 CodeBlock，则不渲染 <p> 标签，直接返回内容
-            // 这是为了避免 <pre> 和 <div> 不能是 <p> 的后代的 HTML 规范问题
-            if (children && typeof children === 'object' && children !== null) {
-              const childrenArray = Array.isArray(children) ? children : [children];
-              const hasBlockElement = childrenArray.some(child =>
-                typeof child === 'object' && child !== null &&
-                'type' in child && (child.type === 'pre' || (typeof child.type === 'function' && child.type.name === 'CodeBlock'))
-              );
-              if (hasBlockElement) {
-                return <>{children}</>;
-              }
-            }
-            return (
-              <p {...props} className="mb-6 text-gray-700 dark:text-gray-300 leading-relaxed">
-                {children}
-              </p>
-            );
-          },
+          p: ({ node, children, ...props }) => (
+            <p {...props} className="mb-6 text-gray-700 dark:text-gray-300 leading-relaxed">
+              {children}
+            </p>
+          ),
           pre: ({ node, children, ...props }) => {
             // pre 元素只负责渲染 pre 标签，CodeBlock 由 code 处理器处理
             const preProps = props as { className?: string };
@@ -132,15 +117,19 @@ export default function MDXContent({ content }: MDXContentProps) {
             if (match && match[1] === 'mermaid') {
               return <Mermaid code={String(children)} />;
             }
-            return inline ? (
-              <code
-                {...props}
-                className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-200 break-words"
-              >
-                {children}
-              </code>
-            ) : (
-              // Code block - wrap with CodeBlock for copy button and language label
+            // If no language prefix, treat as inline code (no copy button)
+            if (!match) {
+              return (
+                <code
+                  {...props}
+                  className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-200 break-words"
+                >
+                  {children}
+                </code>
+              );
+            }
+            // Has language prefix - render as code block with copy button
+            return (
               <CodeBlock className={className || ''}>
                 <code
                   {...props}
@@ -161,14 +150,51 @@ export default function MDXContent({ content }: MDXContentProps) {
           mark: ({ node, ...props }) => (
             <mark {...props} className="bg-yellow-200 dark:bg-yellow-800/50 px-1 py-0.5 rounded text-gray-900 dark:text-gray-100" />
           ),
-          ruby: ({ node, children, ...props }) => (
-            <ruby {...props} className="inline">
-              {children}
-            </ruby>
+          ruby: ({ node, children, ...props }) => {
+            // 将 children 分类：文本节点需要包裹在 <rb> 中，<rt>/<rp> 保持原样
+            // 同时收集 rt 文本用于创建隐形宽度占位符
+            let rtText = '';
+            const processedChildren = React.Children.map(children, (child) => {
+              if (typeof child === 'string') {
+                return <rb>{child}</rb>;
+              }
+              if (typeof child === 'object' && child !== null) {
+                const childType = (child as any).type;
+                const childProps = (child as any).props;
+                if (childType === 'rt' || childType === 'rp' || childType === 'rb') {
+                  if (childType === 'rt') {
+                    rtText = String(childProps?.children || rtText);
+                  }
+                  return child;
+                }
+                if (childProps?.node?.tagName === 'rt' || childProps?.node?.tagName === 'rp' || childProps?.node?.tagName === 'rb') {
+                  if (childProps?.node?.tagName === 'rt') {
+                    rtText = String(childProps?.children || rtText);
+                  }
+                  return child;
+                }
+                return <rb>{child}</rb>;
+              }
+              return child;
+            });
+            return (
+              <ruby {...props}>
+                {/* 隐形占位符 - visibility hidden 贡献宽度但不显示 */}
+                <span className="invisible whitespace-nowrap block h-0" aria-hidden="true">{rtText}</span>
+                {processedChildren}
+              </ruby>
+            );
+          },
+          rb: ({ node, ...props }) => (
+            <rb {...props} className="whitespace-nowrap" />
           ),
-          rt: ({ node, ...props }) => (
-            <rt {...props} className="text-xs text-gray-500 dark:text-gray-400 text-center leading-none" />
-          ),
+          rt: ({ node, children, ...props }) => {
+            return (
+              <rt {...props} className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                {children}
+              </rt>
+            );
+          },
           rp: ({ node, ...props }) => (
             <rp {...props} className="hidden" />
           ),

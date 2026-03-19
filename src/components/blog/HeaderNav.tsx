@@ -47,7 +47,8 @@ export function HeaderNav({ locale, dictionary }: HeaderNavProps) {
 
   // 判断当前是否为活动链接
   const isActive = (href: string) => {
-    if (href === '/') return pathname === `/${locale}`;
+    if (href === `/${locale}`) return pathname === `/${locale}`;
+    if (href === `/${locale}/blog`) return pathname === `/${locale}/blog` || pathname?.startsWith(`/${locale}/blog/`);
     return pathname?.startsWith(href);
   };
 

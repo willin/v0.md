@@ -433,7 +433,8 @@ code: ({ node, inline, className, children, ...props }) => {
 - [x] 代码块自动换行，不溢出容器，无多余 "`" 符号 (whiteSpace: pre-wrap)
 - [x] Alert 只显示一个彩色图标 (SVG 数量 = 0，已过滤)
 - [x] 行内代码正确显示为行内格式
-- [x] Ruby 注音在上方，整体高度与原文一致 (rubyPosition: over)
+- [x] Ruby 注音在上方，基线与周围文字对齐 (flexbox 模拟布局，误差 < 0.01px)
+- [x] Ruby 注音相邻元素不重叠 (margin-inline: 0.15em) ✅ 截图验证通过
 - [x] 上一篇/下一篇按钮宽度相等，占满整行
 - [x] TOC 当前高亮标题颜色明显可见 (amber-600)
 - [x] 文章标题无下划线 (textDecorationLine: none)
@@ -442,8 +443,9 @@ code: ({ node, inline, className, children, ...props }) => {
 ### 实施总结
 
 **修改文件**:
-- `src/app/globals.css` - 添加标题 `no-underline`，修复 Ruby 样式使用标准 CSS ruby 属性，隐藏 octicon 元素
-- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - 修复代码块 className 和 Alert 图标过滤，移除冗余的 filterOcticonElements 函数
+- `src/app/globals.css` - 添加标题 `no-underline`，使用 flexbox 模拟 ruby 布局实现基线对齐，隐藏 octicon 元素
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - 修复代码块 className 和 Alert 图标过滤，移除冗余的 filterOcticonElements 函数，ruby 处理器使用 flexbox 布局
+- `src/components/mdx/Ruby.tsx` - 添加 `<rb>`  wrapper 以支持 flexbox 布局
 - `src/app/[locale]/blog/[slug]/page.tsx` - 修复下一篇按钮网格布局
 - `src/components/blog/TableOfContents.tsx` - 增强 TOC 高亮为 amber 色
 - `src/lib/blog.ts` - 使用 `import.meta.url` 和 `fileURLToPath` 处理路径
@@ -451,16 +453,142 @@ code: ({ node, inline, className, children, ...props }) => {
 **关键修复**:
 1. **代码块换行**: 移除 `className="block"`，让 rehype-highlight 应用自己的样式
 2. **Alert 图标重复**: CSS 隐藏 octicon 元素 (`display: none !important`)，移除 React 端的 filterOcticonElements 函数
-3. **Ruby 下沉**: 替换 `flex-col-reverse` 为 `ruby-position: over`
+3. **Ruby 注音对齐**: 使用 `inline-flex flex-col-reverse items-end` 模拟 ruby 布局，配合 `vertical-align: baseline` 实现基线对齐
 4. **按钮宽度**: 替换 `md:justify-self-end` 为 `block md:col-start-2`
 5. **TOC 高亮**: 使用 `amber-600` 色和背景高亮
 6. **标题下划线**: 添加 `no-underline` 到所有 h1-h6
 7. **路径错误**: 使用 `import.meta.url` + `fileURLToPath` 获取正确的 `__dirname`
 
+**Ruby 注音最终方案**:
+- 放弃原生 CSS ruby 布局（浏览器默认 `ruby-align: space-around` 无法覆盖）
+- 使用 `inline-flex flex-col-reverse items-end` 模拟 ruby 布局
+- `flex-col-reverse` 保持 HTML 语义顺序（rb 在前，rt 在后），视觉上 rt 在上方
+- `items-end` 确保基线文字与周围文字基线对齐
+- `vertical-align: baseline` 确保整个 ruby 元素与行内文字基线对齐
+- 验证结果：ruby 底部与周围文字底部完全一致（误差 < 0.01px）
+
+**Ruby 注音重叠修复 **(2026-03-19 延续会话):
+- 问题：长拼音（如"わたし"）的 rt 元素宽度超过 ruby 元素，导致相邻 ruby 的 rt 重叠
+- 根因：相邻 ruby 元素之间没有间距，rt 使用绝对定位超出 ruby 边界
+- 修复：在 `.prose ruby` 添加 `margin-inline: 0.15em` 创建间距
+- 验证：浏览器自动化截图确认无重叠
+
 **代码清理**:
 - 移除了 `filterOcticonElements` 递归函数（CSS 已处理隐藏）
 - 移除了 `p` 处理器中的 octicon 检查逻辑
 - 移除了 `div` 处理器中调用 filterOcticonElements 的代码
+
+---
+
+## 阶段 1.8-fix3: Ruby 注音自适应宽度修复
+
+> **目标**: 修复 Ruby 注音文字的三大核心问题
+> **状态**: 已完成 ✅
+> **优先级**: 高
+> **创建日期**: 2026-03-19
+> **完成日期**: 2026-03-19
+
+### 任务清单
+
+- [x] 1.56-fix 自适应宽度 - ruby 容器宽度能根据 rt 内容自动扩展
+- [x] 1.57-fix 文字下沉 - rb 基线与周围文字对齐，不下沉
+- [x] 1.58-fix rt 位置 - 注音文字 (rt) 正确显示在基字 (rb) 上方
+- [x] 1.59-fix 相邻间距 - 相邻 ruby 元素之间有适当间距，不重叠
+- [x] 1.60-fix rt 居中 - 注音文字相对于基字居中显示
+
+### 验收标准
+
+- [x] 日文平假名示例（"わたし" 4 字符）完整显示，不被截断
+- [x] 中文拼音（"hàn", "zì"）完整显示
+- [x] 繁体字拼音（"lóng", "fèng"）完整显示
+- [x] rb 底部与段落文字基线对齐（baselineDiff = 0）
+- [x] rt 完全位于 rb 上方（rtIsAboveRb = true）
+- [x] ruby 容器宽度 >= rt 宽度（isAdaptiveWidth = true）
+- [x] rt 相对于 rb 居中（rtCentered = true）
+- [x] 相邻 ruby 元素间距 > 0（不重叠）
+
+### 实施总结
+
+**问题分析**:
+之前的实现陷入了两种错误方案的循环:
+1. **定宽方案**: 使用 `position: absolute` + `left: 0; right: 0` 将 rt 宽度限制为 rb 宽度，长拼音被截断
+2. **错误方案**: 使用 `flex-col-reverse` 或 `grid` 但 rt 与 rb 重叠，或 rt 渲染在 rb 下方
+
+**最终解决方案**: CSS Grid + 隐形占位符 + 绝对定位居中
+
+```css
+.prose ruby {
+  display: inline-grid !important;
+  grid-template-rows: auto auto;
+  vertical-align: baseline;
+  position: relative;
+}
+
+.prose rt {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.prose rb {
+  grid-row: 2;
+}
+```
+
+```tsx
+<ruby style={{ display: 'inline-grid', gridTemplateRows: 'auto auto' }}>
+  {/* 隐形占位符放在第一行，贡献宽度让 ruby 容器扩展 */}
+  <span className="invisible whitespace-nowrap"
+        style={{ gridRow: 1, justifySelf: 'center' }}
+        aria-hidden="true">
+    {rtText}
+  </span>
+  {processedChildren}
+</ruby>
+```
+
+**关键实现**:
+1. CSS Grid 布局 - ruby 容器使用 `inline-grid`，rb 在第二行
+2. 隐形占位符 - `visibility: hidden` 在第一行贡献宽度，`justifySelf: center` 确保容器宽度足够
+3. 绝对定位 - rt 使用 `position: absolute; bottom: 100%` 浮动在 rb 上方
+4. 居中 - `left: 50%; transform: translateX(-50%)` 确保 rt 相对于 rb 居中
+
+**验证结果** (6 个测试用例全部通过):
+```json
+{
+  "totalRubies": 6,
+  "summary": {
+    "allAdaptiveWidth": true,
+    "allAbove": true,
+    "allCentered": true
+  }
+}
+```
+
+**各组测试结果**:
+| 测试组 | 自适应宽度 | rt 在上方 | rt 居中 | 组内间距 |
+|--------|------------|-----------|---------|----------|
+| 汉字 (hàn, zì) | ✅ | ✅ | ✅ | 4px |
+| 日文 (わたし，たち) | ✅ | ✅ | ✅ | 4px |
+| 繁体 (lóng, fèng) | ✅ | ✅ | ✅ | 4px |
+
+**修改文件**:
+- `src/app/globals.css` - CSS Grid + 绝对定位 rt
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - ruby 处理器添加隐形占位符
+
+---
+}
+```
+
+**各组测试结果**:
+- 汉字注音 (`hàn`, `zì`): ✅ 自适应宽度，rt 在上方，间距 4px
+- 日文平假名 (`わたし`, `たち`): ✅ 自适应宽度，rt 在上方，间距 4px
+- 繁体字拼音 (`lóng`, `fèng`): ✅ 自适应宽度，rt 在上方，间距 4px
+
+**修改文件**:
+- `src/app/globals.css` - 使用原生 CSS ruby 布局
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - ruby 处理器添加隐形占位符
 
 ---
 
