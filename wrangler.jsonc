@@ -4,7 +4,7 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "v0_md",
+  "name": "v0",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-03-17",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -22,10 +22,26 @@
       // Self-reference service binding, the service name must match the worker name
       // see https://opennext.js.org/cloudflare/caching
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "v0_md"
+      "service": "v0"
     }
   ],
   "observability": {
     "enabled": true
-  }
+  },
+  /**
+   * 自定义域名配置
+   * 部署后使用以下命令绑定域名:
+   * - wrangler binding domain create --domain v0.md --service v0
+   * - wrangler binding domain create --domain www.v0.md --service v0
+   */
+  "routes": [
+    {
+      "pattern": "v0.md/*",
+      "zone_name": "v0.md"
+    },
+    {
+      "pattern": "www.v0.md/*",
+      "zone_name": "v0.md"
+    }
+  ]
 }
