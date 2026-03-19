@@ -1,6 +1,7 @@
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { BlogPost, BlogPostSummary, BlogFrontmatter } from '@/types/blog';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,17 +10,8 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 博客内容目录路径
-// - Cloudflare Workers 环境：Wrangler rules 将 MDX 文件打包到 /bundle/content/blog
-// - 本地开发环境：使用 src/content/blog
-// 使用 try-catch 判断：/bundle 目录存在则为 CF 环境，否则为本地环境
-let blogDirectory: string;
-try {
-  readdirSync('/bundle/content/blog');
-  blogDirectory = '/bundle/content/blog';
-} catch {
-  blogDirectory = path.join(__dirname, '../content/blog');
-}
+// 博客内容目录路径（用于本地开发）
+const localBlogDirectory = path.join(__dirname, '../content/blog');
 
 /**
  * 从文件名提取 slug、日期和语言
@@ -35,6 +27,39 @@ function parseFilename(filename: string): { slug: string; date: string; locale: 
     date: new Date(dateStr).toISOString(),
     locale: locale as 'zh' | 'en',
   };
+}
+
+/**
+ * 在 Cloudflare Workers 环境中获取博客文件列表
+ * 通过读取构建时生成的 index.json 文件来获取文章列表
+ */
+async function getCloudflareBlogFileIndex(): Promise<Array<{ filename: string; slug: string; date: string; locale: 'zh' | 'en' }>> {
+  const { env } = getCloudflareContext();
+  const response = await (env as any).ASSETS.fetch(new URL('/content/blog/index.json', 'https://assets.local'));
+  if (!response.ok) {
+    throw new Error('Failed to read blog index.json');
+  }
+  const data = await response.json();
+  return data.files || [];
+}
+
+/**
+ * 在 Cloudflare Workers 环境中列出博客文件
+ */
+async function getCloudflareBlogFiles(): Promise<Array<{ filename: string; slug: string; date: string; locale: 'zh' | 'en' }>> {
+  return getCloudflareBlogFileIndex();
+}
+
+/**
+ * 在 Cloudflare Workers 环境中读取文件内容
+ */
+async function readCloudflareFile(filename: string): Promise<string> {
+  const { env } = getCloudflareContext();
+  const response = await (env as any).ASSETS.fetch(new URL(`/content/blog/${filename}`, 'https://assets.local'));
+  if (!response.ok) {
+    throw new Error(`Failed to read file ${filename}: ${response.status} ${response.statusText}`);
+  }
+  return response.text();
 }
 
 /**
@@ -88,7 +113,21 @@ function findTranslations(
  * 获取所有博客文章（用于列表页）
  */
 export async function getAllPosts(): Promise<BlogPostSummary[]> {
-  const files = readdirSync(blogDirectory);
+  let files: string[];
+  let cloudflareFiles: Array<{ filename: string; slug: string; locale: string }> = [];
+
+  // 判断是否在 Cloudflare Workers 环境
+  const isCloudflare = typeof globalThis !== 'undefined' && 'caches' in globalThis;
+
+  if (isCloudflare) {
+    // Cloudflare Workers 环境：使用 ASSETS binding
+    const cfFiles = await getCloudflareBlogFiles();
+    cloudflareFiles = cfFiles.map(f => ({ filename: f.filename, slug: f.slug, locale: f.locale }));
+    files = cloudflareFiles.map(f => f.filename);
+  } else {
+    // 本地开发环境：使用 fs
+    files = readdirSync(localBlogDirectory);
+  }
 
   const posts: BlogPostSummary[] = [];
 
@@ -98,12 +137,18 @@ export async function getAllPosts(): Promise<BlogPostSummary[]> {
     const parsed = parseFilename(file);
     if (!parsed) continue;
 
-    const filePath = path.join(blogDirectory, file);
-    const fileContent = readFileSync(filePath, 'utf-8');
+    let fileContent: string;
+    if (isCloudflare) {
+      fileContent = await readCloudflareFile(file);
+    } else {
+      const filePath = path.join(localBlogDirectory, file);
+      fileContent = readFileSync(filePath, 'utf-8');
+    }
+
     const { data } = matter(fileContent);
 
     // 查找翻译版本
-    const translations = findTranslations(parsed.slug, files.map(f => {
+    const translations = findTranslations(parsed.slug, cloudflareFiles.length > 0 ? cloudflareFiles : files.map(f => {
       const p = parseFilename(f);
       return p ? { slug: p.slug, locale: p.locale } : null;
     }).filter(Boolean) as Array<{ slug: string; locale: string }>);
@@ -133,7 +178,18 @@ export async function getPostBySlug(
   slug: string,
   locale: 'zh' | 'en'
 ): Promise<BlogPost | null> {
-  const files = readdirSync(blogDirectory);
+  // 判断是否在 Cloudflare Workers 环境
+  const isCloudflare = typeof globalThis !== 'undefined' && 'caches' in globalThis;
+
+  let files: string[];
+  let cloudflareFiles: Array<{ filename: string; slug: string; locale: string }> = [];
+
+  if (isCloudflare) {
+    cloudflareFiles = await getCloudflareBlogFiles().then(f => f.map(x => ({ filename: x.filename, slug: x.slug, locale: x.locale })));
+    files = cloudflareFiles.map(f => f.filename);
+  } else {
+    files = readdirSync(localBlogDirectory);
+  }
 
   // 查找匹配的文件
   const targetFile = files.find((file) => {
@@ -143,12 +199,17 @@ export async function getPostBySlug(
 
   if (!targetFile) return null;
 
-  const filePath = path.join(blogDirectory, targetFile);
-  const fileContent = readFileSync(filePath, 'utf-8');
+  let fileContent: string;
+  if (isCloudflare) {
+    fileContent = await readCloudflareFile(targetFile);
+  } else {
+    const filePath = path.join(localBlogDirectory, targetFile);
+    fileContent = readFileSync(filePath, 'utf-8');
+  }
 
   const { data, content } = matter(fileContent);
   const parsed = parseFilename(targetFile)!;
-  const translations = findTranslations(slug, files.map(f => {
+  const translations = findTranslations(slug, cloudflareFiles.length > 0 ? cloudflareFiles : files.map(f => {
     const p = parseFilename(f);
     return p ? { slug: p.slug, locale: p.locale } : null;
   }).filter(Boolean) as Array<{ slug: string; locale: string }>);
