@@ -1,6 +1,12 @@
 {
-  "generated": "2026-03-19T14:51:44.272Z",
+  "generated": "2026-03-19T15:32:29.433Z",
   "files": [
+    {
+      "filename": "2026-03-19-mdx-component-demo.zh.mdx",
+      "slug": "mdx-component-demo",
+      "date": "2026-03-19T00:00:00.000Z",
+      "locale": "zh"
+    },
     {
       "filename": "2026-03-19-mdx-demo.zh.mdx",
       "slug": "mdx-demo",

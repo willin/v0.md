@@ -1,0 +1,127 @@
+---
+title: 'MDX 中使用 TSX 组件示例'
+description: '学习如何在 MDX 文章中导入和使用 React/TSX 组件，实现交互式内容'
+categories:
+  - 技术教程
+  - 博客系统
+tags:
+  - MDX
+  - React
+  - TSX
+  - 组件
+cover:
+  image: /og-default.png
+  alt: 'MDX 组件示例'
+---
+
+# MDX 中使用 TSX 组件示例
+
+MDX 是一种强大的文档格式，它允许你在 Markdown 中直接导入和使用 React 组件。这使得我们可以创建具有交互性的动态内容。
+
+## 导入组件
+
+在 MDX 文件中，你可以像在其他 React 组件中一样导入 TSX 组件：
+
+```mdx
+---
+title: '我的文章'
+---
+
+import Callout from '@/components/mdx/Callout';
+import Stepper from '@/components/mdx/Stepper';
+import Alert from '@/components/mdx/Alert';
+
+// 现在可以使用这些组件了
+<Callout emoji="💡" title="提示">
+  这是一个提示框！
+</Callout>
+```
+
+## Callout 组件示例
+
+`Callout` 组件用于创建带有表情符号和标题的提示框：
+
+<Callout emoji="💡" title="小知识">
+这是一个蓝色的 Callout 组件，用于展示重要但不紧急的信息。
+</Callout>
+
+<Callout emoji="⚠️" title="注意" color="red">
+这是一个红色的 Callout 组件，用于警告用户注意潜在的问题。
+</Callout>
+
+<Callout emoji="✅" title="成功" color="green">
+这是一个绿色的 Callout 组件，用于表示操作成功或推荐的做法。
+</Callout>
+
+<Callout emoji="🎨" title="自定义颜色" color="purple">
+Callout 组件支持多种颜色：`default`、`blue`、`green`、`red`、`purple`。
+</Callout>
+
+## Stepper 组件示例
+
+`Stepper` 组件用于创建分步导航，适合教程或分步骤说明：
+
+<Stepper steps={[{title: '第一步', content: <><p>这是第一步的内容。</p><p>你需要先完成这个准备工作：</p><ul><li>安装 Node.js 18+</li><li>安装 pnpm 或 npm</li><li>克隆项目代码</li></ul></>}, {title: '第二步', content: <><p>这是第二步的内容。</p><pre><code className="language-bash">pnpm install</code></pre><p>安装所有依赖包。</p></>}, {title: '第三步', content: <><p>这是最后一步。</p><pre><code className="language-bash">pnpm run dev</code></pre><p>启动开发服务器，访问 <a href="http://localhost:3000">http://localhost:3000</a></p></>}]}>
+</Stepper>
+
+上面的 Stepper 组件展示了三个步骤，点击标签可以切换显示不同的内容。
+
+## Alert 组件示例
+
+`Alert` 组件用于创建不同级别的警告信息：
+
+<Alert type="note">
+这是 `note` 类型的警告，用于提供补充说明信息。
+</Alert>
+
+<Alert type="tip">
+这是 `tip` 类型的警告，用于提供有用的技巧和提示。
+</Alert>
+
+<Alert type="warning">
+这是 `warning` 类型的警告，用于提醒用户注意潜在问题。
+</Alert>
+
+<Alert type="caution">
+这是 `caution` 类型的警告，用于告知用户需要谨慎操作。
+</Alert>
+
+## 组合使用组件
+
+你可以组合使用多个组件来创建更丰富的内容：
+
+<Callout emoji="📦" title="完整示例" color="blue">
+  <Alert type="important">
+    在实际项目中，你可以根据自己的需求创建更多自定义组件，比如：
+    <ul>
+      <li>API 参数表格组件</li>
+      <li>交互式代码编辑器</li>
+      <li>实时预览组件</li>
+      <li>投票和反馈组件</li>
+    </ul>
+  </Alert>
+</Callout>
+
+## 组件属性类型
+
+组件可以接收各种类型的属性：
+
+| 属性名 | 类型 | 默认值 | 说明 |
+|--------|------|--------|------|
+| `emoji` | `string` | `undefined` | 表情符号 |
+| `title` | `string` | `undefined` | 标题文本 |
+| `children` | `ReactNode` | 必填 | 子元素内容 |
+| `color` | `'default' \| 'blue' \| 'green' \| 'red' \| 'purple'` | `'default'` | 颜色主题 |
+
+## 总结
+
+MDX 的强大之处在于它将 Markdown 的简洁性与 React 组件的灵活性相结合。通过创建自定义组件，你可以：
+
+1. 提高内容的可复用性
+2. 增加文章的交互性
+3. 保持内容和样式的一致性
+4. 创建独特的用户体验
+
+<Callout emoji="🚀" title="开始创作">
+现在你已经学会了如何在 MDX 中使用 TSX 组件，开始创建你的交互式文档吧！
+</Callout>
