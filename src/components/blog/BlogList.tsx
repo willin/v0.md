@@ -52,6 +52,19 @@ export function BlogList({ posts, categories, tags, locale, stats }: BlogListPro
     return true;
   });
 
+  // 将文章分成两列，实现瀑布流效果
+  // 偶数索引放左列，奇数索引放右列，实现从左到右、从上到下的视觉顺序
+  const leftColumn: BlogPostSummary[] = [];
+  const rightColumn: BlogPostSummary[] = [];
+
+  filteredPosts.forEach((post, index) => {
+    if (index % 2 === 0) {
+      leftColumn.push(post);
+    } else {
+      rightColumn.push(post);
+    }
+  });
+
   return (
     <div className="flex flex-col lg:flex-row gap-6 w-full max-w-7xl mx-auto px-4 py-8">
       {/* 主内容区 - 文章列表 */}
@@ -84,11 +97,28 @@ export function BlogList({ posts, categories, tags, locale, stats }: BlogListPro
             {isZh ? '没有找到相关文章' : 'No articles found'}
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {filteredPosts.map((post, index) => (
-              <BlogCard key={`${post.locale}-${post.slug}`} post={post} index={index} />
-            ))}
-          </div>
+          /* 移动端单列，桌面端双列瀑布流 */
+          <>
+            {/* 移动端：单列布局 */}
+            <div className="md:hidden flex flex-col gap-6">
+              {filteredPosts.map((post, index) => (
+                <BlogCard key={`${post.locale}-${post.slug}`} post={post} index={index} />
+              ))}
+            </div>
+            {/* 桌面端：双列瀑布流 */}
+            <div className="hidden md:flex gap-6">
+              <div className="flex-1 flex flex-col gap-6">
+                {leftColumn.map((post, index) => (
+                  <BlogCard key={`${post.locale}-${post.slug}-left-${index}`} post={post} index={index * 2} />
+                ))}
+              </div>
+              <div className="flex-1 flex flex-col gap-6">
+                {rightColumn.map((post, index) => (
+                  <BlogCard key={`${post.locale}-${post.slug}-right-${index}`} post={post} index={index * 2 + 1} />
+                ))}
+              </div>
+            </div>
+          </>
         )}
       </div>
 

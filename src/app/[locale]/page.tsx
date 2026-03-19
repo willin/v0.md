@@ -24,7 +24,7 @@ export default async function HomePage({
   return (
     <>
       <HeaderNav locale={locale as any} dictionary={dictionary as any} />
-      <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 bg-gray-50 dark:bg-gray-900">
+      <div className="font-sans grid grid-rows-[20px_1fr] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 bg-gray-50 dark:bg-gray-900">
         <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start w-full">
           <ProfileSection dictionary={dictionary} />
 
@@ -41,13 +41,7 @@ export default async function HomePage({
 
           <DigitalTwinChat dictionary={dictionary} locale={locale} />
         </main>
-
-        <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center w-full">
-          <p className="text-center text-sm text-gray-700 dark:text-gray-300">
-            © {new Date().getFullYear()} Willin Wang. {(dictionary as any).footer.rightsReserved}
-          </p>
-        </footer>
-        </div>
-      </>
+      </div>
+    </>
   );
 }

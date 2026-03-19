@@ -294,3 +294,25 @@ export async function getBlogStats(locale?: 'zh' | 'en'): Promise<{ totalPosts: 
   const totalWords = filteredPosts.reduce((sum, post) => sum + Math.round(post.readingTime.words), 0);
   return { totalPosts, totalWords };
 }
+
+/**
+ * 检查指定 slug 的文章是否有其他语言版本
+ */
+export async function checkTranslation(slug: string): Promise<{ zh?: string; en?: string }> {
+  const posts = await getAllPosts();
+
+  const translations: { zh?: string; en?: string } = {};
+
+  for (const post of posts) {
+    if (post.slug === slug) {
+      if (post.locale === 'zh') {
+        translations.zh = slug;
+      } else if (post.locale === 'en') {
+        translations.en = slug;
+      }
+    }
+  }
+
+  // 返回所有存在的语言版本（可能只有 zh 或只有 en）
+  return translations;
+}

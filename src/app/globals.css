@@ -50,9 +50,9 @@ body {
   }
 }
 
-/* Blog card hover effects */
+/* Blog card styles - for masonry layout */
 .blog-card {
-  @apply transition-all duration-300;
+  @apply transition-all duration-300 break-inside-avoid mb-6;
 }
 
 .blog-card:hover {

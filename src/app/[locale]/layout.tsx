@@ -4,6 +4,7 @@ import "@/app/globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { getCurrentLocale, getDictionary } from "@/i18n/config";
 import { notFound } from "next/navigation";
+import { Footer } from "@/components/layout/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,6 +56,7 @@ export default async function LocaleLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider>
           {children}
+          <Footer locale={locale as 'zh' | 'en'} />
         </ThemeProvider>
       </body>
     </html>

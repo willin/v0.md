@@ -488,6 +488,89 @@ code: ({ node, inline, className, children, ...props }) => {
 > **创建日期**: 2026-03-19
 > **完成日期**: 2026-03-19
 
+---
+
+## 阶段 1.9：MDX 自定义组件支持
+
+> **目标**: 在 Markdown 中使用 React 组件（Callout、Alert、Stepper）
+> **状态**: 已完成 ✅
+> **优先级**: 高
+> **创建日期**: 2026-03-19
+> **完成日期**: 2026-03-19
+
+### 任务清单
+
+- [x] 1.61 创建 Callout 组件（带表情符号和标题的提示框）
+- [x] 1.62 创建 Stepper 组件（分步导航）
+- [x] 1.63 在 MDXContent.tsx 中注册自定义组件
+- [x] 1.64 扩展 JSX.IntrinsicElements 类型定义
+- [x] 1.65 创建示例文章展示组件用法
+
+### 验收标准
+
+- [x] `<callout>` 组件能正常渲染，支持 emoji、title、color 属性
+- [x] `<alert>` 组件能正常渲染，支持 type 属性（note/tip/warning/caution/important）
+- [x] 示例文章能访问并正确显示所有组件
+- [x] 组件样式与现有设计系统一致
+
+### 实施总结
+
+**架构限制**: 当前系统使用 `react-markdown` 解析 Markdown，不是真正的 MDX 编译。因此：
+- 不支持在 Markdown 中使用 `import` 语句
+- 组件通过 HTML 标签方式使用（小写标签名，如 `<callout>`）
+- Stepper 等需要复杂 props（对象数组）的组件无法在 Markdown 中使用
+
+**新增文件**:
+- `src/components/mdx/Callout.tsx` - 带表情符号和标题的提示框组件，支持 5 种颜色主题
+- `src/components/mdx/Stepper.tsx` - 分步导航组件，使用 useState 管理当前步骤
+
+**修改文件**:
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - 扩展 JSX.IntrinsicElements，注册 callout/alert/stepper 组件处理器
+- `src/content/blog/2026-03-19-mdx-component-demo.zh.mdx` - 示例文章，展示所有组件用法
+
+**依赖安装**:
+```bash
+pnpm add @mdx-js/loader @mdx-js/mdx @mdx-js/react @next/mdx
+```
+（虽然最终使用 react-markdown 方案，但保留这些依赖以备将来支持真正 MDX）
+
+**组件用法示例**:
+```markdown
+<callout emoji="💡" title="小知识" color="blue">
+这是一个蓝色的 Callout 组件。
+</callout>
+
+<alert type="tip">
+这是 tip 类型的警告。
+</alert>
+```
+
+**组件处理器实现**:
+```typescript
+// 在 components 映射中注册
+callout: ({ children, ...props }) => {
+  const emoji = props.emoji || '';
+  const title = props.title || '';
+  const color = (props.color as 'default' | 'blue' | 'green' | 'red' | 'purple') || 'default';
+  return (
+    <Callout emoji={emoji} title={title} color={color}>
+      {children}
+    </Callout>
+  );
+},
+alert: ({ children, ...props }) => {
+  const type = (props.type as 'note' | 'tip' | 'warning' | 'caution' | 'important') || 'note';
+  return <Alert type={type}>{children}</Alert>;
+},
+```
+
+**验证结果**:
+- 开发服务器运行正常
+- `/zh/blog/mdx-component-demo` 页面成功渲染所有组件
+- 组件样式与现有设计一致
+- 支持嵌套使用（如 Callout 内嵌套 Alert）
+
+
 ### 任务清单
 
 - [x] 1.56-fix 自适应宽度 - ruby 容器宽度能根据 rt 内容自动扩展
