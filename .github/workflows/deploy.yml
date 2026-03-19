@@ -36,5 +36,4 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          # 如果需要配置自定义域名，需要添加以下配置:
-          # wrangler.jsonc 中添加 routes 配置或使用 wrangler 命令绑定域名
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
