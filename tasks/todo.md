@@ -801,9 +801,55 @@ pnpm add lucide-react
 > **预计**: 1 天
 
 ### 任务清单
+
+#### 5.3 部署到 Cloudflare Workers（提前执行 - 每步可独立验证）
+
+**架构方案**: 使用 Cloudflare Workers `node:fs` 支持（最简单，零额外依赖）
+
+**前置条件**:
+- `wrangler.jsonc` 已配置 `compatibility_date: 2026-03-17` 和 `nodejs_compat` 旗标 ✅
+- 需要添加 `includeFiles` 配置确保博客 MDX 文件被打包进 Worker bundle
+
+**实施步骤**:
+
+- [ ] **5.3.1 更新 open-next.config.ts** - 添加 `includeFiles` 配置
+  ```typescript
+  export default defineCloudflareConfig({
+    includeFiles: ["src/content/blog/**/*"],
+  });
+  ```
+
+- [ ] **5.3.2 更新 src/lib/blog.ts** - 修改路径前缀为 `/bundle`
+  - 将 `blogDirectory` 从相对路径改为 `/bundle/src/content/blog`
+  - 使用 `node:fs` 替代 `fs`（导入路径修改）
+
+- [ ] **5.3.3 基础部署验证**
+  - [ ] 运行 `npm run build` 验证构建成功
+  - [ ] 运行 `npm run deploy` 部署到 Cloudflare Workers
+  - [ ] 访问生产 URL 首页正常显示
+  - [ ] 导航链接（首页、博客）正常工作
+
+- [ ] **5.3.4 博客列表页部署验证**
+  - [ ] 博客列表页正常显示文章列表
+  - [ ] 侧边栏搜索、分类、标签功能正常
+  - [ ] 点击文章卡片能跳转到详情页
+
+- [ ] **5.3.5 博客详情页部署验证**
+  - [ ] 文章详情内容正常渲染（MDX、代码高亮、Mermaid 等）
+  - [ ] 侧边栏目录滚动跟随正常
+  - [ ] 语言切换功能正常
+
+- [ ] **5.3.6 主题切换部署验证**
+  - [ ] 明暗主题切换正常工作
+  - [ ] 主题状态持久化正常
+
+- [ ] **5.3.7 多语言部署验证**
+  - [ ] 中英文切换正常
+  - [ ] 各语言页面独立访问正常
+
+#### 其他任务
 - [ ] 5.1 完整功能测试
 - [ ] 5.2 性能优化（缓存策略）
-- [ ] 5.3 部署到 Cloudflare Workers
 - [ ] 5.4 监控和日志配置
 
 ### 验收标准

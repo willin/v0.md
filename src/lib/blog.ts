@@ -1,26 +1,20 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { BlogPost, BlogPostSummary, BlogFrontmatter } from '@/types/blog';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
+import { readFileSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 // 使用 import.meta.url 获取当前文件路径（ESM 标准方式）
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 博客内容目录：相对于当前文件的位置
-// src/lib -> src/content/blog
-const blogDirectory = path.join(__dirname, '../content/blog');
+// 判断是否在 Cloudflare Workers 环境
+const isCloudflare = typeof globalThis !== 'undefined' && 'caches' in globalThis;
 
-/**
- * 获取文件修改时间
- * 使用文件系统的修改时间作为文章更新时间
- */
-function getFileModifiedTime(filePath: string): string {
-  const stats = fs.statSync(filePath);
-  return stats.mtime.toISOString();
-}
+// 博客内容目录路径（用于本地开发）
+const localBlogDirectory = path.join(__dirname, '../content/blog');
 
 /**
  * 从文件名提取 slug、日期和语言
@@ -39,30 +33,63 @@ function parseFilename(filename: string): { slug: string; date: string; locale: 
 }
 
 /**
- * 检测文章是否有其他语言的翻译版本
- * 返回纯 slug（不含日期前缀）
+ * 在 Cloudflare Workers 环境中获取博客文件列表
+ * 通过读取构建时生成的 index.json 文件来获取文章列表
  */
-function findTranslations(slug: string): { zh?: string; en?: string } {
-  const translations: { zh?: string; en?: string } = {};
-
+async function getCloudflareBlogFileIndex(): Promise<Array<{ filename: string; slug: string; date: string; locale: 'zh' | 'en' }>> {
+  const { env } = getCloudflareContext();
   try {
-    const files = fs.readdirSync(blogDirectory);
-    for (const file of files) {
-      const parsed = parseFilename(file);
-      if (parsed?.slug === slug) {
-        if (parsed.locale === 'zh') {
-          translations.zh = slug; // 只返回 slug，不包含日期
-        } else if (parsed.locale === 'en') {
-          translations.en = slug; // 只返回 slug，不包含日期
-        }
-      }
+    const response = await (env as any).ASSETS.fetch(new URL('/content/blog/index.json', 'https://assets.local'));
+    if (response.ok) {
+      const data = await response.json();
+      return data.files || [];
     }
-  } catch (error) {
-    console.error('Error finding translations:', error);
+  } catch (e) {
+    // 如果 index.json 不存在，回退到手动列出已知文件
   }
 
-  // 只有当两种语言都存在时才返回 translations
-  return Object.keys(translations).length > 1 ? translations : {};
+  // 回退方案：尝试获取常见文件名
+  const knownFiles = [
+    '2026-03-18-welcome.zh.mdx',
+    '2026-03-18-welcome.en.mdx',
+    '2026-03-19-mdx-demo.zh.mdx',
+  ];
+
+  const files: Array<{ filename: string; slug: string; date: string; locale: 'zh' | 'en' }> = [];
+  for (const filename of knownFiles) {
+    try {
+      const response = await (env as any).ASSETS.fetch(new URL(`/content/blog/${filename}`, 'https://assets.local'));
+      if (response.ok) {
+        const content = await response.text();
+        const parsed = parseFilename(filename);
+        if (parsed) {
+          files.push({ filename, ...parsed });
+        }
+      }
+    } catch (e) {
+      // 忽略不存在的文件
+    }
+  }
+  return files;
+}
+
+/**
+ * 在 Cloudflare Workers 环境中列出博客文件
+ */
+async function getCloudflareBlogFiles(): Promise<Array<{ filename: string; slug: string; date: string; locale: 'zh' | 'en' }>> {
+  return getCloudflareBlogFileIndex();
+}
+
+/**
+ * 在 Cloudflare Workers 环境中读取文件内容
+ */
+async function readCloudflareFile(filename: string): Promise<string> {
+  const { env } = getCloudflareContext();
+  const response = await (env as any).ASSETS.fetch(new URL(`/content/blog/${filename}`, 'https://assets.local'));
+  if (!response.ok) {
+    throw new Error(`Failed to read file ${filename}: ${response.status} ${response.statusText}`);
+  }
+  return response.text();
 }
 
 /**
@@ -90,24 +117,68 @@ const AUTHOR = {
 };
 
 /**
+ * 检测文章是否有其他语言的翻译版本
+ */
+function findTranslations(
+  slug: string,
+  allFiles: Array<{ slug: string; locale: string }>
+): { zh?: string; en?: string } {
+  const translations: { zh?: string; en?: string } = {};
+
+  for (const file of allFiles) {
+    if (file.slug === slug) {
+      if (file.locale === 'zh') {
+        translations.zh = slug;
+      } else if (file.locale === 'en') {
+        translations.en = slug;
+      }
+    }
+  }
+
+  // 只有当两种语言都存在时才返回 translations
+  return Object.keys(translations).length > 1 ? translations : {};
+}
+
+/**
  * 获取所有博客文章（用于列表页）
  */
 export async function getAllPosts(): Promise<BlogPostSummary[]> {
-  const files = fs.readdirSync(blogDirectory);
+  let files: string[];
+  let cloudflareFiles: Array<{ filename: string; slug: string; locale: string }> = [];
+
+  if (isCloudflare) {
+    // Cloudflare Workers 环境：使用 ASSETS binding
+    const cfFiles = await getCloudflareBlogFiles();
+    cloudflareFiles = cfFiles.map(f => ({ filename: f.filename, slug: f.slug, locale: f.locale }));
+    files = cloudflareFiles.map(f => f.filename);
+  } else {
+    // 本地开发环境：使用 fs
+    files = readdirSync(localBlogDirectory);
+  }
+
   const posts: BlogPostSummary[] = [];
 
   for (const file of files) {
     if (!file.endsWith('.mdx')) continue;
 
-    const filePath = path.join(blogDirectory, file);
     const parsed = parseFilename(file);
     if (!parsed) continue;
 
-    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    let fileContent: string;
+    if (isCloudflare) {
+      fileContent = await readCloudflareFile(file);
+    } else {
+      const filePath = path.join(localBlogDirectory, file);
+      fileContent = readFileSync(filePath, 'utf-8');
+    }
+
     const { data } = matter(fileContent);
 
     // 查找翻译版本
-    const translations = findTranslations(parsed.slug);
+    const translations = findTranslations(parsed.slug, cloudflareFiles.length > 0 ? cloudflareFiles : files.map(f => {
+      const p = parseFilename(f);
+      return p ? { slug: p.slug, locale: p.locale } : null;
+    }).filter(Boolean) as Array<{ slug: string; locale: string }>);
 
     posts.push({
       slug: parsed.slug,
@@ -134,7 +205,15 @@ export async function getPostBySlug(
   slug: string,
   locale: 'zh' | 'en'
 ): Promise<BlogPost | null> {
-  const files = fs.readdirSync(blogDirectory);
+  let files: string[];
+  let cloudflareFiles: Array<{ filename: string; slug: string; locale: string }> = [];
+
+  if (isCloudflare) {
+    cloudflareFiles = await getCloudflareBlogFiles().then(f => f.map(x => ({ filename: x.filename, slug: x.slug, locale: x.locale })));
+    files = cloudflareFiles.map(f => f.filename);
+  } else {
+    files = readdirSync(localBlogDirectory);
+  }
 
   // 查找匹配的文件
   const targetFile = files.find((file) => {
@@ -144,14 +223,20 @@ export async function getPostBySlug(
 
   if (!targetFile) return null;
 
-  const filePath = path.join(blogDirectory, targetFile);
-  const fileContent = fs.readFileSync(filePath, 'utf-8');
-  const { data, content } = matter(fileContent);
+  let fileContent: string;
+  if (isCloudflare) {
+    fileContent = await readCloudflareFile(targetFile);
+  } else {
+    const filePath = path.join(localBlogDirectory, targetFile);
+    fileContent = readFileSync(filePath, 'utf-8');
+  }
 
-  // 获取文件修改时间
-  const modifiedTime = getFileModifiedTime(filePath);
+  const { data, content } = matter(fileContent);
   const parsed = parseFilename(targetFile)!;
-  const translations = findTranslations(slug);
+  const translations = findTranslations(slug, cloudflareFiles.length > 0 ? cloudflareFiles : files.map(f => {
+    const p = parseFilename(f);
+    return p ? { slug: p.slug, locale: p.locale } : null;
+  }).filter(Boolean) as Array<{ slug: string; locale: string }>);
 
   // Type assertion for frontmatter data
   const frontmatter = data as BlogFrontmatter;
@@ -163,8 +248,8 @@ export async function getPostBySlug(
     tags: frontmatter.tags || [],
     cover: frontmatter.cover,
     slug: parsed.slug,
-    date: modifiedTime,
-    updated: modifiedTime,
+    date: parsed.date,
+    updated: parsed.date,
     locale: parsed.locale,
     translations: Object.keys(translations).length > 0 ? translations : undefined,
     readingTime: readingTime(content),

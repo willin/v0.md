@@ -1,6 +1,18 @@
 'use client';
 
 import React from 'react';
+
+// 扩展 JSX.IntrinsicElements 以支持 HTML ruby 注音元素
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      rb: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      rt: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      rp: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+      ruby: React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    }
+  }
+}
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkAlerts from 'remark-alerts';
