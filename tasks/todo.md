@@ -373,12 +373,12 @@ code: ({ node, inline, className, children, ...props }) => {
 ## 阶段 1.8：博客 UI/UX 修复
 
 > **目标**: 修复用户反馈的 7 个 UI 问题
-> **状态**: 已完成 ✅
+> **状态**: 验收未通过，需要修复
 > **优先级**: 高
 > **创建日期**: 2026-03-19
-> **完成日期**: 2026-03-19
+> **完成日期**: 待定
 
-### 任务清单
+### 任务清单（初版实现 - 验收未通过）
 - [x] 1.36 使用 @tailwindcss/typography 调整代码块换行样式
 - [x] 1.37 修复 Alert 组件重复显示标题问题（删除 [!NOTE] 等原文）
 - [x] 1.38 调整任务列表已完成/待完成的视觉区分度（颜色或样式）
@@ -387,7 +387,7 @@ code: ({ node, inline, className, children, ...props }) => {
 - [x] 1.41 为 Mermaid 添加明暗主题切换（当前暗色主题下显示不清晰）
 - [x] 1.42 修复 Ruby 注音样式（rt、rb 显示位置问题）
 
-### 验收标准
+### 验收标准（初版 - 未通过）
 - [x] 代码块可以正常换行，不溢出容器
 - [x] Alert 组件只显示图标和内容，不显示原文 "[!NOTE]" 等标记
 - [x] 任务列表已完成项和待完成项有明显视觉区分
@@ -396,23 +396,209 @@ code: ({ node, inline, className, children, ...props }) => {
 - [x] Mermaid 图表在深色主题下清晰可见
 - [x] Ruby 注音正确显示在汉字上方
 
+### 用户反馈问题
+
+1. **代码块换行失败** - 代码依然挤在一行内，行首多显示 "`" 符号
+2. **行内代码显示为代码块** - 应该保持行内格式
+3. **Ruby 下沉** - 注释应该在上方，但整体高度下沉了
+4. **下一篇按钮宽度** - 只有上一篇的 1/3 宽度
+5. **Alert 图标重复** - 显示两个图标（彩色 + 黑色），把文字挤到第二行
+6. **TOC 高亮不明显** - 当前高亮的标题颜色不够明显（新增）
+7. **标题下划线** - 文章标题有下划线需要移除（新增）
+8. **Build 路径错误** - `/bundle/src/content/blog` 路径不存在（新增）
+
+---
+
+## 阶段 1.8-fix：博客 UI/UX 修复（重新实现）
+
+> **目标**: 修复用户反馈的所有 8 个问题
+> **状态**: 已完成 ✅
+> **优先级**: 高
+> **创建日期**: 2026-03-19
+> **完成日期**: 2026-03-19
+
+### 任务清单
+
+- [x] 1.43-fix 代码块换行 - 正确实现自动换行，移除行首多余引号
+- [x] 1.44-fix Alert 图标重复 - 移除第二个黑色图标
+- [x] 1.45-fix 行内代码显示为代码块 - 正确区分 inline 和 block 代码
+- [x] 1.46-fix Ruby 下沉 - 保持与原文同高度，注音在上方
+- [x] 1.47-fix 下一篇按钮宽度 - 两按钮平均分配宽度，占满整行
+- [x] 1.48-new TOC 高亮颜色 - 换更明显的颜色
+- [x] 1.49-new 标题下划线 - 移除文章标题下划线
+- [x] 1.50-new Build 路径错误 - 修复 `/bundle/src/content/blog` 路径问题
+
+### 验收标准（全部通过 ✅）
+
+- [x] 代码块自动换行，不溢出容器，无多余 "`" 符号 (whiteSpace: pre-wrap)
+- [x] Alert 只显示一个彩色图标 (SVG 数量 = 0，已过滤)
+- [x] 行内代码正确显示为行内格式
+- [x] Ruby 注音在上方，整体高度与原文一致 (rubyPosition: over)
+- [x] 上一篇/下一篇按钮宽度相等，占满整行
+- [x] TOC 当前高亮标题颜色明显可见 (amber-600)
+- [x] 文章标题无下划线 (textDecorationLine: none)
+- [x] Build 后博客页面访问正常，无路径错误
+
 ### 实施总结
 
 **修改文件**:
-- `src/components/mdx/Alert.tsx` - 移除重复标题渲染（删除第 83 行 `<p className="font-semibold mb-1">{config.title}</p>`）
-- `src/app/globals.css` - 添加代码换行 (`break-words`, `whitespace-pre-wrap`, `max-w-full`)、Ruby 定位 (`flex-col-reverse`)、任务列表样式 (`:has()` 选择器)
-- `src/components/blog/TableOfContents.tsx` - 添加 `sticky top-4` 类实现滚动跟随
-- `src/components/mdx/Mermaid.tsx` - 添加 `renderKey` 状态，主题切换时重新渲染
-- `src/app/[locale]/blog/[slug]/page.tsx` - 修复导航按钮：始终显示两个按钮，移除日期前缀，添加占位符
+- `src/app/globals.css` - 添加标题 `no-underline`，修复 Ruby 样式使用标准 CSS ruby 属性，隐藏 octicon 元素
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - 修复代码块 className 和 Alert 图标过滤，移除冗余的 filterOcticonElements 函数
+- `src/app/[locale]/blog/[slug]/page.tsx` - 修复下一篇按钮网格布局
+- `src/components/blog/TableOfContents.tsx` - 增强 TOC 高亮为 amber 色
+- `src/lib/blog.ts` - 使用 `import.meta.url` 和 `fileURLToPath` 处理路径
+
+**关键修复**:
+1. **代码块换行**: 移除 `className="block"`，让 rehype-highlight 应用自己的样式
+2. **Alert 图标重复**: CSS 隐藏 octicon 元素 (`display: none !important`)，移除 React 端的 filterOcticonElements 函数
+3. **Ruby 下沉**: 替换 `flex-col-reverse` 为 `ruby-position: over`
+4. **按钮宽度**: 替换 `md:justify-self-end` 为 `block md:col-start-2`
+5. **TOC 高亮**: 使用 `amber-600` 色和背景高亮
+6. **标题下划线**: 添加 `no-underline` 到所有 h1-h6
+7. **路径错误**: 使用 `import.meta.url` + `fileURLToPath` 获取正确的 `__dirname`
+
+**代码清理**:
+- 移除了 `filterOcticonElements` 递归函数（CSS 已处理隐藏）
+- 移除了 `p` 处理器中的 octicon 检查逻辑
+- 移除了 `div` 处理器中调用 filterOcticonElements 的代码
+
+---
+
+## 阶段 1.8-fix2：代码块功能增强
+
+> **目标**: 添加复制代码按钮，优化代码块样式
+> **状态**: 已完成 ✅
+> **优先级**: 高
+> **创建日期**: 2026-03-19
+> **完成日期**: 2026-03-19
+
+### 任务清单
+
+- [x] 1.51-fix 移除 `:before :after {content: "`"}` 伪元素样式
+- [x] 1.52-fix 修复代码块背景色覆盖整个容器
+- [x] 1.53-new 添加复制代码按钮功能
+- [x] 1.54-fix 修复语言检测：所有代码块显示正确语言名称
+- [x] 1.55-fix 明暗主题适配：代码块背景色随主题切换
+
+### 验收标准
+
+- [x] 代码块无多余的反引号伪元素装饰
+- [x] 代码块背景色与页面背景有明显对比，覆盖整个容器区域
+- [x] 鼠标悬停时显示复制代码按钮
+- [x] 点击复制按钮后显示成功反馈（绿色勾选图标）
+- [x] 代码块显示语言标签
+- [x] 语言检测正确：javascript, typescript, python, sql, bash 显示正确
+- [x] 明亮主题：bg-white 背景（白色，与页面浅灰背景形成对比）
+- [x] 暗黑主题：bg-gray-800/50 背景（半透明深灰色，带 border-gray-700 边框）
+
+### 实施总结
+
+**最终修复 (2026-03-19 延续会话)**:
+
+问题：所有代码块显示 "text" 而非实际语言名称
+
+根本原因：ReactMarkdown 处理器执行顺序问题 - `pre` 处理器在 `code` 处理器之前执行，导致 `pre` 处理器无法获取 `code` 元素的 language className
+
+解决方案：将 `CodeBlock` 包装从 `pre` 处理器移动到 `code` 处理器
+
+**修改文件**:
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - 重构 `pre` 和 `code` 处理器
+
+**关键代码变更**:
+```typescript
+// pre 处理器 - 简化为只渲染 pre 元素
+pre: ({ node, children, ...props }) => {
+  const preProps = props as { className?: string };
+  const originalClassName = preProps?.className;
+  return (
+    <pre {...props} className={`${originalClassName || ''} !bg-transparent`.trim()}>
+      {children}
+    </pre>
+  );
+},
+
+// code 处理器 - 非行内代码块用 CodeBlock 包裹
+code: ({ node, inline, className, children, ...props }) => {
+  const match = /language-(\w+)/.exec(className || '');
+  if (match && match[1] === 'mermaid') {
+    return <Mermaid code={String(children)} />;
+  }
+  return inline ? (
+    <code {...props} className="bg-gray-100 dark:bg-gray-800 ...">
+      {children}
+    </code>
+  ) : (
+    <CodeBlock className={className || ''}>
+      <code {...props} className={className || ''}>
+        {children}
+      </code>
+    </CodeBlock>
+  );
+},
+```
+
+**MCP 浏览器自动化验证结果**:
+```json
+{
+  "theme": "light",
+  "codeBlocks": [
+    { "langLabel": "javascript", "bgClass": "bg-gray-50" },
+    { "langLabel": "typescript", "bgClass": "bg-gray-50" },
+    { "langLabel": "python", "bgClass": "bg-gray-50" },
+    { "langLabel": "sql", "bgClass": "bg-gray-50" },
+    { "langLabel": "bash", "bgClass": "bg-gray-50" }
+  ]
+}
+```
+
+暗黑主题验证：全部显示 `bg-gray-900`，语言标签正确。
+
+**新增文件**:
+- `src/components/mdx/CodeBlock.tsx` - 代码块包装组件，带复制按钮和语言标签
+
+**修改文件**:
+- `src/app/globals.css` - 修复 `pre` 和 `code` 样式，确保背景覆盖容器
+- `src/app/[locale]/blog/[slug]/MDXContent.tsx` - 引入 CodeBlock 组件，更新 `pre` 和 `code` 处理器
+
+**依赖安装**:
+```bash
+pnpm add lucide-react
+```
 
 **关键实现**:
-1. 代码块换行：为 `pre code` 添加 `whitespace-pre-wrap break-words max-w-full`
-2. Alert 重复标题：移除 Alert.tsx 中的标题渲染，MDXContent.tsx 已用 `slice(1)` 过滤
-3. 任务列表样式：使用 CSS `:has()` 选择器区分选中/未选中状态
-4. 导航按钮：从条件渲染改为三元渲染，URL 移除日期前缀 `${prevPost.slug}`
-5. 目录滚动：添加 `sticky top-4` 类
-6. Mermaid 主题：添加 `renderKey` 状态，主题变化时递增强制重新渲染
-7. Ruby 注音：从 `flex-col` 改为 `flex-col-reverse`，rt 添加 `mb-0.5` 间距
+1. **复制按钮**: 使用 `navigator.clipboard.writeText()` API 复制代码
+2. **成功反馈**: 复制后显示绿色勾选图标 2 秒
+3. **语言标签**: 从 `className` 提取语言名称并显示在左上角
+4. **悬停显示**: 使用 `group-hover:opacity-100` 实现鼠标悬停时显示按钮
+5. **背景覆盖**: 确保 `pre` 有背景色，`pre > code` 和 `.hljs` 背景透明
+
+**关键实现**:
+1. **复制按钮**: 使用 `navigator.clipboard.writeText()` API 复制代码
+2. **成功反馈**: 复制后显示绿色勾选图标 2 秒
+3. **语言标签**: 从 `className` 提取语言名称并显示在左上角
+4. **悬停显示**: 使用 `group-hover:opacity-100` 实现鼠标悬停时显示按钮
+5. **背景覆盖**: 确保 `pre` 有背景色，`pre > code` 和 `.hljs` 背景透明
+
+**背景颜色修复 (2026-03-19 延续会话)**:
+
+问题：代码块背景与页面背景颜色太接近，看不出来有代码块
+
+原因：
+- 浅主题：`bg-gray-50` ≈ `#f8f9fa`，页面背景 `--background: #f8fafc`（几乎一样）
+- 暗主题：`bg-gray-900` ≈ `#111827`，页面背景 `--background: #0f172a`（几乎一样）
+
+解决方案：
+- 浅主题：改用 `bg-white border-gray-200` - 白色背景 + 细边框
+- 暗主题：改用 `bg-gray-800/50 border-gray-700` - 半透明深灰色 + 细边框
+
+验证结果：
+- 浅主题：`rgb(255, 255, 255)` 白色背景，`1px solid` gray-200 边框
+- 暗主题：`oklab(0.277998.../ 0.5)` 半透明灰色背景，`1px solid` gray-700 边框
+
+代码提取逻辑**:
+- 使用递归函数 `extractCodeText()` 从 React 元素中提取纯文本
+- 支持处理字符串、数组和 ReactElement 类型
+- 安全处理 TypeScript 类型断言
 
 ---
 

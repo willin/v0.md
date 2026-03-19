@@ -1,10 +1,17 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
 import { BlogPost, BlogPostSummary, BlogFrontmatter } from '@/types/blog';
 
-const blogDirectory = path.join(process.cwd(), 'src/content/blog');
+// 使用 import.meta.url 获取当前文件路径（ESM 标准方式）
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// 博客内容目录：相对于当前文件的位置
+// src/lib -> src/content/blog
+const blogDirectory = path.join(__dirname, '../content/blog');
 
 /**
  * 获取文件修改时间

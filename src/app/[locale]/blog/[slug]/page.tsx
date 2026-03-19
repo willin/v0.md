@@ -194,7 +194,7 @@ export default async function BlogPostPage({
               {prevPost ? (
                 <Link
                   href={`/${locale}/blog/${prevPost.slug}`}
-                  className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors block"
                 >
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                     {isZh ? '← 上一篇' : '← Previous'}
@@ -218,7 +218,7 @@ export default async function BlogPostPage({
               {nextPost ? (
                 <Link
                   href={`/${locale}/blog/${nextPost.slug}`}
-                  className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors md:justify-self-end"
+                  className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors block md:col-start-2"
                 >
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 text-right">
                     {isZh ? '下一篇 →' : 'Next →'}
@@ -228,7 +228,7 @@ export default async function BlogPostPage({
                   </p>
                 </Link>
               ) : (
-                <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 md:justify-self-end">
+                <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 md:col-start-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 text-right">
                     {isZh ? '下一篇 →' : 'Next →'}
                   </p>

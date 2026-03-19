@@ -136,7 +136,7 @@ export function TableOfContents() {
               : 'text-gray-600 dark:text-gray-400 border-transparent'
           } ${
             isActive
-              ? 'text-blue-600 dark:text-blue-400 border-blue-500 font-semibold'
+              ? 'text-amber-600 dark:text-amber-400 border-amber-500 font-bold bg-amber-50 dark:bg-amber-900/20 -ml-[1px] pl-[calc(0.75rem+0.25rem)]'
               : 'hover:text-gray-900 dark:hover:text-gray-100'
           }`}
           style={{ paddingLeft: `${indent + 0.75}rem` }}

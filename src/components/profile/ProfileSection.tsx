@@ -73,7 +73,7 @@ export default function ProfileSection({ dictionary }: ProfileSectionProps) {
           </h2>
 
           <p className="text-lg text-gray-600 dark:text-gray-300 italic mb-4">
-            "{dictionary.home.subtitle}"
+            &quot;{dictionary.home.subtitle}&quot;
           </p>
 
           <div className="mb-4">

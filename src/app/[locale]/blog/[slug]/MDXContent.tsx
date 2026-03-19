@@ -12,6 +12,7 @@ import 'highlight.js/styles/atom-one-dark.css';
 import Alert from '@/components/mdx/Alert';
 import Ruby from '@/components/mdx/Ruby';
 import Mermaid from '@/components/mdx/Mermaid';
+import CodeBlock from '@/components/mdx/CodeBlock';
 
 interface MDXContentProps {
   content: string;
@@ -56,33 +57,33 @@ export default function MDXContent({ content }: MDXContentProps) {
         ]}
         components={{
           h1: ({ node, ...props }) => (
-            <h1 {...props} className="text-4xl font-bold mt-0 mb-8 text-gray-900 dark:text-gray-100" />
+            <h1 {...props} className="text-4xl font-bold mt-0 mb-8 text-gray-900 dark:text-gray-100 no-underline [&>a]:no-underline [&>a]:hover:no-underline" />
           ),
           h2: ({ node, ...props }) => (
-            <h2 {...props} className="text-3xl font-bold mt-16 mb-8 text-gray-900 dark:text-gray-100 scroll-mt-24" />
+            <h2 {...props} className="text-3xl font-bold mt-16 mb-8 text-gray-900 dark:text-gray-100 scroll-mt-24 no-underline [&>a]:no-underline [&>a]:hover:no-underline" />
           ),
           h3: ({ node, ...props }) => (
-            <h3 {...props} className="text-2xl font-semibold mt-12 mb-6 text-gray-900 dark:text-gray-100 scroll-mt-24" />
+            <h3 {...props} className="text-2xl font-semibold mt-12 mb-6 text-gray-900 dark:text-gray-100 scroll-mt-24 no-underline [&>a]:no-underline [&>a]:hover:no-underline" />
           ),
           h4: ({ node, ...props }) => (
-            <h4 {...props} className="text-xl font-semibold mt-8 mb-4 text-gray-900 dark:text-gray-100" />
+            <h4 {...props} className="text-xl font-semibold mt-8 mb-4 text-gray-900 dark:text-gray-100 no-underline [&>a]:no-underline [&>a]:hover:no-underline" />
           ),
           h5: ({ node, ...props }) => (
-            <h5 {...props} className="text-lg font-semibold mt-6 mb-3 text-gray-900 dark:text-gray-100" />
+            <h5 {...props} className="text-lg font-semibold mt-6 mb-3 text-gray-900 dark:text-gray-100 no-underline [&>a]:no-underline [&>a]:hover:no-underline" />
           ),
           h6: ({ node, ...props }) => (
-            <h6 {...props} className="text-base font-semibold mt-4 mb-2 text-gray-900 dark:text-gray-100" />
+            <h6 {...props} className="text-base font-semibold mt-4 mb-2 text-gray-900 dark:text-gray-100 no-underline [&>a]:no-underline [&>a]:hover:no-underline" />
           ),
           p: ({ node, children, ...props }) => {
-            // 如果 <p> 标签内只包含 <pre>，则不渲染 <p> 标签，直接返回内容
-            // 这是为了避免 <pre> 不能是 <p> 的后代的 HTML 规范问题
+            // 如果 <p> 标签内包含 <pre> 或 CodeBlock，则不渲染 <p> 标签，直接返回内容
+            // 这是为了避免 <pre> 和 <div> 不能是 <p> 的后代的 HTML 规范问题
             if (children && typeof children === 'object' && children !== null) {
               const childrenArray = Array.isArray(children) ? children : [children];
-              const hasPre = childrenArray.some(child =>
+              const hasBlockElement = childrenArray.some(child =>
                 typeof child === 'object' && child !== null &&
-                'type' in child && child.type === 'pre'
+                'type' in child && (child.type === 'pre' || (typeof child.type === 'function' && child.type.name === 'CodeBlock'))
               );
-              if (hasPre) {
+              if (hasBlockElement) {
                 return <>{children}</>;
               }
             }
@@ -93,11 +94,13 @@ export default function MDXContent({ content }: MDXContentProps) {
             );
           },
           pre: ({ node, children, ...props }) => {
-            // Shiki 会渲染自己的 pre 标签，保留其样式
+            // pre 元素只负责渲染 pre 标签，CodeBlock 由 code 处理器处理
+            const preProps = props as { className?: string };
+            const originalClassName = preProps?.className;
             return (
-              <div className="my-6">
+              <pre {...props} className={`${originalClassName || ''} !bg-transparent`.trim()}>
                 {children}
-              </div>
+              </pre>
             );
           },
           ul: ({ node, children, ...props }) => (
@@ -132,15 +135,21 @@ export default function MDXContent({ content }: MDXContentProps) {
             return inline ? (
               <code
                 {...props}
-                className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-200"
+                className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-200 break-words"
               >
                 {children}
               </code>
             ) : (
-              // Shiki 会渲染 code 标签，保留其样式
-              <code {...props} className="block">
-                {children}
-              </code>
+              // Code block - wrap with CodeBlock for copy button and language label
+              <CodeBlock className={className || ''}>
+                <code
+                  {...props}
+                  className={className || ''}
+                  style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                >
+                  {children}
+                </code>
+              </CodeBlock>
             );
           },
           sup: ({ node, ...props }) => (
@@ -153,7 +162,7 @@ export default function MDXContent({ content }: MDXContentProps) {
             <mark {...props} className="bg-yellow-200 dark:bg-yellow-800/50 px-1 py-0.5 rounded text-gray-900 dark:text-gray-100" />
           ),
           ruby: ({ node, children, ...props }) => (
-            <ruby {...props} className="inline-flex flex-col items-center">
+            <ruby {...props} className="inline">
               {children}
             </ruby>
           ),
@@ -207,8 +216,21 @@ export default function MDXContent({ content }: MDXContentProps) {
               const alertType = className.split(' ').find(c => c.startsWith('markdown-alert-'))?.replace('markdown-alert-', '') as 'note' | 'tip' | 'warning' | 'caution' | 'important' || 'note';
               // Extract content from children, skipping the title paragraph from remark-alerts
               const contentArray = React.Children.toArray(children);
-              // Find and skip the first child (title paragraph from remark-alerts which contains "[!NOTE]" etc.)
-              const content = contentArray.slice(1);
+              // Skip first paragraph (title with "[!NOTE]" etc.) and paragraphs that only contain SVG icons
+              const content = contentArray.filter((child, index) => {
+                // Skip first paragraph (title with "[!NOTE]" etc.)
+                if (index === 0) return false;
+                // Skip paragraphs that only contain SVG icons
+                if (typeof child === 'object' && child !== null && 'type' in child && child.type === 'p') {
+                  const pChildren = Array.isArray((child as any).props?.children)
+                    ? (child as any).props.children
+                    : [(child as any).props?.children];
+                  if (pChildren.length === 1 && typeof pChildren[0] === 'object' && pChildren[0]?.type === 'svg') {
+                    return false;
+                  }
+                }
+                return true;
+              });
               return <Alert type={alertType}>{content}</Alert>;
             }
             return (

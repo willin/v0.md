@@ -65,8 +65,40 @@ body {
   @apply text-base leading-relaxed;
 }
 
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
+  @apply no-underline;
+}
+
+/* Remove underline from anchor links in headings (rehype-autolink-headings) */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a,
+.prose h4 a,
+.prose h5 a,
+.prose h6 a {
+  text-decoration: none !important;
+}
+
+.prose h1 a:hover,
+.prose h2 a:hover,
+.prose h3 a:hover,
+.prose h4 a:hover,
+.prose h5 a:hover,
+.prose h6 a:hover {
+  text-decoration: none !important;
+}
+
+.prose h1 {
+  @apply text-4xl font-bold mt-0 mb-8 text-gray-900 dark:text-gray-100;
+}
+
 .prose h2 {
-  @apply text-2xl font-bold mt-12 mb-6 text-gray-900 dark:text-gray-100;
+  @apply text-3xl font-bold mt-16 mb-8 text-gray-900 dark:text-gray-100;
 }
 
 .prose h3 {
@@ -75,6 +107,14 @@ body {
 
 .prose h4 {
   @apply text-lg font-semibold mt-6 mb-3 text-gray-900 dark:text-gray-100;
+}
+
+.prose h5 {
+  @apply text-base font-semibold mt-4 mb-2 text-gray-900 dark:text-gray-100;
+}
+
+.prose h6 {
+  @apply text-sm font-semibold mt-3 mb-1 text-gray-900 dark:text-gray-100;
 }
 
 .prose p {
@@ -142,13 +182,22 @@ body {
   @apply bg-yellow-200 dark:bg-yellow-800/50 px-1 py-0.5 rounded text-gray-900 dark:text-gray-100;
 }
 
-/* Ruby annotations */
+/* Hide octicon elements (from remark-alerts plugin) */
+.prose .octicon,
+.prose [class*="octicon"] {
+  display: none !important;
+}
+
+/* Ruby annotations - use proper ruby positioning */
 .prose ruby {
-  @apply inline-flex flex-col-reverse items-center;
+  @apply inline;
+  ruby-position: over;
+  ruby-align: center;
 }
 
 .prose rt {
-  @apply text-xs text-gray-500 dark:text-gray-400 text-center leading-none mb-0.5;
+  @apply text-xs text-gray-500 dark:text-gray-400;
+  ruby-align: center;
 }
 
 .prose rp {
@@ -156,11 +205,94 @@ body {
 }
 
 .prose pre {
-  @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto mb-6;
+  /* 背景色由 CodeBlock 组件处理 */
+  @apply p-0 rounded-lg overflow-x-auto mb-0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
+/* 代码块文字颜色 - 根据主题调整 */
+.prose pre {
+  @apply text-gray-800 dark:text-gray-100;
+}
+
+/* Code block content - ensure background covers entire container */
 .prose pre code {
-  @apply bg-transparent p-0 text-gray-100 whitespace-pre-wrap break-words max-w-full;
+  @apply bg-transparent p-2! max-w-full block;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Override highlight.js default background to use container background */
+.prose pre .hljs {
+  @apply bg-transparent;
+}
+
+/* Override highlight.js default pre background */
+.prose pre {
+  background: transparent !important;
+}
+
+/* 明亮主题下的代码高亮颜色 - 使用 atom-one-light 配色 */
+:not(.dark) .prose pre .hljs {
+  color: #383a42;
+}
+:not(.dark) .prose pre .hljs-comment,
+:not(.dark) .prose pre .hljs-quote {
+  color: #a0a1a7;
+  font-style: italic;
+}
+:not(.dark) .prose pre .hljs-doctag,
+:not(.dark) .prose pre .hljs-keyword,
+:not(.dark) .prose pre .hljs-formula {
+  color: #a626a4;
+}
+:not(.dark) .prose pre .hljs-section,
+:not(.dark) .prose pre .hljs-name,
+:not(.dark) .prose pre .hljs-selector-tag,
+:not(.dark) .prose pre .hljs-deletion {
+  color: #e45649;
+}
+:not(.dark) .prose pre .hljs-literal {
+  color: #0184bb;
+}
+:not(.dark) .prose pre .hljs-string,
+:not(.dark) .prose pre .hljs-regexp,
+:not(.dark) .prose pre .hljs-addition,
+:not(.dark) .prose pre .hljs-attribute,
+:not(.dark) .prose pre .hljs-meta-string {
+  color: #50a14f;
+}
+:not(.dark) .prose pre .hljs-built_in,
+:not(.dark) .prose pre .hljs-class .hljs-title {
+  color: #c18401;
+}
+:not(.dark) .prose pre .hljs-attr,
+:not(.dark) .prose pre .hljs-variable,
+:not(.dark) .prose pre .hljs-template-variable,
+:not(.dark) .prose pre .hljs-type,
+:not(.dark) .prose pre .hljs-selector-class,
+:not(.dark) .prose pre .hljs-selector-attr,
+:not(.dark) .prose pre .hljs-selector-pseudo,
+:not(.dark) .prose pre .hljs-number {
+  color: #986801;
+}
+:not(.dark) .prose pre .hljs-symbol,
+:not(.dark) .prose pre .hljs-bullet,
+:not(.dark) .prose pre .hljs-link,
+:not(.dark) .prose pre .hljs-meta,
+:not(.dark) .prose pre .hljs-selector-id,
+:not(.dark) .prose pre .hljs-title {
+  color: #4078f2;
+}
+:not(.dark) .prose pre .hljs-emphasis {
+  font-style: italic;
+}
+:not(.dark) .prose pre .hljs-strong {
+  font-weight: bold;
+}
+:not(.dark) .prose pre .hljs-link {
+  text-decoration: underline;
 }
 
 .prose a {
