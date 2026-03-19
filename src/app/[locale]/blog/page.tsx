@@ -36,7 +36,7 @@ export default async function BlogPage({
 
   return (
     <>
-      <HeaderNav locale={locale} dictionary={dictionary as any} />
+      <HeaderNav locale={locale as 'zh' | 'en'} dictionary={dictionary as any} />
       <BlogList posts={filteredPosts} categories={categories} tags={tags} locale={locale} stats={stats} />
     </>
   );

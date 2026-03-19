@@ -27,7 +27,7 @@ export default function BlogNotFound() {
 
   return (
     <>
-      <HeaderNav locale={locale} dictionary={dictionary as any} />
+      <HeaderNav locale={locale as 'zh' | 'en'} dictionary={dictionary as any} />
       <div className="flex flex-col lg:flex-row gap-6 w-full max-w-7xl mx-auto px-4 py-8">
         {/* 主内容区 */}
         <article className="flex-1 min-w-0">
@@ -80,9 +80,9 @@ export default function BlogNotFound() {
         </article>
 
         {/* 侧边栏 */}
-        <BlogDetailSidebar categories={[]} tags={[]} locale={locale} stats={{ totalPosts: 0, totalWords: 0 }} />
+        <BlogDetailSidebar categories={[]} tags={[]} locale={locale as 'zh' | 'en'} stats={{ totalPosts: 0, totalWords: 0 }} />
       </div>
-      <Footer locale={locale} />
+      <Footer locale={locale as 'zh' | 'en'} />
     </>
   );
 }
