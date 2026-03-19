@@ -1,0 +1,23 @@
+{
+  "generated": "2026-03-19T14:51:44.272Z",
+  "files": [
+    {
+      "filename": "2026-03-19-mdx-demo.zh.mdx",
+      "slug": "mdx-demo",
+      "date": "2026-03-19T00:00:00.000Z",
+      "locale": "zh"
+    },
+    {
+      "filename": "2026-03-18-welcome.en.mdx",
+      "slug": "welcome",
+      "date": "2026-03-18T00:00:00.000Z",
+      "locale": "en"
+    },
+    {
+      "filename": "2026-03-18-welcome.zh.mdx",
+      "slug": "welcome",
+      "date": "2026-03-18T00:00:00.000Z",
+      "locale": "zh"
+    }
+  ]
+}

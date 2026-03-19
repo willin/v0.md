@@ -3,29 +3,29 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-\t"$schema": "node_modules/wrangler/config-schema.json",
-\t"name": "v0_md",
-\t"main": ".open-next/worker.js",
-\t"compatibility_date": "2026-03-17",
-\t"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-\t"assets": {
-\t\t"binding": "ASSETS",
-\t\t"directory": ".open-next/assets"
-\t},
-\t"images": {
-\t\t// Enable image optimization
-\t\t// see https://opennext.js.org/cloudflare/howtos/image
-\t\t"binding": "IMAGES"
-\t},
-\t"services": [
-\t\t{
-\t\t\t// Self-reference service binding, the service name must match the worker name
-\t\t\t// see https://opennext.js.org/cloudflare/caching
-\t\t\t"binding": "WORKER_SELF_REFERENCE",
-\t\t\t"service": "v0_md"
-\t\t}
-\t],
-\t"observability": {
-\t\t"enabled": true
-\t}
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "v0_md",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-03-17",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "images": {
+    // Enable image optimization
+    // see https://opennext.js.org/cloudflare/howtos/image
+    "binding": "IMAGES"
+  },
+  "services": [
+    {
+      // Self-reference service binding, the service name must match the worker name
+      // see https://opennext.js.org/cloudflare/caching
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "v0_md"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
 }
