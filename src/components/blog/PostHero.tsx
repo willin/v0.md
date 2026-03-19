@@ -3,15 +3,16 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { BlogPost } from '@/types/blog';
+import { useTranslation } from '@/i18n/client';
 
 interface PostHeroProps {
   post: BlogPost;
   locale: string;
   dateStr: string;
-  isZh: boolean;
 }
 
-export function PostHero({ post, locale, dateStr, isZh }: PostHeroProps) {
+export function PostHero({ post, locale, dateStr }: PostHeroProps) {
+  const { t } = useTranslation(locale);
   const [scrollProgress, setScrollProgress] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -86,13 +87,13 @@ export function PostHero({ post, locale, dateStr, isZh }: PostHeroProps) {
             <ol className="flex items-center gap-2">
               <li>
                 <Link href={`/${locale}`} className="hover:text-white transition-colors">
-                  {isZh ? '首页' : 'Home'}
+                  {t('common.home')}
                 </Link>
               </li>
               <li>/</li>
               <li>
                 <Link href={`/${locale}/blog`} className="hover:text-white transition-colors">
-                  {isZh ? '博客' : 'Blog'}
+                  {t('common.blog')}
                 </Link>
               </li>
               {post.categories && post.categories.length > 0 && (
@@ -126,13 +127,13 @@ export function PostHero({ post, locale, dateStr, isZh }: PostHeroProps) {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {post.readingTime.minutes} {isZh ? '分钟阅读' : 'min read'}
+              {post.readingTime.minutes} {t('blog.post.readingTime')}
             </span>
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              {Math.round(post.readingTime.words)} {isZh ? '字' : 'words'}
+              {Math.round(post.readingTime.words)} {t('blog.post.words')}
             </span>
           </div>
 
@@ -157,13 +158,13 @@ export function PostHero({ post, locale, dateStr, isZh }: PostHeroProps) {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.148" />
                 </svg>
-                {isZh ? '提示：本文有其他语言版本' : 'Note: This article has other language versions'}
+                {t('blog.post.otherLanguageHint')}
                 {post.translations.zh && locale !== 'zh' && (
                   <Link
                     href={`/zh/blog/${post.translations.zh}`}
                     className="underline hover:text-blue-200 transition-colors"
                   >
-                    {isZh ? '切换到中文版' : 'Switch to Chinese'}
+                    {t('blog.notFound.switchToChinese')}
                   </Link>
                 )}
                 {post.translations.en && locale !== 'en' && (
@@ -171,7 +172,7 @@ export function PostHero({ post, locale, dateStr, isZh }: PostHeroProps) {
                     href={`/en/blog/${post.translations.en}`}
                     className="underline hover:text-blue-200 transition-colors"
                   >
-                    {isZh ? 'Switch to English' : '切换到英文版'}
+                    {t('blog.notFound.switchToEnglish')}
                   </Link>
                 )}
               </p>

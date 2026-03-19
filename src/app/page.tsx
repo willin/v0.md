@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { i18n } from '@/i18n/config';
 import { headers } from 'next/headers';
 
-async function getPreferredLocale(): Promise<string> {
+export async function getPreferredLocale(): Promise<string> {
   // In Next.js App Router, we can access headers on the server
   const headersList = await headers();
   const acceptLanguage = headersList.get('accept-language');

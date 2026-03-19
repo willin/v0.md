@@ -1,5 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import { BlogPostSummary } from '@/types/blog';
+import { useTranslation } from '@/i18n/client';
+import { Locale } from '@/i18n/config';
 
 interface BlogCardProps {
   post: BlogPostSummary;
@@ -7,8 +11,10 @@ interface BlogCardProps {
 }
 
 export function BlogCard({ post, index }: BlogCardProps) {
-  const isZh = post.locale === 'zh';
-  const dateStr = new Date(post.date).toLocaleDateString(isZh ? 'zh-CN' : 'en-US', {
+  const { t } = useTranslation(post.locale);
+  const locale = post.locale as Locale;
+  const dateLocale = locale === 'zh' ? 'zh-CN' : 'en-US';
+  const dateStr = new Date(post.date).toLocaleDateString(dateLocale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -51,13 +57,13 @@ export function BlogCard({ post, index }: BlogCardProps) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            {Math.round(post.readingTime.minutes)} {isZh ? '分钟' : 'min'}
+            {Math.round(post.readingTime.minutes)} {t('blog.card.minutes')}
           </span>
           <span className="flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            {Math.round(post.readingTime.words)} {isZh ? '字' : 'words'}
+            {Math.round(post.readingTime.words)} {t('blog.card.words')}
           </span>
         </div>
         {post.tags && post.tags.length > 0 && (

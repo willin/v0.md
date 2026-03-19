@@ -56,7 +56,7 @@ export default async function LocaleLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider>
           {children}
-          <Footer locale={locale as 'zh' | 'en'} />
+          <Footer locale={locale} />
         </ThemeProvider>
       </body>
     </html>

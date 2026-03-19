@@ -7,6 +7,7 @@ import Link from 'next/link';
 import MDXContent from './MDXContent';
 import { getDictionary } from '@/i18n/config';
 import { PostHero } from '@/components/blog/PostHero';
+import { Locale } from '@/i18n/config';
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -22,8 +23,8 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  const post = await getPostBySlug(slug, locale as 'zh' | 'en');
-  const dictionary = await getDictionary(locale as any);
+  const post = await getPostBySlug(slug, locale as Locale);
+  const dictionary = await getDictionary(locale as Locale);
 
   if (!post) {
     return {
@@ -49,26 +50,38 @@ export default async function BlogPostPage({
   params: Promise<{ locale: string; slug: string }>;
 }) {
   const { locale, slug } = await params;
-  const dictionary = await getDictionary(locale as any);
-  const post = await getPostBySlug(slug, locale as 'zh' | 'en');
+  const dictionary = await getDictionary(locale as Locale);
+  const post = await getPostBySlug(slug, locale as Locale);
 
   const categories = await getAllCategories();
   const tags = await getAllTags();
   // 获取当前语言的统计信息
-  const stats = await getBlogStats(locale as 'zh' | 'en');
+  const stats = await getBlogStats(locale as Locale);
 
-  const isZh = locale === 'zh';
+  const localeStr = locale === 'zh' ? 'zh-CN' : 'en-US';
+  const dateStr = new Date(post?.date || Date.now()).toLocaleDateString(localeStr, {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  // 查找上一篇和下一篇文章
+  const allPosts = (await getAllPosts()).filter((p) => p.locale === locale);
+  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
+  const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+  const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 
   // 如果文章不存在，检查是否有其他语言版本
   if (!post) {
     const translations = await checkTranslation(slug);
     const hasTranslation = Object.keys(translations).length > 0;
-    const otherLocale = isZh ? 'en' : 'zh';
-    const translationSlug = translations[otherLocale];
+    const otherLocaleKey = locale === 'zh' ? 'en' : 'zh';
+    const otherLocale = translations[otherLocaleKey] ? otherLocaleKey : null;
+    const translationSlug = otherLocale ? translations[otherLocale] : null;
 
     return (
       <>
-        <HeaderNav locale={locale as 'zh' | 'en'} dictionary={dictionary as any} />
+        <HeaderNav locale={locale as Locale} dictionary={dictionary as any} />
         <div className="flex flex-col lg:flex-row gap-6 w-full max-w-7xl mx-auto px-4 py-8">
           {/* 主内容区 */}
           <article className="flex-1 min-w-0">
@@ -77,13 +90,13 @@ export default async function BlogPostPage({
               <ol className="flex items-center gap-2">
                 <li>
                   <Link href={`/${locale}`} className="hover:text-gray-700 dark:hover:text-gray-200">
-                    {isZh ? '首页' : 'Home'}
+                    {dictionary.common.home}
                   </Link>
                 </li>
                 <li>/</li>
                 <li>
                   <Link href={`/${locale}/blog`} className="hover:text-gray-700 dark:hover:text-gray-200">
-                    {isZh ? '博客' : 'Blog'}
+                    {dictionary.common.blog}
                   </Link>
                 </li>
                 <li>/</li>
@@ -97,12 +110,10 @@ export default async function BlogPostPage({
             <div className="text-center py-16">
               <h1 className="text-6xl font-bold text-gray-200 dark:text-gray-700">404</h1>
               <p className="text-xl font-semibold text-gray-900 dark:text-gray-100 mt-4">
-                {isZh ? '文章未找到' : 'Article Not Found'}
+                {dictionary.blog.notFound.title}
               </p>
               <p className="text-gray-600 dark:text-gray-400 mt-2">
-                {isZh
-                  ? '抱歉，您访问的文章不存在'
-                  : 'Sorry, the article you are looking for does not exist'}
+                {dictionary.blog.notFound.description}
               </p>
 
               {/* 翻译版本提示 */}
@@ -112,12 +123,12 @@ export default async function BlogPostPage({
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.148" />
                     </svg>
-                    {isZh ? '提示：这篇文章有其他语言版本' : 'Note: This article is available in another language'}
+                    {dictionary.blog.notFound.translationHint}
                     <Link
                       href={`/${otherLocale}/blog/${translationSlug}`}
                       className="underline hover:text-blue-600 dark:hover:text-blue-400 ml-2"
                     >
-                      {isZh ? '切换到英文版' : 'Switch to Chinese'}
+                      {otherLocale === 'zh' ? dictionary.blog.notFound.switchToChinese : dictionary.blog.notFound.switchToEnglish}
                     </Link>
                   </p>
                 </div>
@@ -128,46 +139,33 @@ export default async function BlogPostPage({
                   href={`/${locale}/blog`}
                   className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                 >
-                  {isZh ? '返回博客列表' : 'Back to Blog'}
+                  {dictionary.blog.notFound.backToBlog}
                 </Link>
                 <Link
                   href={`/${locale}`}
                   className="px-6 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium rounded-lg transition-colors"
                 >
-                  {isZh ? '返回首页' : 'Back to Home'}
+                  {dictionary.notFound.backToHome}
                 </Link>
               </div>
             </div>
           </article>
 
           {/* 侧边栏 */}
-          <BlogDetailSidebar categories={categories} tags={tags} locale={locale as 'zh' | 'en'} stats={stats} />
+          <BlogDetailSidebar categories={categories} tags={tags} locale={locale as Locale} stats={stats} />
         </div>
       </>
     );
   }
 
-  const dateStr = new Date(post.date).toLocaleDateString(isZh ? 'zh-CN' : 'en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  // 查找上一篇和下一篇文章
-  const allPosts = (await getAllPosts()).filter((p) => p.locale === locale);
-  const currentIndex = allPosts.findIndex((p) => p.slug === slug);
-  const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
-  const nextPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
-
   return (
     <>
-      <HeaderNav locale={locale as 'zh' | 'en'} dictionary={dictionary as any} />
+      <HeaderNav locale={locale as Locale} dictionary={dictionary as any} />
       <ReadingProgress />
       <PostHero
         post={post}
         locale={locale}
         dateStr={dateStr}
-        isZh={isZh}
       />
       <div className="flex flex-col lg:flex-row gap-6 w-full max-w-7xl mx-auto px-4 py-8">
         {/* 主内容区 */}
@@ -177,13 +175,13 @@ export default async function BlogPostPage({
             <ol className="flex items-center gap-2">
               <li>
                 <Link href={`/${locale}`} className="hover:text-gray-700 dark:hover:text-gray-200">
-                  {isZh ? '首页' : 'Home'}
+                  {dictionary.common.home}
                 </Link>
               </li>
               <li>/</li>
               <li>
                 <Link href={`/${locale}/blog`} className="hover:text-gray-700 dark:hover:text-gray-200">
-                  {isZh ? '博客' : 'Blog'}
+                  {dictionary.common.blog}
                 </Link>
               </li>
               {post.categories && post.categories.length > 0 && (
@@ -209,13 +207,13 @@ export default async function BlogPostPage({
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {Math.round(post.readingTime.minutes)} {isZh ? '分钟阅读' : 'min read'}
+              {Math.round(post.readingTime.minutes)} {dictionary.blog.post.readingTime}
             </span>
             <span className="flex items-center gap-1">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              {Math.round(post.readingTime.words)} {isZh ? '字' : 'words'}
+              {Math.round(post.readingTime.words)} {dictionary.blog.post.words}
             </span>
             {post.categories && post.categories.length > 0 && (
               <span className="flex items-center gap-1">
@@ -246,13 +244,13 @@ export default async function BlogPostPage({
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.148" />
                 </svg>
-                {isZh ? '提示：本文有英文版本' : 'Note: This article has an English version'}
+                {dictionary.blog.post.hasTranslation}
                 {post.translations.zh && locale !== 'zh' && (
                   <Link
                     href={`/zh/blog/${post.translations.zh}`}
                     className="underline hover:text-blue-600 dark:hover:text-blue-400"
                   >
-                    {isZh ? '切换到中文版' : 'Switch to Chinese'}
+                    {dictionary.blog.notFound.switchToChinese}
                   </Link>
                 )}
                 {post.translations.en && locale !== 'en' && (
@@ -260,7 +258,7 @@ export default async function BlogPostPage({
                     href={`/en/blog/${post.translations.en}`}
                     className="underline hover:text-blue-600 dark:hover:text-blue-400"
                   >
-                    {isZh ? 'Switch to English' : '切换到英文版'}
+                    {dictionary.blog.notFound.switchToEnglish}
                   </Link>
                 )}
               </p>
@@ -282,7 +280,7 @@ export default async function BlogPostPage({
                   className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors block"
                 >
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                    {isZh ? '← 上一篇' : '← Previous'}
+                    {dictionary.blog.post.previous}
                   </p>
                   <p className="text-gray-900 dark:text-gray-100 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400">
                     {prevPost.title}
@@ -291,10 +289,10 @@ export default async function BlogPostPage({
               ) : (
                 <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                    {isZh ? '← 上一篇' : '← Previous'}
+                    {dictionary.blog.post.previous}
                   </p>
                   <p className="text-gray-400 dark:text-gray-500 text-sm">
-                    {isZh ? '没有上一篇' : 'No previous post'}
+                    {dictionary.blog.post.noPrevious}
                   </p>
                 </div>
               )}
@@ -306,7 +304,7 @@ export default async function BlogPostPage({
                   className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors block md:col-start-2"
                 >
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 text-right">
-                    {isZh ? '下一篇 →' : 'Next →'}
+                    {dictionary.blog.post.next}
                   </p>
                   <p className="text-gray-900 dark:text-gray-100 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 text-right">
                     {nextPost.title}
@@ -315,10 +313,10 @@ export default async function BlogPostPage({
               ) : (
                 <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 md:col-start-2">
                   <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 text-right">
-                    {isZh ? '下一篇 →' : 'Next →'}
+                    {dictionary.blog.post.next}
                   </p>
                   <p className="text-gray-400 dark:text-gray-500 text-sm text-right">
-                    {isZh ? '没有下一篇' : 'No next post'}
+                    {dictionary.blog.post.noNext}
                   </p>
                 </div>
               )}
@@ -327,7 +325,7 @@ export default async function BlogPostPage({
         </article>
 
         {/* 侧边栏 */}
-        <BlogDetailSidebar categories={categories} tags={tags} locale={locale as 'zh' | 'en'} stats={stats} />
+        <BlogDetailSidebar categories={categories} tags={tags} locale={locale as Locale} stats={stats} />
       </div>
     </>
   );

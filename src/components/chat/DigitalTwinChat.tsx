@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { getResponse } from '@/data/digital-twin-knowledge';
+import { useTranslation } from '@/i18n/client';
 
 interface Message {
   id: string;
@@ -16,13 +17,12 @@ interface DigitalTwinChatProps {
 }
 
 export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatProps) {
+  const { t } = useTranslation(locale);
   const [inputValue, setInputValue] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: locale === 'zh'
-        ? "你好！我是老王（v0）的数字分身。你可以问我关于数字游民、财务自由或AI创业的问题。"
-        : "Hello! I'm Willin's digital twin. You can ask me about digital nomadism, financial freedom, or AI entrepreneurship.",
+      content: t('home.chat.greeting'),
       role: 'assistant',
       timestamp: new Date()
     }
@@ -62,18 +62,14 @@ export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatP
 
       if (!responseContent) {
         // If no predefined response, provide a default response
-        responseContent = locale === 'zh'
-          ? "关于这个问题，我目前没有预先设定的答案。作为老王（v0）的数字分身，我会根据他的理念回答：追求有意义的工作，保持学习心态，并拥抱不确定性。"
-          : "I don't have a specific preset answer for this question. As Willin's digital twin, I'd respond based on his philosophy: pursue meaningful work, maintain a learning mindset, and embrace uncertainty.";
+        responseContent = t('home.chat.noPresetAnswer');
       }
 
       // Add assistant message after delay to simulate thinking
       setTimeout(() => {
         const assistantMessage: Message = {
           id: (Date.now() + 1).toString(),
-          content: responseContent || (locale === 'zh'
-            ? "谢谢你的提问！"
-            : "Thank you for your question!"),
+          content: responseContent || t('home.chat.thankYou'),
           role: 'assistant',
           timestamp: new Date()
         };
@@ -85,9 +81,7 @@ export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatP
       setIsLoading(false);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: locale === 'zh'
-          ? "抱歉，出现了错误。请稍后再试。"
-          : "Sorry, an error occurred. Please try again later.",
+        content: t('home.chat.errorMessage'),
         role: 'assistant',
         timestamp: new Date()
       };

@@ -5,6 +5,7 @@ import { getCloudflareContext } from '@opennextjs/cloudflare';
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { type Locale } from '@/i18n/config';
 
 // 使用 import.meta.url 获取当前文件路径（ESM 标准方式）
 const __filename = fileURLToPath(import.meta.url);
@@ -17,7 +18,7 @@ const localBlogDirectory = path.join(__dirname, '../content/blog');
  * 从文件名提取 slug、日期和语言
  * 格式：YYYY-MM-DD-SLUG.zh.mdx 或 YYYY-MM-DD-SLUG.en.mdx
  */
-function parseFilename(filename: string): { slug: string; date: string; locale: 'zh' | 'en' } | null {
+function parseFilename(filename: string): { slug: string; date: string; locale: Locale } | null {
   const match = filename.match(/^(\d{4}-\d{2}-\d{2})-(.+)\.(zh|en)\.mdx$/);
   if (!match) return null;
 
@@ -25,7 +26,7 @@ function parseFilename(filename: string): { slug: string; date: string; locale: 
   return {
     slug,
     date: new Date(dateStr).toISOString(),
-    locale: locale as 'zh' | 'en',
+    locale: locale as Locale,
   };
 }
 
@@ -33,7 +34,7 @@ function parseFilename(filename: string): { slug: string; date: string; locale: 
  * 在 Cloudflare Workers 环境中获取博客文件列表
  * 通过读取构建时生成的 index.json 文件来获取文章列表
  */
-async function getCloudflareBlogFileIndex(): Promise<Array<{ filename: string; slug: string; date: string; locale: 'zh' | 'en' }>> {
+async function getCloudflareBlogFileIndex(): Promise<Array<{ filename: string; slug: string; date: string; locale: Locale }>> {
   const { env } = getCloudflareContext();
   const response = await (env as any).ASSETS.fetch(new URL('/content/blog/index.json', 'https://assets.local'));
   if (!response.ok) {

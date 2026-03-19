@@ -12,7 +12,11 @@
       "title": "数字分身聊天",
       "placeholder": "询问有关数字游民、财务自由或 AI 创业的问题...",
       "sendButton": "发送",
-      "digitalTwinName": "老王（v0）的数字分身"
+      "digitalTwinName": "老王（v0）的数字分身",
+      "greeting": "你好！我是老王（v0）的数字分身。你可以问我关于数字游民、财务自由或 AI 创业的问题。",
+      "noPresetAnswer": "关于这个问题，我目前没有预先设定的答案。作为老王（v0）的数字分身，我会根据他的理念回答：追求有意义的工作，保持学习心态，并拥抱不确定性。",
+      "thankYou": "谢谢你的提问！",
+      "errorMessage": "抱歉，出现了错误。请稍后再试。"
     },
     "themeToggle": {
       "light": "浅色主题",
@@ -37,13 +41,60 @@
     "blog": "博客"
   },
   "footer": {
-    "rightsReserved": "保留所有权利"
+    "rightsReserved": "版权所有"
   },
   "blogLink": {
     "text": "📝 访问我的博客"
   },
   "blog": {
     "title": "博客 - Willin Wang",
-    "postTitle": "{title} - Willin Wang"
+    "postTitle": "{title} - Willin Wang",
+    "description": "记录数字游民和 AI 创业的点点滴滴",
+    "notFound": {
+      "title": "文章未找到",
+      "description": "抱歉，您访问的文章不存在",
+      "backToBlog": "返回博客列表",
+      "backToHome": "返回首页",
+      "translationHint": "提示：这篇文章有其他语言版本",
+      "switchToEnglish": "切换到英文版",
+      "switchToChinese": "切换到中文版"
+    },
+    "post": {
+      "hasTranslation": "提示：本文有英文版本",
+      "otherLanguageHint": "提示：本文有其他语言版本",
+      "readingTime": "分钟阅读",
+      "words": "字",
+      "previous": "← 上一篇",
+      "next": "下一篇 →",
+      "noPrevious": "没有上一篇",
+      "noNext": "没有下一篇"
+    },
+    "filter": {
+      "prefix": "筛选：",
+      "noResults": "没有找到相关文章"
+    },
+    "sidebar": {
+      "search": "🔍 搜索",
+      "searchPlaceholder": "搜索文章...",
+      "categories": "📁 分类",
+      "tags": "🏷️ 标签",
+      "author": "👤 关于作者",
+      "stats": "📊 统计",
+      "totalPosts": "篇文章",
+      "totalWords": "万字",
+      "authorTitle": "数字游民 & AI 创业者"
+    },
+    "card": {
+      "minutes": "分钟",
+      "words": "字"
+    }
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "backToHome": "返回首页"
+  },
+  "common": {
+    "home": "首页",
+    "blog": "博客"
   }
 }

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { BlogCard } from './BlogCard';
 import { BlogSidebar } from './BlogSidebar';
 import { BlogPostSummary } from '@/types/blog';
+import { useTranslation } from '@/i18n/client';
+import { Locale } from '@/i18n/config';
 
 interface BlogStats {
   totalPosts: number;
@@ -14,7 +16,7 @@ interface BlogListProps {
   posts: BlogPostSummary[];
   categories: string[];
   tags: string[];
-  locale: 'zh' | 'en';
+  locale: Locale | string;
   stats?: BlogStats;
 }
 
@@ -22,8 +24,7 @@ export function BlogList({ posts, categories, tags, locale, stats }: BlogListPro
   const [searchQuery, setSearchQuery] = useState('');
   const [currentCategory, setCurrentCategory] = useState<string | null>(null);
   const [currentTag, setCurrentTag] = useState<string | null>(null);
-
-  const isZh = locale === 'zh';
+  const { t } = useTranslation(locale);
 
   // 过滤文章
   const filteredPosts = posts.filter((post) => {
@@ -72,7 +73,7 @@ export function BlogList({ posts, categories, tags, locale, stats }: BlogListPro
         {(currentCategory || currentTag || searchQuery) && (
           <div className="mb-4 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <span>
-              {isZh ? '筛选：' : 'Filtering: '}
+              {t('blog.filter.prefix')}
             </span>
             {searchQuery && (
               <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded">
@@ -94,7 +95,7 @@ export function BlogList({ posts, categories, tags, locale, stats }: BlogListPro
 
         {filteredPosts.length === 0 ? (
           <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-            {isZh ? '没有找到相关文章' : 'No articles found'}
+            {t('blog.filter.noResults')}
           </div>
         ) : (
           /* 移动端单列，桌面端双列瀑布流 */

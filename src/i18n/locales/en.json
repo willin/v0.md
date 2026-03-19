@@ -12,7 +12,11 @@
       "title": "Digital Twin Chat",
       "placeholder": "Ask me about digital nomadism, financial freedom, or AI entrepreneurship...",
       "sendButton": "Send",
-      "digitalTwinName": "Willin's Digital Twin"
+      "digitalTwinName": "Willin's Digital Twin",
+      "greeting": "Hello! I'm Willin's digital twin. You can ask me about digital nomadism, financial freedom, or AI entrepreneurship.",
+      "noPresetAnswer": "I don't have a specific preset answer for this question. As Willin's digital twin, I'd respond based on his philosophy: pursue meaningful work, maintain a learning mindset, and embrace uncertainty.",
+      "thankYou": "Thank you for your question!",
+      "errorMessage": "Sorry, an error occurred. Please try again later."
     },
     "themeToggle": {
       "light": "Light theme",
@@ -44,6 +48,53 @@
   },
   "blog": {
     "title": "Blog - Willin Wang",
-    "postTitle": "{title} - Willin Wang"
+    "postTitle": "{title} - Willin Wang",
+    "description": "Sharing thoughts on digital nomadism and AI entrepreneurship",
+    "notFound": {
+      "title": "Article Not Found",
+      "description": "Sorry, the article you are looking for does not exist",
+      "backToBlog": "Back to Blog",
+      "backToHome": "Back to Home",
+      "translationHint": "Note: This article is available in another language",
+      "switchToEnglish": "Switch to English",
+      "switchToChinese": "Switch to Chinese"
+    },
+    "post": {
+      "hasTranslation": "Note: This article has an English version",
+      "otherLanguageHint": "Note: This article has other language versions",
+      "readingTime": "min read",
+      "words": "words",
+      "previous": "← Previous",
+      "next": "Next →",
+      "noPrevious": "No previous post",
+      "noNext": "No next post"
+    },
+    "filter": {
+      "prefix": "Filtering: ",
+      "noResults": "No articles found"
+    },
+    "sidebar": {
+      "search": "🔍 Search",
+      "searchPlaceholder": "Search posts...",
+      "categories": "📁 Categories",
+      "tags": "🏷️ Tags",
+      "author": "👤 About",
+      "stats": "📊 Stats",
+      "totalPosts": "posts",
+      "totalWords": "K words",
+      "authorTitle": "Digital Nomad & AI Entrepreneur"
+    },
+    "card": {
+      "minutes": "min",
+      "words": "words"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "backToHome": "Back to Home"
+  },
+  "common": {
+    "home": "Home",
+    "blog": "Blog"
   }
 }

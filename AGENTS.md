@@ -35,3 +35,174 @@ This is a Next.js 16 application deployed to Cloudflare Workers using OpenNext.
 - Image optimization enabled via `IMAGES` binding
 - R2 incremental cache available (commented out by default)
 - Remote bindings enabled for local development
+
+## Development Guidelines
+
+### Internationalization (i18n)
+
+**IMPORTANT**: This is a multi-language application that supports Chinese (zh), English (en), and potentially more languages in the future.
+
+#### Prohibited Patterns
+
+**DO NOT use these patterns:**
+
+1. **No hardcoded language type assertions**: `as 'zh' | 'en'`
+   - These will break when adding a third language
+   - Use `Locale` type from `@/i18n/config` instead
+
+2. **No `isZh` + ternary operator pattern**: `isZh ? '中文' : 'English'`
+   - This binary pattern doesn't scale to multiple languages
+   - Use dictionary-based translations instead
+
+3. **No direct locale comparisons for content**: `locale === 'zh' ? ... : ...`
+   - Content should come from dictionary files
+   - Use `getDictionary()` for translated strings
+
+#### Correct Patterns
+
+```typescript
+// ✅ Import and use the Locale type
+import { Locale, getDictionary } from '@/i18n/config';
+
+// ✅ Use dictionary for translations
+const dictionary = await getDictionary(locale as Locale);
+<p>{dictionary.nav.home}</p>
+
+// ✅ Use Locale type for type safety
+function MyComponent({ locale }: { locale: Locale }) {
+  // ...
+}
+
+// ✅ Use getDictionary() in components
+const dictionary = await getDictionary(locale);
+```
+
+#### Adding New Languages
+
+When adding a new language (e.g., Japanese 'ja'):
+1. Add to `i18n.locales` in `src/i18n/config.ts`
+2. Create `src/i18n/locales/ja.json` dictionary
+3. Update type definitions if needed
+4. No changes needed to existing components using dictionaries
+
+#### ESLint Rule
+
+A custom ESLint rule `custom/no-hardcoded-locale` is configured to catch these patterns:
+- `as 'zh' | 'en'` type assertions
+- `locale === 'zh'` direct comparisons
+- `isZh ? ... : ...` binary ternary expressions
+
+Run `npm run lint` to check for violations.
+
+#### Allowed Exceptions (Functional Logic)
+
+The following patterns are **allowed** because they are functional logic, not display text:
+
+1. **Date formatting** in blog components:
+   ```typescript
+   const dateLocale = locale === 'zh' ? 'zh-CN' : 'en-US';
+   const dateStr = new Date(post.date).toLocaleDateString(dateLocale);
+   ```
+
+2. **Content filtering** by language (e.g., filtering categories/tags by Chinese characters):
+   ```typescript
+   const isZh = locale === 'zh';
+   const filteredCategories = filterByLanguage(categories, isZh);
+   ```
+
+3. **Route/link generation** in page components:
+   ```typescript
+   {post.translations.zh && locale !== 'zh' && (
+     <Link href={`/zh/blog/${post.translations.zh}`}>...</Link>
+   )}
+   ```
+
+4. **Data layer** files (`lib/blog.ts`, `data/`) for translation lookups:
+   ```typescript
+   if (file.locale === 'zh') {
+     translations.zh = slug;
+   }
+   ```
+
+5. **Config files** (`i18n/config.ts`) for locale detection and dictionary loading.
+
+#### Translation Files
+
+- `src/i18n/locales/zh.json` - Chinese translations
+- `src/i18n/locales/en.json` - English translations
+
+Translation keys are organized by feature:
+- `home.*` - Homepage (about, chat, theme toggle, etc.)
+- `nav.*` - Navigation links
+- `blog.*` - Blog pages (post, sidebar, card, filter, notFound)
+- `common.*` - Shared strings (home, blog)
+- `footer.*` - Footer text
+- `notFound.*` - 404 pages
+
+#### i18n Implementation Summary
+
+**Refactored Components** (using dictionary-based translations):
+- `src/components/layout/Footer.tsx`
+- `src/components/blog/BlogCard.tsx`
+- `src/components/blog/BlogList.tsx`
+- `src/components/blog/PostHero.tsx`
+- `src/components/blog/BlogSidebar.tsx` (functional filtering allowed)
+- `src/components/chat/DigitalTwinChat.tsx`
+- `src/app/[locale]/blog/page.tsx`
+- `src/app/[locale]/blog/[slug]/page.tsx`
+- `src/app/[locale]/blog/[slug]/not-found.tsx`
+- `src/app/[locale]/not-found.tsx`
+
+**Utility Files**:
+- `src/i18n/client.ts` - `useTranslation` hook for client components
+- `src/i18n/config.ts` - `getDictionary()` for server components, `Locale` type
+- `eslint/rules/no-hardcoded-locale.js` - Custom ESLint rule
+
+### Code Examples
+
+#### ❌ Bad: Hardcoded locale type
+
+```typescript
+// Don't do this
+const locale = params.locale as 'zh' | 'en';
+```
+
+#### ✅ Good: Use Locale type
+
+```typescript
+import { Locale } from '@/i18n/config';
+
+const locale = params.locale as Locale;
+```
+
+#### ❌ Bad: Binary language check
+
+```typescript
+// Don't do this
+const isZh = locale === 'zh';
+return <p>{isZh ? '首页' : 'Home'}</p>;
+```
+
+#### ✅ Good: Dictionary-based translation
+
+```typescript
+import { getDictionary } from '@/i18n/config';
+
+const dictionary = await getDictionary(locale);
+return <p>{dictionary.nav.home}</p>;
+```
+
+#### ❌ Bad: Hardcoded date format
+
+```typescript
+// Don't do this
+const dateStr = date.toLocaleDateString(isZh ? 'zh-CN' : 'en-US');
+```
+
+#### ✅ Good: Use locale-specific format
+
+```typescript
+// Create a helper function or use a library like date-fns
+import { formatDate } from '@/lib/date';
+const dateStr = formatDate(date, locale);
+```
