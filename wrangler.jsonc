@@ -12,6 +12,16 @@
 		"binding": "ASSETS",
 		"directory": ".open-next/assets"
 	},
+	// Include MDX files as Text modules from src/content/blog
+	"find_additional_modules": true,
+	"base_dir": "src/content/blog",
+	"rules": [
+		{
+			"type": "Text",
+			"globs": ["**/*.mdx"],
+			"fallthrough": true
+		}
+	],
 	"images": {
 		// Enable image optimization
 		// see https://opennext.js.org/cloudflare/howtos/image
