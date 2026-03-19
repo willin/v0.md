@@ -17,18 +17,25 @@ interface DigitalTwinChatProps {
 }
 
 export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatProps) {
-  const { t } = useTranslation(locale);
+  const { t, isLoading: translationsLoading } = useTranslation(locale);
   const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: t('home.chat.greeting'),
-      role: 'assistant',
-      timestamp: new Date()
-    }
-  ]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // 翻译加载完成后初始化欢迎消息
+  useEffect(() => {
+    if (!translationsLoading && messages.length === 0) {
+      setMessages([
+        {
+          id: '1',
+          content: t('home.chat.greeting'),
+          role: 'assistant',
+          timestamp: new Date()
+        }
+      ]);
+    }
+  }, [translationsLoading, messages.length, locale]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -40,7 +47,7 @@ export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatP
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!inputValue.trim() || isLoading) return;
+    if (!inputValue.trim() || isSubmitting) return;
 
     // Add user message
     const userMessage: Message = {
@@ -52,7 +59,7 @@ export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatP
 
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
-    setIsLoading(true);
+    setIsSubmitting(true);
 
     try {
       // Check for predefined responses
@@ -75,10 +82,10 @@ export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatP
         };
 
         setMessages(prev => [...prev, assistantMessage]);
-        setIsLoading(false);
+        setIsSubmitting(false);
       }, 500);
     } catch (error) {
-      setIsLoading(false);
+      setIsSubmitting(false);
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: t('home.chat.errorMessage'),
@@ -117,7 +124,7 @@ export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatP
               </div>
             </div>
           ))}
-          {isLoading && (
+          {isSubmitting && (
             <div className="flex justify-start">
               <div className="bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-2xl rounded-bl-none px-4 py-3 max-w-[80%] shadow-sm border border-gray-100 dark:border-gray-600">
                 <div className="flex space-x-2">
@@ -140,11 +147,11 @@ export default function DigitalTwinChat({ dictionary, locale }: DigitalTwinChatP
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={dictionary.home.chat.placeholder}
               className="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-              disabled={isLoading}
+              disabled={isSubmitting}
             />
             <button
               type="submit"
-              disabled={!inputValue.trim() || isLoading}
+              disabled={!inputValue.trim() || isSubmitting}
               className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
             >
               {dictionary.home.chat.sendButton}

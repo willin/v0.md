@@ -33,7 +33,8 @@ export function useTranslation(locale: string) {
     // 动态导入翻译文件
     import(`./locales/${locale}.json`)
       .then((module) => {
-        const dict = module.default as TranslationDict;
+        // JSON 模块在 Next.js 中直接导出对象，不需要 .default
+        const dict = module.default || module as TranslationDict;
         translationsCache.set(cacheKey, dict);
         setTranslations(dict);
         setIsLoading(false);
