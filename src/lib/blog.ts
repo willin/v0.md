@@ -217,10 +217,12 @@ export async function getPostsByTag(tag: string): Promise<BlogPostSummary[]> {
 
 /**
  * 获取博客统计信息
+ * @param locale 可选，指定语言则只统计该语言的文章
  */
-export async function getBlogStats(): Promise<{ totalPosts: number; totalWords: number }> {
+export async function getBlogStats(locale?: 'zh' | 'en'): Promise<{ totalPosts: number; totalWords: number }> {
   const posts = await getAllPosts();
-  const totalPosts = posts.length;
-  const totalWords = posts.reduce((sum, post) => sum + Math.round(post.readingTime.words), 0);
+  const filteredPosts = locale ? posts.filter((post) => post.locale === locale) : posts;
+  const totalPosts = filteredPosts.length;
+  const totalWords = filteredPosts.reduce((sum, post) => sum + Math.round(post.readingTime.words), 0);
   return { totalPosts, totalWords };
 }

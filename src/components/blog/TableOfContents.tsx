@@ -56,22 +56,22 @@ export function TableOfContents() {
     return () => observer.disconnect();
   }, []);
 
-  // 更新展开状态：当活跃标题变化时，展开其父级 H2
+  // 更新展开状态：当活跃标题变化时，展开其父级 H2（手风琴模式：只展开一个章节）
   useEffect(() => {
     if (!activeId) return;
 
     const activeHeading = headings.find(h => h.id === activeId);
     if (!activeHeading) return;
 
-    // 如果是 H2，直接展开
+    // 如果是 H2，直接设置为唯一展开的项
     if (activeHeading.level === 2) {
-      setExpandedHeadings(prev => new Set([...prev, activeId]));
+      setExpandedHeadings(new Set([activeId]));
     } else {
-      // 如果是 H3 或 H4，找到其前面的最近一个 H2 并展开
+      // 如果是 H3 或 H4，找到其前面的最近一个 H2 并展开（同时折叠其他）
       const currentIndex = headings.findIndex(h => h.id === activeId);
       for (let i = currentIndex - 1; i >= 0; i--) {
         if (headings[i].level === 2) {
-          setExpandedHeadings(prev => new Set([...prev, headings[i].id]));
+          setExpandedHeadings(new Set([headings[i].id]));
           break;
         }
       }
@@ -81,16 +81,16 @@ export function TableOfContents() {
   const handleClick = (e: React.MouseEvent, heading: Heading) => {
     e.preventDefault();
 
-    // 如果是 H2，切换展开/收起状态
+    // 如果是 H2，切换展开/收起状态（手风琴模式：展开当前，收起其他）
     if (heading.level === 2) {
       setExpandedHeadings(prev => {
-        const newSet = new Set(prev);
-        if (newSet.has(heading.id)) {
-          newSet.delete(heading.id);
+        if (prev.has(heading.id)) {
+          // 如果已展开，收起所有
+          return new Set();
         } else {
-          newSet.add(heading.id);
+          // 展开当前，收起其他（手风琴效果）
+          return new Set([heading.id]);
         }
-        return newSet;
       });
     }
 
@@ -111,6 +111,18 @@ export function TableOfContents() {
     // 计算缩进：H2=0, H3=4, H4=8
     const indent = (heading.level - 2) * 1; // rem
 
+    // 检查是否有子标题
+    const hasChildren = heading.level === 2 && headings.some(h => {
+      const idx = headings.findIndex(item => item.id === heading.id);
+      return idx > 0 && headings[idx + 1]?.level > 2 && headings[idx + 1]?.level === 3;
+    });
+
+    // 检查是否有 H4 子标题
+    const hasSubChildren = heading.level === 3 && headings.some((h, i) => {
+      const idx = headings.findIndex(item => item.id === heading.id);
+      return idx >= 0 && headings[idx + 1]?.level === 4;
+    });
+
     return (
       <div key={heading.id}>
         <a
@@ -129,7 +141,7 @@ export function TableOfContents() {
           }`}
           style={{ paddingLeft: `${indent + 0.75}rem` }}
         >
-          {heading.level === 2 && (
+          {heading.level === 2 && (hasChildren || hasSubChildren) && (
             <span className="inline-block w-4 text-center mr-1">
               {isExpanded ? '▼' : '▶'}
             </span>
@@ -166,7 +178,7 @@ export function TableOfContents() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sticky top-4">
+    <div className="sticky top-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
       <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
         📑 目录
       </h3>

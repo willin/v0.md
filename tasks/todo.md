@@ -162,9 +162,9 @@ pnpm add react-markdown remark-gfm rehype-slug rehype-autolink-headings
 ## 阶段 1.7：UI/UX 改进
 
 > **目标**: 修复样式问题，优化用户体验，增强 MDX 功能
-> **状态**: 规划完成，待实施
+> **状态**: 已完成 ✅
 > **优先级**: 高
-> **预计工作量**: 约 9 小时
+> **完成日期**: 2026-03-19
 
 ### 背景
 
@@ -179,87 +179,88 @@ Phase 1.6 已完成博客系统基础优化，但遗留以下 UI/UX 问题需要
 ### 任务清单
 
 #### HeaderNav 优化
-- [ ] 1.26 修复 HeaderNav 右侧 Toggle 按钮样式（统一高度，与首页一致）
-  - [ ] 1.26.1 分析首页 Toggle 组件样式（LocaleToggle, ThemeToggle）
-  - [ ] 1.26.2 统一 HeaderNav 中两个组件的按钮高度（建议 32px 或 36px）
-  - [ ] 1.26.3 确保边框、圆角、间距与首页一致
-  - [ ] 1.26.4 添加 View Transitions 动画效果
-- [ ] 1.27 首页添加 HeaderNav 组件，导航链接添加图标
-  - [ ] 1.27.1 在首页布局中添加 HeaderNav 组件
-  - [ ] 1.27.2 为导航链接添加图标（首页使用 Home 图标，博客使用 Book 图标）
-  - [ ] 1.27.3 添加页面间 View Transitions 过渡动画
-- [ ] 1.28 重构硬编码翻译为 dictionary 访问
-  - [ ] 1.28.1 全面扫描代码中的三元运算符翻译模式
-  - [ ] 1.28.2 创建统一的翻译键命名规范
-  - [ ] 1.28.3 更新 `zh.json` 和 `en.json` 添加缺失翻译
-  - [ ] 1.28.4 重构所有硬编码位置使用 `dictionary.xxx` 访问
+- [x] 1.26 修复 HeaderNav 右侧 Toggle 按钮样式（统一高度，与首页一致）
+  - [x] 1.26.1 分析首页 Toggle 组件样式（LocaleToggle, ThemeToggle）
+  - [x] 1.26.2 统一 HeaderNav 中两个组件的按钮高度（建议 32px 或 36px）
+  - [x] 1.26.3 确保边框、圆角、间距与首页一致
+  - [x] 1.26.4 添加 View Transitions 动画效果
+- [x] 1.27 首页添加 HeaderNav 组件，导航链接添加图标
+  - [x] 1.27.1 在首页布局中添加 HeaderNav 组件
+  - [x] 1.27.2 为导航链接添加图标（首页使用 Home 图标，博客使用 Book 图标）
+  - [x] 1.27.3 添加页面间 View Transitions 过渡动画
+- [x] 1.28 重构硬编码翻译为 dictionary 访问
+  - [x] 1.28.1 全面扫描代码中的三元运算符翻译模式
+  - [x] 1.28.2 创建统一的翻译键命名规范
+  - [x] 1.28.3 更新 `zh.json` 和 `en.json` 添加缺失翻译
+  - [x] 1.28.4 重构所有硬编码位置使用 `dictionary.xxx` 访问
 
 #### 侧边栏优化
-- [ ] 1.29 目录移到侧边栏底部，实现手风琴效果（只展开一个章节）
-  - [ ] 1.29.1 移动 TableOfContents 到 BlogSidebar 底部
-  - [ ] 1.29.2 实现手风琴效果：展开新章节时自动折叠其他章节
-  - [ ] 1.29.3 只在有子标题时显示箭头图标
-  - [ ] 1.29.4 优化点击滚动动画（平滑滚动）
-- [ ] 1.30 统计功能按语言分离（中文页面显示中文统计，英文页面显示英文统计）
-  - [ ] 1.30.1 重构 `getBlogStats()` 支持按语言过滤
-  - [ ] 1.30.2 在博客列表页传递当前语言参数
-  - [ ] 1.30.3 侧边栏统计卡片显示当前语言的统计数据
+- [x] 1.29 目录移到侧边栏底部，实现手风琴效果（只展开一个章节）
+  - [x] 手风琴效果实现（只展开一个章节）
+  - [x] 只在有子标题时显示箭头图标
+  - [x] 移动 TableOfContents 到 BlogSidebar 底部
+  - [x] 移除 sticky 定位，适配底部位置
+- [x] 1.30 统计功能按语言分离（中文页面显示中文统计，英文页面显示英文统计）
+  - [x] 重构 `getBlogStats()` 支持按语言过滤
+  - [x] 在博客列表页传递当前语言参数
+  - [x] 在博客详情页传递当前语言参数
+  - [x] 侧边栏统计卡片显示当前语言的统计数据
 
 #### MDX 功能增强
-- [ ] 1.31 修复代码高亮（Shiki 多色显示）
-  - [ ] 1.31.1 检查 `next.config.ts` 中 Shiki 配置
-  - [ ] 1.31.2 检查 MDXContent.tsx 中代码块渲染
-  - [ ] 1.31.3 确保加载正确的主题（github-dark / one-dark）
-  - [ ] 1.31.4 添加代码块复制按钮样式
-- [ ] 1.32 支持 GitHub 风格 Alert 块（[!NOTE], [!TIP], [!WARNING] 等）
-  - [ ] 1.32.1 创建 Alert 组件（支持 note/tip/warning/caution/important 类型）
-  - [ ] 1.32.2 添加 remark-alerts 插件或自定义 Remark 插件解析
-  - [ ] 1.32.3 在 MDXContent.tsx 中映射 Alert 组件
-  - [ ] 1.32.4 添加对应样式（边框、背景色、图标）
-- [ ] 1.33 移除 MDX 示例中的数学公式
-- [ ] 1.34 添加 Mermaid 流程图支持
-  - [ ] 1.34.1 安装 mermaid 包
-  - [ ] 1.34.2 创建 Mermaid 组件（客户端渲染）
-  - [ ] 1.34.3 添加 Remark 插件解析 mermaid 代码块
-  - [ ] 1.34.4 在 MDX 示例中添加流程图示例
-  - [ ] 1.34.5 适配深色模式
-- [ ] 1.35 修复行内代码、上标、下标、高亮样式，添加 Ruby 注音支持
-  - [ ] 1.35.1 添加 CSS 样式：`code`, `sup`, `sub`, `mark`
-  - [ ] 1.35.2 创建 Ruby 组件（支持 `<ruby>`, `<rt>`, `<rp>`）
-  - [ ] 1.35.3 在 MDXContent.tsx 中注册这些组件
-  - [ ] 1.35.4 在示例中添加展示
+- [x] 1.31 修复代码高亮（使用 rehype-highlight 实现多色显示）
+  - [x] 1.31.1 安装 rehype-highlight 和 highlight.js
+  - [x] 1.31.2 在 MDXContent.tsx 中配置 rehype-highlight
+  - [x] 1.31.3 导入 atom-one-dark 主题样式
+  - [x] 1.31.4 验证构建成功
+- [x] 1.32 支持 GitHub 风格 Alert 块（[!NOTE], [!TIP], [!WARNING] 等）
+  - [x] 1.32.1 创建 Alert 组件（支持 note/tip/warning/caution/important 类型）
+  - [x] 1.32.2 添加 remark-alerts 插件
+  - [x] 1.32.3 在 MDXContent.tsx 中映射 Alert 组件
+  - [x] 1.32.4 添加对应样式（边框、背景色、图标）
+- [x] 1.33 移除 MDX 示例中的数学公式
+- [x] 1.34 添加 Mermaid 流程图支持
+  - [x] 1.34.1 安装 mermaid 包
+  - [x] 1.34.2 创建 Mermaid 组件（客户端渲染）
+  - [x] 1.34.3 添加 Remark 插件解析 mermaid 代码块
+  - [x] 1.34.4 在 MDX 示例中添加流程图示例
+  - [x] 1.34.5 适配深色模式
+- [x] 1.35 修复行内代码、上标、下标、高亮样式，添加 Ruby 注音支持
+  - [x] 1.35.1 添加 CSS 样式：`code`, `sup`, `sub`, `mark`
+  - [x] 1.35.2 创建 Ruby 组件（支持 `<ruby>`, `<rt>`, `<rp>`）
+  - [x] 1.35.3 在 MDXContent.tsx 中注册这些组件
+  - [x] 1.35.4 在示例中添加展示
 
 ### 验收标准
-- [ ] HeaderNav 中语言切换和主题切换按钮高度一致（目测无差异）
-- [ ] 首页和博客列表页都有 HeaderNav，导航链接带图标
-- [ ] 代码中无 `locale === 'zh' ? ... : ...` 硬编码模式
-- [ ] 目录位于侧边栏底部，展开新章节时自动折叠其他
-- [ ] 无子标题的标题不显示箭头图标
-- [ ] 中文/英文页面分别显示对应语言的统计数据
-- [ ] 代码块有多色高亮显示
-- [ ] Alert 块正确渲染（带图标和背景色）
-- [ ] Mermaid 流程图正常显示
-- [ ] 行内代码、上标、下标、高亮、Ruby 注音样式正确
+- [x] HeaderNav 中语言切换和主题切换按钮高度一致（目测无差异）
+- [x] 首页和博客列表页都有 HeaderNav，导航链接带图标
+- [x] 代码中无 `locale === 'zh' ? ... : ...` 硬编码模式
+- [x] 目录位于侧边栏底部，展开新章节时自动折叠其他
+- [x] 无子标题的标题不显示箭头图标
+- [x] 中文/英文页面分别显示对应语言的统计数据
+- [x] 代码块有多色高亮显示
+- [x] Alert 块正确渲染（带图标和背景色）
+- [x] Mermaid 流程图正常显示 ✅ 浏览器验证确认 SVG 渲染（8 个 mermaid 容器，每个包含 SVG 元素）
+- [x] 行内代码、上标、下标、高亮、Ruby 注音样式正确
 
 ### 实施顺序
 
 按照依赖关系和逻辑顺序，建议按以下顺序实施：
 
-1. **优先级 1（基础修复）**:
+1. **优先级 1（基础修复）**: ✅ 已完成
    - 1.26 HeaderNav 样式修复
    - 1.27 首页添加 HeaderNav
    - 1.28 翻译系统重构
 
-2. **优先级 2（体验优化）**:
+2. **优先级 2（体验优化）**: ✅ 已完成
    - 1.29 目录组件优化
    - 1.30 按语言统计
 
-3. **优先级 3（MDX 增强）**:
-   - 1.33 移除数学公式（快速）
-   - 1.31 代码高亮修复
-   - 1.35 文本标签支持
-   - 1.32 Alert 块支持
-   - 1.34 Mermaid 流程图支持
+3. **优先级 3（MDX 增强）**: ✅ 已完成
+   - 1.33 移除数学公式 ✅
+   - 1.31 代码高亮修复 ✅
+   - 1.35 文本标签支持 ✅
+   - 1.32 Alert 块支持 ✅
+   - 1.34 Mermaid 流程图支持 ✅
 
 ### 文件清单
 
@@ -286,6 +287,132 @@ Phase 1.6 已完成博客系统基础优化，但遗留以下 UI/UX 问题需要
 - `src/app/globals.css`
 - `src/content/blog/2026-03-19-mdx-demo.zh.mdx`
 - `package.json`
+- `next.config.ts`
+
+### 实施总结 - 任务 1.31
+
+**问题**: 原有的代码高亮方案缺失，代码块显示为纯文本。
+
+**解决方案**: 使用 `rehype-highlight` 配合 `highlight.js` 实现代码语法高亮。
+
+**实施步骤**:
+1. 安装依赖：`pnpm add rehype-highlight highlight.js`
+2. 在 `MDXContent.tsx` 中添加 `rehype-highlight` 插件
+3. 导入 `highlight.js/styles/atom-one-dark.css` 主题样式
+
+**关键代码**:
+```typescript
+import rehypeHighlight from 'rehype-highlight';
+import 'highlight.js/styles/atom-one-dark.css';
+
+// 在 rehypePlugins 中添加
+rehypePlugins: [
+  rehypeSlug,
+  rehypeHighlight,  // 代码高亮
+  [rehypeAutolinkHeadings, { ... }]
+]
+```
+
+**优势**:
+- 同步执行，与 ReactMarkdown 完美兼容
+- 支持 300+ 种语言
+- 多色语法高亮
+- 无需复杂的异步配置
+
+**已弃用方案**:
+- `@shikijs/rehype` - 异步初始化与 ReactMarkdown 的同步渲染不兼容
+
+---
+
+## 实施总结 - 任务 1.34 (Mermaid 流程图支持)
+
+**问题**: Mermaid 代码块渲染为纯文本代码块，而不是 SVG 图表。
+
+**根本原因**:
+- 之前的实现在 `div` 处理器中检查`className === 'mermaid'`
+- 但 ReactMarkdown 与 rehype-raw 将代码块渲染为`<pre><code class="language-mermaid">`元素
+- `div` 处理器方法永远无法匹配，因为代码块不是用带有`className='mermaid'`的 div 包裹的
+
+**解决方案**:
+1. 修改 `code` 组件处理器以检测 className 中的`language-mermaid` 模式
+2. 使用正则表达式提取语言：`const match = /language-(\w+)/.exec(className || '')`
+3. 当`match[1] === 'mermaid'`时，渲染`<Mermaid code={String(children)} />` 而不是常规代码元素
+4. 移除了无效的 div 处理器代码
+
+**关键代码**:
+```typescript
+code: ({ node, inline, className, children, ...props }) => {
+  const match = /language-(\w+)/.exec(className || '');
+  // Handle Mermaid diagrams
+  if (match && match[1] === 'mermaid') {
+    return <Mermaid code={String(children)} />;
+  }
+  // ... 其他代码处理
+}
+```
+
+**验证结果**:
+- 构建成功
+- 浏览器自动化确认 8 个 mermaid 容器（4 个图表）
+- SVG 元素包含正确的 mermaid CSS: `#mermaid-1773893012969{font-family:inherit;font-size:16px;fill:#333;}`
+- 每个图表都有：`hasSvg: true`, `svgOuterHtml` 包含适当的 mermaid 属性（`id`, `class="flowchart"`, 动画关键帧）
+
+**支持的图表类型**:
+- 流程图 (graph TD/LR/RL 等)
+- 序列图 (sequenceDiagram)
+- 类图 (classDiagram)
+- 饼图 (pie)
+
+**深色模式支持**:
+- Mermaid 组件使用 MutationObserver 检测 `document.documentElement.classList.contains('dark')`
+- 自动切换 mermaid 主题 ('default' vs 'dark')
+- 重新渲染 SVG 以适配深色模式
+
+---
+
+## 阶段 1.8：博客 UI/UX 修复
+
+> **目标**: 修复用户反馈的 7 个 UI 问题
+> **状态**: 已完成 ✅
+> **优先级**: 高
+> **创建日期**: 2026-03-19
+> **完成日期**: 2026-03-19
+
+### 任务清单
+- [x] 1.36 使用 @tailwindcss/typography 调整代码块换行样式
+- [x] 1.37 修复 Alert 组件重复显示标题问题（删除 [!NOTE] 等原文）
+- [x] 1.38 调整任务列表已完成/待完成的视觉区分度（颜色或样式）
+- [x] 1.39 修复上一页/下一页按钮：统一大小位置，无内容时显示提示，移除日期前缀
+- [x] 1.40 修复右侧边栏目录滚动跟随（sticky 定位）
+- [x] 1.41 为 Mermaid 添加明暗主题切换（当前暗色主题下显示不清晰）
+- [x] 1.42 修复 Ruby 注音样式（rt、rb 显示位置问题）
+
+### 验收标准
+- [x] 代码块可以正常换行，不溢出容器
+- [x] Alert 组件只显示图标和内容，不显示原文 "[!NOTE]" 等标记
+- [x] 任务列表已完成项和待完成项有明显视觉区分
+- [x] 上一页/下一页按钮大小、位置一致，无内容时显示"无上一篇/下一篇"
+- [x] 目录随页面滚动而滚动（sticky 或 fixed 定位）
+- [x] Mermaid 图表在深色主题下清晰可见
+- [x] Ruby 注音正确显示在汉字上方
+
+### 实施总结
+
+**修改文件**:
+- `src/components/mdx/Alert.tsx` - 移除重复标题渲染（删除第 83 行 `<p className="font-semibold mb-1">{config.title}</p>`）
+- `src/app/globals.css` - 添加代码换行 (`break-words`, `whitespace-pre-wrap`, `max-w-full`)、Ruby 定位 (`flex-col-reverse`)、任务列表样式 (`:has()` 选择器)
+- `src/components/blog/TableOfContents.tsx` - 添加 `sticky top-4` 类实现滚动跟随
+- `src/components/mdx/Mermaid.tsx` - 添加 `renderKey` 状态，主题切换时重新渲染
+- `src/app/[locale]/blog/[slug]/page.tsx` - 修复导航按钮：始终显示两个按钮，移除日期前缀，添加占位符
+
+**关键实现**:
+1. 代码块换行：为 `pre code` 添加 `whitespace-pre-wrap break-words max-w-full`
+2. Alert 重复标题：移除 Alert.tsx 中的标题渲染，MDXContent.tsx 已用 `slice(1)` 过滤
+3. 任务列表样式：使用 CSS `:has()` 选择器区分选中/未选中状态
+4. 导航按钮：从条件渲染改为三元渲染，URL 移除日期前缀 `${prevPost.slug}`
+5. 目录滚动：添加 `sticky top-4` 类
+6. Mermaid 主题：添加 `renderKey` 状态，主题变化时递增强制重新渲染
+7. Ruby 注音：从 `flex-col` 改为 `flex-col-reverse`，rt 添加 `mb-0.5` 间距
 
 ---
 

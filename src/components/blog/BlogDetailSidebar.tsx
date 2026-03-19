@@ -18,7 +18,6 @@ interface BlogDetailSidebarProps {
 export function BlogDetailSidebar({ categories, tags, locale, stats }: BlogDetailSidebarProps) {
   return (
     <aside className="w-full lg:w-72 flex-shrink-0 space-y-6">
-      <TableOfContents />
       <BlogSidebar
         categories={categories}
         tags={tags}
@@ -28,6 +27,7 @@ export function BlogDetailSidebar({ categories, tags, locale, stats }: BlogDetai
         locale={locale}
         stats={stats}
       />
+      <TableOfContents />
     </aside>
   );
 }

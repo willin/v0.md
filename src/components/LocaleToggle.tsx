@@ -13,9 +13,10 @@ interface LocaleToggleProps {
       };
     };
   };
+  variant?: 'header' | 'page';
 }
 
-export default function LocaleToggle({ currentLocale, dictionary }: LocaleToggleProps) {
+export default function LocaleToggle({ currentLocale, dictionary, variant = 'page' }: LocaleToggleProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -24,15 +25,24 @@ export default function LocaleToggle({ currentLocale, dictionary }: LocaleToggle
     router.push(newPath);
   };
 
+  // 统一按钮样式
+  const buttonBaseClass = variant === 'header'
+    ? 'px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200'
+    : 'px-2 py-1 rounded text-sm transition-colors';
+
+  const activeClass = variant === 'header'
+    ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-300 shadow-sm'
+    : 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium';
+
+  const inactiveClass = variant === 'header'
+    ? 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800'
+    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200';
+
   return (
-    <div className="flex gap-1 border-l border-gray-300 dark:border-gray-600 pl-2">
+    <div className={`flex gap-1${variant === 'header' ? ' border-r border-gray-300 dark:border-gray-600 pr-2' : ''}`}>
       <button
         onClick={() => switchLocale('en')}
-        className={`px-2 py-1 rounded text-sm transition-colors ${
-          currentLocale === 'en'
-            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium'
-            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-        }`}
+        className={`${buttonBaseClass} ${currentLocale === 'en' ? activeClass : inactiveClass}`}
         title={dictionary.home.localeToggle.en}
         aria-label={dictionary.home.localeToggle.en}
       >
@@ -40,11 +50,7 @@ export default function LocaleToggle({ currentLocale, dictionary }: LocaleToggle
       </button>
       <button
         onClick={() => switchLocale('zh')}
-        className={`px-2 py-1 rounded text-sm transition-colors ${
-          currentLocale === 'zh'
-            ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium'
-            : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-        }`}
+        className={`${buttonBaseClass} ${currentLocale === 'zh' ? activeClass : inactiveClass}`}
         title={dictionary.home.localeToggle.zh}
         aria-label={dictionary.home.localeToggle.zh}
       >

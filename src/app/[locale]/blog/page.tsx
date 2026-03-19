@@ -12,7 +12,7 @@ export async function generateMetadata({
   const dictionary = await getDictionary(locale as any);
 
   return {
-    title: locale === 'zh' ? '博客 - Willin Wang' : 'Blog - Willin Wang',
+    title: (dictionary as any).blog.title,
     description:
       locale === 'zh'
         ? '记录数字游民和 AI 创业的点点滴滴'
@@ -30,7 +30,8 @@ export default async function BlogPage({
   const posts = await getAllPosts();
   const categories = await getAllCategories();
   const tags = await getAllTags();
-  const stats = await getBlogStats();
+  // 获取当前语言的统计信息
+  const stats = await getBlogStats(locale as 'zh' | 'en');
 
   // 过滤当前语言的文章
   const filteredPosts = posts.filter((post) => post.locale === locale);

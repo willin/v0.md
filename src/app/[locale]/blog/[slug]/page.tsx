@@ -23,6 +23,7 @@ export async function generateMetadata({
 }) {
   const { locale, slug } = await params;
   const post = await getPostBySlug(slug, locale as 'zh' | 'en');
+  const dictionary = await getDictionary(locale as any);
 
   if (!post) {
     return {
@@ -31,7 +32,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${post.title} - ${locale === 'zh' ? 'Willin Wang' : 'Willin Wang'}`,
+    title: `${post.title} - ${(dictionary as any).blog.postTitle.replace('{title}', '')}`.trim(),
     description: post.description,
     keywords: post.seo?.keywords.join(', '),
     openGraph: {
@@ -57,7 +58,8 @@ export default async function BlogPostPage({
 
   const categories = await getAllCategories();
   const tags = await getAllTags();
-  const stats = await getBlogStats();
+  // 获取当前语言的统计信息
+  const stats = await getBlogStats(locale as 'zh' | 'en');
 
   const isZh = locale === 'zh';
   const dateStr = new Date(post.date).toLocaleDateString(isZh ? 'zh-CN' : 'en-US', {
@@ -186,38 +188,57 @@ export default async function BlogPostPage({
           </div>
 
           {/* 上一篇/下一篇导航 */}
-          {(prevPost || nextPost) && (
-            <nav className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-              <div className="grid md:grid-cols-2 gap-4">
-                {prevPost && (
-                  <Link
-                    href={`/${locale}/blog/${prevPost.date.split('T')[0]}-${prevPost.slug}`}
-                    className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                      {isZh ? '上一篇' : 'Previous'}
-                    </p>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      {prevPost.title}
-                    </p>
-                  </Link>
-                )}
-                {nextPost && (
-                  <Link
-                    href={`/${locale}/blog/${nextPost.date.split('T')[0]}-${nextPost.slug}`}
-                    className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors md:justify-self-end"
-                  >
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                      {isZh ? '下一篇' : 'Next'}
-                    </p>
-                    <p className="text-gray-900 dark:text-gray-100 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                      {nextPost.title}
-                    </p>
-                  </Link>
-                )}
-              </div>
-            </nav>
-          )}
+          <nav className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <div className="grid md:grid-cols-2 gap-4">
+              {/* 上一篇按钮 */}
+              {prevPost ? (
+                <Link
+                  href={`/${locale}/blog/${prevPost.slug}`}
+                  className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                    {isZh ? '← 上一篇' : '← Previous'}
+                  </p>
+                  <p className="text-gray-900 dark:text-gray-100 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    {prevPost.title}
+                  </p>
+                </Link>
+              ) : (
+                <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                    {isZh ? '← 上一篇' : '← Previous'}
+                  </p>
+                  <p className="text-gray-400 dark:text-gray-500 text-sm">
+                    {isZh ? '没有上一篇' : 'No previous post'}
+                  </p>
+                </div>
+              )}
+
+              {/* 下一篇按钮 */}
+              {nextPost ? (
+                <Link
+                  href={`/${locale}/blog/${nextPost.slug}`}
+                  className="group p-4 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors md:justify-self-end"
+                >
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 text-right">
+                    {isZh ? '下一篇 →' : 'Next →'}
+                  </p>
+                  <p className="text-gray-900 dark:text-gray-100 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 text-right">
+                    {nextPost.title}
+                  </p>
+                </Link>
+              ) : (
+                <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 md:justify-self-end">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1 text-right">
+                    {isZh ? '下一篇 →' : 'Next →'}
+                  </p>
+                  <p className="text-gray-400 dark:text-gray-500 text-sm text-right">
+                    {isZh ? '没有下一篇' : 'No next post'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </nav>
         </article>
 
         {/* 侧边栏 */}

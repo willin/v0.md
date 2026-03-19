@@ -35,5 +35,15 @@
   "nav": {
     "home": "首页",
     "blog": "博客"
+  },
+  "footer": {
+    "rightsReserved": "保留所有权利"
+  },
+  "blogLink": {
+    "text": "📝 访问我的博客"
+  },
+  "blog": {
+    "title": "博客 - Willin Wang",
+    "postTitle": "{title} - Willin Wang"
   }
 }

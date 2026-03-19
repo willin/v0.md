@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* Light theme (default) */
 :root {
@@ -97,12 +98,61 @@ body {
   @apply mb-2 text-gray-700 dark:text-gray-300;
 }
 
+/* Task list items */
+.prose li:has(input[type="checkbox"]) {
+  @apply flex items-center gap-2;
+}
+
+.prose li:has(input[type="checkbox"]:checked) {
+  @apply text-gray-500 dark:text-gray-400 line-through opacity-75;
+}
+
+.prose li:has(input[type="checkbox"]:not(:checked)) {
+  @apply text-gray-700 dark:text-gray-300;
+}
+
+.prose input[type="checkbox"] {
+  @apply w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500;
+}
+
 .prose blockquote {
   @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 py-2 my-6 italic text-gray-600 dark:text-gray-400;
 }
 
 .prose code {
-  @apply bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-200;
+  @apply bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-gray-800 dark:text-gray-200 break-words;
+}
+
+/* Superscript and Subscript */
+.prose sup,
+.prose sub {
+  @apply text-xs font-normal;
+}
+
+.prose sup {
+  @apply align-super;
+}
+
+.prose sub {
+  @apply align-sub;
+}
+
+/* Mark/Highlight */
+.prose mark {
+  @apply bg-yellow-200 dark:bg-yellow-800/50 px-1 py-0.5 rounded text-gray-900 dark:text-gray-100;
+}
+
+/* Ruby annotations */
+.prose ruby {
+  @apply inline-flex flex-col-reverse items-center;
+}
+
+.prose rt {
+  @apply text-xs text-gray-500 dark:text-gray-400 text-center leading-none mb-0.5;
+}
+
+.prose rp {
+  @apply hidden;
 }
 
 .prose pre {
@@ -110,7 +160,7 @@ body {
 }
 
 .prose pre code {
-  @apply bg-transparent p-0 text-gray-100;
+  @apply bg-transparent p-0 text-gray-100 whitespace-pre-wrap break-words max-w-full;
 }
 
 .prose a {

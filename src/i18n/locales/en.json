@@ -35,5 +35,15 @@
   "nav": {
     "home": "Home",
     "blog": "Blog"
+  },
+  "footer": {
+    "rightsReserved": "All rights reserved."
+  },
+  "blogLink": {
+    "text": "📝 Visit My Blog"
+  },
+  "blog": {
+    "title": "Blog - Willin Wang",
+    "postTitle": "{title} - Willin Wang"
   }
 }

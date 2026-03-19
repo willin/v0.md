@@ -165,7 +165,19 @@ echo "✅ 部署完成！"
 
 ### 上标和下标
 
-水的化学式是 H~2~O，2 的 10 次方是 2^10^ = 1024。
+水的化学式是 H<sub>2</sub>O，2 的 10 次方是 2<sup>10</sup> = 1024。
+
+爱因斯坦的质能方程是 E = mc<sup>2</sup>。
+
+葡萄糖的分子式是 C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>。
+
+### Ruby 注音
+
+汉字注音示例：<ruby>汉<rt>hàn</rt></ruby><ruby>字<rt>zì</rt></ruby>。
+
+日文平假名：<ruby>私<rt>わたし</rt></ruby><ruby>達<rt>たち</rt></ruby>。
+
+中文繁体字：<ruby>龍<rt>lóng</rt></ruby><ruby>鳳<rt>fèng</rt></ruby>呈祥。
 
 ### 引用块
 
@@ -256,20 +268,6 @@ echo "✅ 部署完成！"
 
 ---
 
-## 数学公式
-
-行内公式：$E = mc^2$ 是爱因斯坦的质能方程。
-
-块级公式：
-
-$$
-\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
-$$
-
-$$
-\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{\pi^2}{6}
-$$
-
 ## 脚注
 
 这是一段包含脚注的文字[^1]，另一段也有脚注[^2]。
@@ -327,9 +325,84 @@ interface Config {
    console.log('包含代码块');
    ```
 
+## 流程图
+
+### Mermaid 流程图
+
+博客系统支持使用 Mermaid 语法绘制流程图、时序图、甘特图等。
+
+#### 流程图示例
+
+```mermaid
+graph TD
+    A[开始] --> B{是否有数据？}
+    B -->|是 | C[处理数据]
+    B -->|否 | D[返回错误]
+    C --> E[保存结果]
+    D --> F[结束]
+    E --> F
+    F --> G[清理资源]
+    G --> H[完成]
+```
+
+#### 序列图示例
+
+```mermaid
+sequenceDiagram
+    participant User as 用户
+    participant Frontend as 前端
+    participant API as API 服务
+    participant DB as 数据库
+
+    User->>Frontend: 提交请求
+    Frontend->>API: 发送数据
+    API->>DB: 查询/更新
+    DB-->>API: 返回结果
+    API-->>Frontend: 响应数据
+    Frontend-->>User: 显示结果
+```
+
+#### 类图示例
+
+```mermaid
+classDiagram
+    class BlogPost {
+        +string slug
+        +string title
+        +string content
+        +date publishedAt
+        +getReadingTime() int
+    }
+
+    class Author {
+        +string name
+        +string avatar
+        +string bio
+    }
+
+    class Comment {
+        +string author
+        +string content
+        +DateTime createdAt
+    }
+
+    BlogPost "1" --> "1" Author : 作者
+    BlogPost "1" --> "0..*" Comment : 评论
+```
+
+#### 饼图示例
+
+```mermaid
+pie
+    "技术文章" : 45
+    "生活随笔" : 25
+    "读书笔记" : 20
+    "旅行记录" : 10
+```
+
 ## 摘要结束
 
-感谢你阅读完这篇演示文章！现在你了解了博客系统支持的所有 Markdown 语法和 MDX 特性。
+感谢你阅读完这篇演示文章！现在你了解了博客系统支持的所有 Markdown 语法、MDX 特性以及流程图绘制功能。
 
 如果你有任何问题或建议，欢迎在评论区留言。
 
