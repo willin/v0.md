@@ -897,6 +897,41 @@ pnpm add lucide-react
 
 ---
 
+## 阶段 1.11：RSS 订阅优化与 Sitemap 链接
+
+> **目标**: 添加多语言 RSS、边栏订阅按钮、Footer Sitemap 链接
+> **优先级**: 高
+> **状态**: 已完成 ✅
+> **完成日期**: 2026-03-20
+
+### 任务清单
+- [x] 1.69 添加多语言 RSS Feed (`/zh/feed.xml`, `/en/feed.xml`)
+- [x] 1.70 在博客侧边栏添加 RSS 订阅按钮（带下拉菜单）
+- [x] 1.71 在 Footer 添加 Sitemap 链接
+
+### 验收标准
+- [x] 访问 `/zh/feed.xml` 只返回中文文章
+- [x] 访问 `/en/feed.xml` 只返回英文文章
+- [x] 博客侧边栏有 RSS 订阅按钮，默认显示"订阅全部"
+- [x] 鼠标悬停时显示下拉菜单，包含"订阅全部"和"订阅当前语言"
+- [x] Footer 底部有 Sitemap 链接
+
+### 实施总结
+
+**新增文件**:
+- `src/app/[locale]/feed.xml/route.ts` - 多语言 RSS Feed 路由
+
+**修改文件**:
+- `src/components/blog/BlogSidebar.tsx` - 添加 RSS 订阅按钮和下拉菜单
+- `src/components/layout/Footer.tsx` - 添加 Sitemap 和 RSS 链接
+
+**关键实现**:
+1. 多语言 RSS Feed 根据 URL 中的 locale 过滤文章
+2. RSS 订阅按钮使用 hover 显示下拉菜单，包含订阅全部和订阅当前语言选项
+3. Footer 添加 Sitemap 和 RSS 链接，新窗口打开
+
+---
+
 ## 阶段 4：进阶功能
 
 > **目标**: 博客搜索、其他 SEO 优化

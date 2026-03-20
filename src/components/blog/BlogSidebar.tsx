@@ -54,6 +54,7 @@ export function BlogSidebar({
   stats,
 }: SidebarProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showRssDropdown, setShowRssDropdown] = useState(false);
   const { t } = useTranslation(locale);
 
   // 注意：这里的 isZh 仅用于过滤分类和标签，不用于文本显示
@@ -132,7 +133,7 @@ C328.5,400,337.9,369.1,347.6,337.1z"/>
             </svg>
           </a>
           <a
-            href="https://twitter.com/willin"
+            href="https://x.com/willinwang"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
@@ -166,6 +167,54 @@ C328.5,400,337.9,369.1,347.6,337.1z"/>
           placeholder={t('blog.sidebar.searchPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      {/* RSS 订阅按钮 */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+          🔔 订阅
+        </h3>
+        <div className="relative">
+          <a
+            href="/feed.xml"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-between px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md transition-colors group"
+            onMouseEnter={() => setShowRssDropdown(true)}
+            onMouseLeave={() => setShowRssDropdown(false)}
+          >
+            <span className="text-sm font-medium">订阅全部</span>
+            <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </a>
+
+          {/* 下拉菜单 */}
+          {showRssDropdown && (
+            <div
+              className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10"
+              onMouseEnter={() => setShowRssDropdown(true)}
+              onMouseLeave={() => setShowRssDropdown(false)}
+            >
+              <a
+                href="/feed.xml"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                📄 订阅全部文章
+              </a>
+              <a
+                href={`/${locale}/feed.xml`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                📄 订阅{locale === 'zh' ? '中文' : 'English'}文章
+              </a>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 统计信息卡片 */}
