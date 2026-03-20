@@ -42,10 +42,11 @@ export default async function BlogPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const dictionary = await getDictionary(locale as Locale);
 
   return (
     <>
-      <HeaderNav locale={locale as 'zh' | 'en'} dictionary={{}} />
+      <HeaderNav locale={locale as 'zh' | 'en'} dictionary={dictionary as any} />
       <Suspense fallback={<BlogListSkeleton />}>
         <BlogContent locale={locale} />
       </Suspense>

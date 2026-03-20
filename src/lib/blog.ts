@@ -191,7 +191,7 @@ export async function getAllPosts(): Promise<BlogPostSummary[]> {
           locale: parsed.locale,
           tags: metadata.tags,
           categories: metadata.categories,
-          cover: metadata.cover,
+          cover: metadata.cover ? { image: metadata.cover, alt: '' } : undefined,
           readingTime: { minutes: 0, words: 0, text: '0 min read' }, // 元数据中不包含阅读时间，需要时再计算
           hasTranslation: Object.keys(translations).length > 0,
         });
