@@ -50,6 +50,13 @@
     "title": "Blog - Willin Wang",
     "postTitle": "{title} - Willin Wang",
     "description": "Sharing thoughts on digital nomadism and AI entrepreneurship",
+    "rss": {
+      "subscribe": "Subscribe",
+      "subscribeAll": "Subscribe to all posts",
+      "subscribeCurrent": "Subscribe to {lang} posts",
+      "chinese": "Chinese",
+      "english": "English"
+    },
     "notFound": {
       "title": "Article Not Found",
       "description": "Sorry, the article you are looking for does not exist",

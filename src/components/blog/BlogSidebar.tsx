@@ -120,7 +120,7 @@ C328.5,400,337.9,369.1,347.6,337.1z"/>
             </p>
           </div>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex items-center space-x-3">
           <a
             href="https://github.com/willin"
             target="_blank"
@@ -133,17 +133,6 @@ C328.5,400,337.9,369.1,347.6,337.1z"/>
             </svg>
           </a>
           <a
-            href="https://x.com/willinwang"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
-            aria-label="Twitter"
-          >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
-            </svg>
-          </a>
-          <a
             href="mailto:willin@willin.org"
             className="text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
             aria-label="Email"
@@ -152,6 +141,51 @@ C328.5,400,337.9,369.1,347.6,337.1z"/>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </a>
+          {/* RSS 订阅图标 - 带下拉菜单 */}
+          <div className="relative">
+            <a
+              href="/feed.xml"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-500 hover:text-orange-500 dark:text-gray-400 dark:hover:text-orange-400"
+              aria-label={t('blog.rss.subscribe')}
+              onMouseEnter={() => setShowRssDropdown(true)}
+              onMouseLeave={() => setShowRssDropdown(false)}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9a6 6 0 016 6m0 0a6 6 0 01-6 6m0-6h6m-6-6a12 12 0 0112 12m-6.929-5.071a12.001 12.001 0 015.657 5.657" />
+              </svg>
+            </a>
+
+            {/* 下拉菜单 */}
+            {showRssDropdown && (
+              <div
+                className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10"
+                onMouseEnter={() => setShowRssDropdown(true)}
+                onMouseLeave={() => setShowRssDropdown(false)}
+              >
+                <a
+                  href="/feed.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  {t('blog.rss.subscribeAll')}
+                </a>
+                <a
+                  href={`/${locale}/feed.xml`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  {isZh
+                    ? t('blog.rss.subscribeCurrent').replace('{lang}', t('blog.rss.chinese'))
+                    : t('blog.rss.subscribeCurrent').replace('{lang}', t('blog.rss.english'))
+                  }
+                </a>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -167,54 +201,6 @@ C328.5,400,337.9,369.1,347.6,337.1z"/>
           placeholder={t('blog.sidebar.searchPlaceholder')}
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-      </div>
-
-      {/* RSS 订阅按钮 */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-          🔔 订阅
-        </h3>
-        <div className="relative">
-          <a
-            href="/feed.xml"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full flex items-center justify-between px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-md transition-colors group"
-            onMouseEnter={() => setShowRssDropdown(true)}
-            onMouseLeave={() => setShowRssDropdown(false)}
-          >
-            <span className="text-sm font-medium">订阅全部</span>
-            <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-          </a>
-
-          {/* 下拉菜单 */}
-          {showRssDropdown && (
-            <div
-              className="absolute top-full left-0 mt-1 w-full bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10"
-              onMouseEnter={() => setShowRssDropdown(true)}
-              onMouseLeave={() => setShowRssDropdown(false)}
-            >
-              <a
-                href="/feed.xml"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                📄 订阅全部文章
-              </a>
-              <a
-                href={`/${locale}/feed.xml`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-              >
-                📄 订阅{locale === 'zh' ? '中文' : 'English'}文章
-              </a>
-            </div>
-          )}
-        </div>
       </div>
 
       {/* 统计信息卡片 */}

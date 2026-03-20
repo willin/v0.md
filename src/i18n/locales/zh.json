@@ -50,6 +50,13 @@
     "title": "博客 - Willin Wang",
     "postTitle": "{title} - Willin Wang",
     "description": "记录数字游民和 AI 创业的点点滴滴",
+    "rss": {
+      "subscribe": "订阅",
+      "subscribeAll": "订阅全部文章",
+      "subscribeCurrent": "订阅{lang}文章",
+      "chinese": "中文",
+      "english": "English"
+    },
     "notFound": {
       "title": "文章未找到",
       "description": "抱歉，您访问的文章不存在",
