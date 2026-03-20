@@ -16,7 +16,7 @@ console.log('Knowledge entries:', digitalTwinKnowledge.length);
 console.log('Sample patterns:', digitalTwinKnowledge[0].patterns.slice(0, 3));
 
 console.log('\n3. Sample Response Test:');
-const sampleInput = "How much money do I need for financial independence?";
+const sampleInput = "What is digital nomadism?";
 const responseEn = getResponse(sampleInput, 'en');
 const responseZh = getResponse(sampleInput, 'zh');
 console.log('Input:', sampleInput);

@@ -5,15 +5,15 @@
     "about": {
       "name": "Willin Wang 老王（v0）",
       "profession": "数字游民 & AI 创业者",
-      "interests": "远程工作，财务自由，AI 技术",
+      "interests": "远程工作，AI 技术",
       "bio": "过着游牧生活的同时，用 AI 构建未来。"
     },
     "chat": {
       "title": "数字分身聊天",
-      "placeholder": "询问有关数字游民、财务自由或 AI 创业的问题...",
+      "placeholder": "询问有关数字游民或 AI 创业的问题...",
       "sendButton": "发送",
       "digitalTwinName": "老王（v0）的数字分身",
-      "greeting": "你好！我是老王（v0）的数字分身。你可以问我关于数字游民、财务自由或 AI 创业的问题。",
+      "greeting": "你好！我是老王（v0）的数字分身。你可以问我关于数字游民或 AI 创业的问题。",
       "noPresetAnswer": "关于这个问题，我目前没有预先设定的答案。作为老王（v0）的数字分身，我会根据他的理念回答：追求有意义的工作，保持学习心态，并拥抱不确定性。",
       "thankYou": "谢谢你的提问！",
       "errorMessage": "抱歉，出现了错误。请稍后再试。"
@@ -29,7 +29,6 @@
     },
     "interests": {
       "digitalNomadism": "数字游民",
-      "financialIndependence": "财务自由",
       "aiTechnology": "AI 技术",
       "remoteWork": "远程工作",
       "minimalism": "极简主义",

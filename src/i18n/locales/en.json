@@ -5,15 +5,15 @@
     "about": {
       "name": "Willin Wang",
       "profession": "Digital Nomad & AI Entrepreneur",
-      "interests": "Remote work, Financial independence, AI technology",
+      "interests": "Remote work, AI technology",
       "bio": "Living the nomadic life while building the future with AI."
     },
     "chat": {
       "title": "Digital Twin Chat",
-      "placeholder": "Ask me about digital nomadism, financial freedom, or AI entrepreneurship...",
+      "placeholder": "Ask me about digital nomadism or AI entrepreneurship...",
       "sendButton": "Send",
       "digitalTwinName": "Willin's Digital Twin",
-      "greeting": "Hello! I'm Willin's digital twin. You can ask me about digital nomadism, financial freedom, or AI entrepreneurship.",
+      "greeting": "Hello! I'm Willin's digital twin. You can ask me about digital nomadism or AI entrepreneurship.",
       "noPresetAnswer": "I don't have a specific preset answer for this question. As Willin's digital twin, I'd respond based on his philosophy: pursue meaningful work, maintain a learning mindset, and embrace uncertainty.",
       "thankYou": "Thank you for your question!",
       "errorMessage": "Sorry, an error occurred. Please try again later."
@@ -29,7 +29,6 @@
     },
     "interests": {
       "digitalNomadism": "Digital Nomadism",
-      "financialIndependence": "Financial Independence",
       "aiTechnology": "AI Technology",
       "remoteWork": "Remote Work",
       "minimalism": "Minimalism",

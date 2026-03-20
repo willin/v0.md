@@ -10,30 +10,6 @@ export const digitalTwinKnowledge: KnowledgeEntry[] = [
   {
     patterns: [
       // English
-      "financial independence",
-      "FI",
-      "retire early",
-      "early retirement",
-      "financial freedom",
-      "how much money to retire",
-      "passive income",
-      // Chinese
-      "财务自由",
-      "财务独立",
-      "提前退休",
-      "被动收入",
-      "躺平",
-      "存款",
-      "多少钱退休"
-    ],
-    responses: {
-      en: "Achieving financial independence requires building passive income streams that cover your expenses. The general rule is saving 25 times your annual expenses (4% rule). Start with investing in low-cost index funds, real estate, or dividend stocks. Focus on increasing your savings rate and reducing unnecessary expenses.",
-      zh: "实现财务自由需要建立能够覆盖支出的被动收入流。一般规则是储蓄年支出的 25 倍（4% 法则）。从投资低成本指数基金、房地产或股息股票开始。专注于提高储蓄率并减少不必要的开支。"
-    }
-  },
-  {
-    patterns: [
-      // English
       "digital nomad",
       "digital nomadism",
       "nomad life",
@@ -77,32 +53,6 @@ export const digitalTwinKnowledge: KnowledgeEntry[] = [
   {
     patterns: [
       // English
-      "1 million yuan",
-      "millionaire",
-      "can I retire with",
-      "is 1 million enough",
-      "1000000",
-      "one million",
-      "1 million",
-      "deposit enough",
-      "money to live",
-      // Chinese
-      "100 万",
-      "一百万",
-      "存款够吗",
-      "多少钱够",
-      "攒钱",
-      "积蓄",
-      "足够花"
-    ],
-    responses: {
-      en: "Whether 1 million yuan is enough depends on your lifestyle and expenses. With the 4% rule, this supports about 40,000 yuan annually. Consider cost of living in your target location, inflation, healthcare costs, and unexpected expenses. For a frugal nomad lifestyle, it might last 10-15 years. For greater security, aim for 2-3 million yuan.",
-      zh: "100 万元是否够用取决于您的生活方式和支出。按照 4% 法则，这支持每年约 4 万元。考虑目标地点的生活成本、通胀、医疗费用和意外支出。对于节俭的游民生活方式，可能持续 10-15 年。为了更大安全，目标应为 200-300 万元。"
-    }
-  },
-  {
-    patterns: [
-      // English
       "lifestyle",
       "about you",
       "who are you",
@@ -118,8 +68,8 @@ export const digitalTwinKnowledge: KnowledgeEntry[] = [
       "老王"
     ],
     responses: {
-      en: "I'm Willin Wang, a digital nomad and AI entrepreneur who believes 'to be Willin is to be willing'. I focus on building location-independent income through AI technologies, advocating for financial freedom and minimalist living while exploring the world.",
-      zh: "我是老王（v0），一个数字游民和 AI 创业者，信奉\"知行合一，随心所愿\"。我专注于通过 AI 技术建立位置独立的收入，倡导财务自由和极简生活，同时探索世界。"
+      en: "I'm Willin Wang, a digital nomad and AI entrepreneur who believes 'to be Willin is to be willing'. I focus on building location-independent income through AI technologies, advocating for minimalist living while exploring the world.",
+      zh: "我是老王（v0），一个数字游民和 AI 创业者，信奉\"知行合一，随心所愿\"。我专注于通过 AI 技术建立位置独立的收入，倡导极简生活，同时探索世界。"
     }
   },
   {

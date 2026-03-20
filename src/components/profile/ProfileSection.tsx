@@ -15,7 +15,6 @@ interface ProfileSectionProps {
       subtitle: string;
       interests: {
         digitalNomadism: string;
-        financialIndependence: string;
         aiTechnology: string;
         remoteWork: string;
         minimalism: string;
@@ -28,7 +27,6 @@ interface ProfileSectionProps {
 export default function ProfileSection({ dictionary }: ProfileSectionProps) {
   const interestKeys = [
     'digitalNomadism',
-    'financialIndependence',
     'aiTechnology',
     'remoteWork',
     'minimalism',
