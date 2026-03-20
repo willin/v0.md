@@ -142,27 +142,33 @@ C328.5,400,337.9,369.1,347.6,337.1z"/>
             </svg>
           </a>
           {/* RSS 订阅图标 - 带下拉菜单 */}
-          <div className="relative">
+          <div
+            className="relative inline-block"
+            onMouseEnter={() => setShowRssDropdown(true)}
+            onMouseLeave={() => setShowRssDropdown(false)}
+          >
             <a
               href="/feed.xml"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-orange-500 dark:text-gray-400 dark:hover:text-orange-400"
               aria-label={t('blog.rss.subscribe')}
-              onMouseEnter={() => setShowRssDropdown(true)}
-              onMouseLeave={() => setShowRssDropdown(false)}
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 9a6 6 0 016 6m0 0a6 6 0 01-6 6m0-6h6m-6-6a12 12 0 0112 12m-6.929-5.071a12.001 12.001 0 015.657 5.657" />
+              {/* 经典 RSS 图标 - 带圆心和弧线 */}
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <circle cx="6.5" cy="17.5" r="2.5" />
+                <path d="M4 4a16 16 0 0116 16" stroke="currentColor" strokeWidth="3" fill="none" />
+                <path d="M4 10a10 10 0 0110 10" stroke="currentColor" strokeWidth="3" fill="none" />
               </svg>
             </a>
+
+            {/* 透明连接区域 - 防止下拉菜单消失 */}
+            <div className="absolute top-full left-0 w-full h-2 bg-transparent"></div>
 
             {/* 下拉菜单 */}
             {showRssDropdown && (
               <div
-                className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10"
-                onMouseEnter={() => setShowRssDropdown(true)}
-                onMouseLeave={() => setShowRssDropdown(false)}
+                className="absolute left-0 mt-0.5 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-10"
               >
                 <a
                   href="/feed.xml"

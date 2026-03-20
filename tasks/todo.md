@@ -912,8 +912,8 @@ pnpm add lucide-react
 ### 验收标准
 - [x] 访问 `/zh/feed.xml` 只返回中文文章
 - [x] 访问 `/en/feed.xml` 只返回英文文章
-- [x] 博客侧边栏有 RSS 订阅按钮，默认显示"订阅全部"
-- [x] 鼠标悬停时显示下拉菜单，包含"订阅全部"和"订阅当前语言"
+- [x] 博客侧边栏作者卡片内有 RSS 图标（GitHub、邮件图标后）
+- [x] RSS 图标 hover 时显示下拉菜单，包含"订阅全部"和"订阅当前语言"
 - [x] Footer 底部有 Sitemap 链接
 
 ### 实施总结
@@ -922,11 +922,16 @@ pnpm add lucide-react
 - `src/app/[locale]/feed.xml/route.ts` - 多语言 RSS Feed 路由
 
 **修改文件**:
-- `src/components/blog/BlogSidebar.tsx` - 添加 RSS 订阅按钮和下拉菜单
+- `src/components/blog/BlogSidebar.tsx` - RSS 图标移至作者卡片，删除 Twitter 图标
 - `src/components/layout/Footer.tsx` - 添加 Sitemap 和 RSS 链接
+- `src/i18n/locales/zh.json` - 添加 RSS 订阅相关翻译
+- `src/i18n/locales/en.json` - 添加 RSS 订阅相关翻译
 
 **关键实现**:
 1. 多语言 RSS Feed 根据 URL 中的 locale 过滤文章
+2. RSS 图标位于作者卡片内（GitHub、邮件图标后），hover 显示下拉菜单
+3. 下拉菜单支持订阅全部或订阅当前语言
+4. 删除 Twitter/X 图标，保持作者卡片简洁
 2. RSS 订阅按钮使用 hover 显示下拉菜单，包含订阅全部和订阅当前语言选项
 3. Footer 添加 Sitemap 和 RSS 链接，新窗口打开
 
