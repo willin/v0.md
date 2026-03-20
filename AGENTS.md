@@ -223,3 +223,51 @@ const dateStr = date.toLocaleDateString(isZh ? 'zh-CN' : 'en-US');
 import { formatDate } from '@/lib/date';
 const dateStr = formatDate(date, locale);
 ```
+
+## Blog AI Summary Generation
+
+### AI 摘要生成规则
+
+为每篇博客文章生成一段简短的 AI 摘要，用于：
+- 文章详情页正文上方的「AI 摘要」文本块
+- 搜索结果预览
+- 社交媒体分享描述
+
+### 摘要生成规范
+
+1. **长度**: 50-150 字（中文）或 30-100 词（英文）
+2. **来源**: 基于文章的 `description` frontmatter 字段进行改写/扩展
+3. **风格**:
+   - 客观、简洁、信息密度高
+   - 使用第三人称
+   - 突出文章核心价值和关键观点
+   - 避免"本文介绍了"等套话
+4. **内容要求**:
+   - 涵盖文章主题和核心观点
+   - 如涉及技术教程，说明解决的问题或达成的目标
+   - 如为随笔/故事，点明情感主线或思考结论
+5. **禁止内容**:
+   - 不添加原文未提及的信息
+   - 不使用夸张或营销性语言
+   - 不包含"阅读全文"等引导性语句
+   - 不添加文本以外的格式（如 Markdown 链接等）
+
+### 摘要执行流程
+
+1. 读取文章的 `description` frontmatter
+2. 分析文章正文提取关键段落
+3. 基于 description 改写，确保涵盖核心内容
+4. 更新 frontmatter 中的 `description` 字段
+5. 在文章详情页添加「AI 摘要」组件展示
+
+### 示例
+
+**输入 (原文 description)**:
+```yaml
+description: "今天已经是 2022 年 2 月 2 日了哦，你可以申请一个"憨憨。我爱你"的域名给 TA 一个惊喜。"
+```
+
+**输出 (AI 摘要)**:
+```yaml
+description: "介绍如何申请「憨憨。我爱你」国际域名，为情人节准备特别礼物的完整教程。"
+```
