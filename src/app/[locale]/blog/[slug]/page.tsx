@@ -3,6 +3,7 @@ import { getPostBySlug, getAllPosts, getAllCategories, getAllTags, getBlogStats,
 import { BlogDetailSidebar } from '@/components/blog/BlogDetailSidebar';
 import { HeaderNav } from '@/components/blog/HeaderNav';
 import { ReadingProgress } from '@/components/blog/ReadingProgress';
+import { AISummary } from '@/components/blog/AISummary';
 import Link from 'next/link';
 import MDXContent from './MDXContent';
 import { getDictionary } from '@/i18n/config';
@@ -267,6 +268,10 @@ export default async function BlogPostPage({
 
           {/* 文章内容 */}
           <div id="post-content">
+            {/* AI 摘要 */}
+            {post.description && (
+              <AISummary summary={post.description} />
+            )}
             <MDXContent content={post.content} />
           </div>
 

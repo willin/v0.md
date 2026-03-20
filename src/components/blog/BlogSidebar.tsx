@@ -143,7 +143,7 @@ C328.5,400,337.9,369.1,347.6,337.1z"/>
             </svg>
           </a>
           <a
-            href="mailto:willin@willin.wang"
+            href="mailto:willin@willin.org"
             className="text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
             aria-label="Email"
           >

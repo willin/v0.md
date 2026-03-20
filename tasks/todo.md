@@ -859,22 +859,56 @@ pnpm add lucide-react
 
 ---
 
+## 阶段 1.10：博客 SEO 与订阅
+
+> **目标**: 添加 RSS 订阅、Sitemap、AI 摘要功能
+> **优先级**: 高
+> **状态**: 已完成 ✅
+> **完成日期**: 2026-03-20
+
+### 任务清单
+- [x] 1.66 生成 RSS Feed (`/feed.xml`)
+- [x] 1.67 生成 Sitemap (`/sitemap.xml`)
+- [x] 1.68 文章详情正文前添加【AI 摘要】文字块（使用 frontmatter description 字段）
+
+### 验收标准
+- [x] 访问 `/feed.xml` 能生成 RSS 订阅源
+- [x] RSS 包含最新文章标题、description 字段内容、链接、发布日期
+- [x] 访问 `/sitemap.xml` 能生成 sitemap
+- [x] Sitemap 包含所有博客文章的 URL
+- [x] 文章详情页在正文开始前显示「AI 摘要」文本块
+- [x] AI 摘要内容来自文章 frontmatter 的 description 字段
+- [x] AI 摘要有明显的视觉样式区分（如背景色、边框等）
+
+### 实施总结
+
+**新增文件**:
+- `src/app/feed.xml/route.ts` - RSS Feed 路由，生成标准 RSS 2.0 格式
+- `src/app/sitemap.xml/route.ts` - Sitemap 路由，生成标准 Sitemap XML
+- `src/components/blog/AISummary.tsx` - AI 摘要展示组件
+
+**修改文件**:
+- `src/app/[locale]/blog/[slug]/page.tsx` - 导入并使用 AISummary 组件，在正文前显示
+
+**关键实现**:
+1. RSS Feed 使用 RSS 2.0 标准，包含 atom:link 自引用，支持 CDATA 转义
+2. Sitemap 包含静态页面（首页、博客列表）和所有博客文章
+3. AI 摘要使用渐变蓝色背景，带灯泡图标，在深色模式下自适应
+
+---
+
 ## 阶段 4：进阶功能
 
-> **目标**: 博客搜索、RSS、SEO 优化
+> **目标**: 博客搜索、其他 SEO 优化
 > **预计**: 1 天
 
 ### 任务清单
 - [ ] 4.1 实现博客搜索功能（侧边栏搜索框）
-- [ ] 4.2 生成 RSS Feed
-- [ ] 4.3 SEO 优化（meta 标签、sitemap）
+- [ ] 4.2 SEO 优化（meta 标签优化）
 
 ### 验收标准
 - [ ] 在侧边栏搜索框输入关键词能实时过滤文章列表
-- [ ] 访问 `/feed.xml` 能生成 RSS 订阅源
-- [ ] RSS 包含最新文章标题、描述、链接
 - [ ] 博客文章页面有正确的 meta 标签（title、description、og:image）
-- [ ] 生成 sitemap.xml 包含所有博客文章
 
 ---
 
