@@ -1,0 +1,440 @@
+---
+title: "Next.js （React） 实用进阶技巧"
+description: "自用整理的 Next.js 或 React 项目进阶小技巧。"
+categories:
+  - 技术
+tags:
+  - next.js
+  - 全栈
+  - react
+  - 博客
+knowledge:
+  enabled: true
+  keywords:
+    - next.js
+    - 技术
+  chunkStrategy: "by-heading"
+  priority: 0.8
+
+---
+
+
+老王退休啦，今天是退休的第二天，已经回到了老家乡下，早上在田里看到了小麦~
+
+第一篇文章围绕着最近经常使用的 Next.js 相关展开。由于 Next.js 使用的是 React 框架，所以部分内容可能仅与 React 相关。
+
+## 文章目录
+
+- 广告和检查广告拦截器（Adblock）相关
+- 主题切换相关
+- 环境变量相关
+- 在 Vercel 上使用 Cloudflare KV
+
+## Anti Adblock
+
+检查浏览器广告拦截插件并阻止。这段代码使用于我的免费域名管理系统，强制用户关闭广告拦截插件才能继续使用。（对不住了，虽然是一个开源公益性质的项目，但由于退休后已经没有收入来源，广告收益蚊子肉也不容小觑。）
+
+> 免费注册域名： [https://domain.willin.wang](https://domain.willin.wang)
+>
+> 目前支持的后缀有： `js.cool`, `log.lu`, `kaiyuan.fund`, `sh.gg`, `v0.chat`, `憨憨.我爱你`
+
+其源码位于： https://github.com/willin/domain/blob/main/app/%5Blang%5D/bootstrap.tsx
+
+```tsx
+'use client';
+import Script from 'next/script';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+
+const SCRIPT = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxx';
+
+export function Bootstrap() {
+  const pathname = usePathname();
+  useEffect(() => {
+    try {
+      // @ts-ignore
+      // eslint-disable-next-line
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      //
+    }
+    // Ignore core pages
+    if (pathname === '/zh' || pathname === '/en') return;
+    // (A) TEST FETCH HEADER REQUEST TO GOOGLE ADSENSE
+    const test = new Request(
+      SCRIPT,
+      // "https://static.ads-twitter.com/uwt.js",
+      { method: 'HEAD', mode: 'no-cors' }
+    );
+
+    // (B) FIRE THE REQEST
+    let result: boolean;
+    fetch(test)
+      .then(() => (result = true))
+      .catch(() => (result = false))
+      .finally(() => {
+        const elm = document.querySelector('ins.adsbygoogle');
+        if (
+          !result ||
+          // @ts-ignore
+          (elm && window.getComputedStyle(elm).display === 'none') ||
+          // @ts-ignore
+          (elm && window.getComputedStyle(elm.parentElement).display === 'none')
+        ) {
+          // 删除文章正文
+          const sponsor = document.querySelector('article.prose');
+          if (!sponsor) return;
+          const prompt = document.createElement('div');
+          // @ts-ignore
+          prompt.style =
+            'border: 1px solid #c6c6c6;border-radius: 4px;background-color: #f5f2f0;padding: 15px; margin:10px 0; font-size: 1.25rem;';
+          prompt.innerHTML =
+            '<p>您使用了广告拦截器，导致本站内容无法显示。</p><p>请将 willin.wang 加入白名单，解除广告屏蔽后，刷新页面。谢谢。</p>';
+          prompt.innerHTML +=
+            '<hr style="margin: 5px 0" /><p>Adblock Detected</p><p>Please set willin.wang to the unblocked list, and refresh the page, thanks.</p>';
+          // @ts-ignore
+          sponsor.parentNode.replaceChild(prompt, sponsor);
+        }
+      });
+  }, [pathname]);
+
+  return (
+    <>
+      <Script async={true} src={SCRIPT} crossOrigin='anonymous' />
+    </>
+  );
+}
+```
+
+### 排除需要检查的路由
+
+在 Line 18-19 行处。
+
+```ts
+if (pathname === '/zh' || pathname === '/en') return;
+```
+
+可以手写，可以从配置读取，还可以用数组方式。看自己喜好了。如果不需要排除部分特殊的路由，也可以直接删掉。
+
+### 设置需要检测的关键广告元素
+
+```ts
+const elm = document.querySelector('ins.adsbygoogle');
+```
+
+比如我的广告是谷歌 Adsense，也可以是其他的，比如 Twitter 的广告、自定义的广告模块，只需替换其中的选择器，获取第一个广告元素即可：
+
+```ts
+// 示例：
+const elm = document.querySelector('.ads');
+// or
+const elm = document.querySelector('#ads');
+```
+
+### 进阶 1：特殊会员权限免广告
+
+这个目前在我的博客系统中用到了： [https://willin.wang](https://willin.wang)
+
+其源码位于： https://github.com/willin/blog/blob/main/app/%5Blang%5D/bootstrap.tsx
+
+在最初的代码上稍加完善：
+
+```tsx
+'use client';
+import Script from 'next/script';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import { useLoginInfo } from './use-login';
+
+const SCRIPT = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-xxxxxx';
+
+export function Bootstrap() {
+  // 引入用户信息
+  const { loading, following, vip } = useLoginInfo();
+  const pathname = usePathname();
+  useEffect(() => {
+    // 如果是特殊类型会员，直接跳过
+    if (loading || following || vip) return;
+    try {
+      // @ts-ignore
+      // eslint-disable-next-line
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      //
+    }
+    // Ignore core pages
+    if (pathname.includes('/sponsor') || pathname.includes('/about') || pathname.includes('/projects')) return;
+    // (A) TEST FETCH HEADER REQUEST TO GOOGLE ADSENSE
+    const test = new Request(
+      SCRIPT,
+      // "https://static.ads-twitter.com/uwt.js",
+      { method: 'HEAD', mode: 'no-cors' }
+    );
+
+    // (B) FIRE THE REQEST
+    let result: boolean;
+    fetch(test)
+      .then(() => (result = true))
+      .catch(() => (result = false))
+      .finally(() => {
+        const elm = document.querySelector('ins.adsbygoogle');
+        if (
+          !result ||
+          // @ts-ignore
+          (elm && window.getComputedStyle(elm).display === 'none') ||
+          // @ts-ignore
+          (elm && window.getComputedStyle(elm.parentElement).display === 'none')
+        ) {
+          // 删除文章正文
+          const sponsor = document.querySelector('article.prose');
+          if (!sponsor) return;
+          const prompt = document.createElement('div');
+          // @ts-ignore
+          prompt.style =
+            'border: 1px solid #c6c6c6;border-radius: 4px;background-color: #f5f2f0;padding: 15px; margin:10px 0; font-size: 2rem;';
+          prompt.innerHTML =
+            '<p>您使用了广告拦截器，导致本站内容无法显示。</p><p>请将 willin.wang 加入白名单，解除广告屏蔽后，刷新页面。谢谢。</p>';
+          prompt.innerHTML +=
+            '<hr style="margin: 5px 0" /><p>Adblock Detected</p><p>Please set willin.wang to the unblocked list, and refresh the page, thanks.</p>';
+          // @ts-ignore
+          sponsor.parentNode.replaceChild(prompt, sponsor);
+        }
+      });
+  }, [pathname, following, loading, vip]);
+  // 如果是特殊类型会员，不加载广告组件
+  if (loading || following || vip) return null;
+
+  return (
+    <>
+      <Script async={true} src={SCRIPT} crossOrigin='anonymous' />
+    </>
+  );
+}
+```
+
+注意其中的三行关键代码即可：
+
+- Line `11`： 引入会员状态
+- Line `15`： 如果是特殊会员跳过检查
+- Line `63`： 如果是特殊会员免广告组件/脚本加载
+
+### 进阶 2：生成钩子
+
+这部分代码是我从网上搜索各种案例总结出来的算是较为全面的一种方式了，由于基本都是原生 js 实现，所以看起来并不美观。
+
+还可以优雅一些去进行全局的判断，这里给出一个示例（未经过实际测试）：
+
+```ts
+export function useAntiAdblock() {
+  // 设置一个默认值， false 未默认优先显示广告拦截提示， true 为默认优先显示主要内容
+  const [adsCanshow, setAdsCanshow] = useState(false);
+  const pathname = usePathname();
+  useEffect(() => {
+    try {
+      // @ts-ignore
+      // eslint-disable-next-line
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      //
+    }
+    // Ignore core pages
+    if (pathname === '/zh' || pathname === '/en') {
+      setAdsCanshow(true);
+      return;
+    }
+    // (A) TEST FETCH HEADER REQUEST TO GOOGLE ADSENSE
+    const test = new Request(
+      SCRIPT,
+      // "https://static.ads-twitter.com/uwt.js",
+      { method: 'HEAD', mode: 'no-cors' }
+    );
+
+    // (B) FIRE THE REQEST
+    let result: boolean;
+    fetch(test)
+      .then(() => (result = true))
+      .catch(() => (result = false))
+      .finally(() => {
+        const elm = document.querySelector('ins.adsbygoogle');
+        if (
+          !result ||
+          // @ts-ignore
+          (elm && window.getComputedStyle(elm).display === 'none') ||
+          // @ts-ignore
+          (elm && window.getComputedStyle(elm.parentElement).display === 'none')
+        ) {
+          setAdsCanshow(true);
+        } else {
+          setAdsCanshow(false);
+        }
+      });
+  }, [pathname]);
+
+  return adsCanshow;
+}
+```
+
+然后在组件中使用：
+
+```tsx
+export function Component() {
+  const adsCanShow = useAntiAdblock();
+  if (!adsCanShow) {
+    return <div>广告拦截提示</div>;
+  }
+
+  return <div>组件主体内容</div>;
+}
+```
+
+## 主题切换
+
+虽然有一个 Next.js 专属的主题切换插件 `next-themes` 了，但是由于长久没有维护，在 Next.js 13 下遇到了各种坑，虽然能解决，但填起来十分麻烦。
+
+后来我参考 `theme-change` 插件使用，简化了一下。代码参考： https://github.com/willin/domain/blob/main/app/%5Blang%5D/themes.tsx
+
+```tsx
+'use client';
+import { themeChange } from 'theme-change';
+import { useEffect } from 'react';
+import { themes } from '@/lib/themes';
+
+export function ThemeChange({ title }: { [k: string]: string }) {
+  useEffect(() => {
+    themeChange(false);
+    // 👆 false parameter is required for react project
+  }, []);
+
+  return (
+    <div title={title} className='dropdown dropdown-end'>
+      {/* <div>The current theme is: {currentTheme}</div> */}
+      <div tabIndex={0} className='btn gap-1 normal-case btn-ghost'>
+        <svg
+          width='20'
+          height='20'
+          xmlns='http://www.w3.org/2000/svg'
+          fill='none'
+          viewBox='0 0 24 24'
+          className='inline-block h-5 w-5 stroke-current md:h-6 md:w-6'>
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            strokeWidth={2}
+            d='M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01'
+          />
+        </svg>
+        {/* <span className='hidden md:inline'>{$t('change-theme-btn')}</span> */}
+        <svg
+          width='12px'
+          height='12px'
+          className='ml-1 hidden h-3 w-3 fill-current opacity-60 sm:inline-block'
+          xmlns='http://www.w3.org/2000/svg'
+          viewBox='0 0 2048 2048'>
+          <path d='M1799 349l242 241-1017 1017L7 590l242-241 775 775 775-775z' />
+        </svg>
+      </div>
+      <div
+        tabIndex={0}
+        className='dropdown-content bg-base-200 text-base-content rounded-t-box rounded-b-box top-px max-h-96 h-[70vh] w-52 overflow-y-auto shadow-2xl mt-16'>
+        <div className='grid grid-cols-1 gap-3 p-3'>
+          {themes.map((theme) => (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+            <div
+              key={theme.id}
+              className='outline-base-content overflow-hidden rounded-lg outline-2 outline-offset-2 hover:outline'
+              data-set-theme={theme.id}
+              data-act-class='outline'>
+              <div data-theme={theme.id} className='bg-base-100 text-base-content w-full cursor-pointer font-sans'>
+                <div className='grid grid-cols-5 grid-rows-3'>
+                  <div className='col-span-5 row-span-3 row-start-1 flex gap-1 py-3 px-4'>
+                    <div className='flex-grow text-sm font-bold'>{theme.id}</div>
+                    <div className='flex flex-shrink-0 flex-wrap gap-1'>
+                      <div className='bg-primary w-2 rounded' />
+                      <div className='bg-secondary w-2 rounded' />
+                      <div className='bg-accent w-2 rounded' />
+                      <div className='bg-neutral w-2 rounded' />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+注意其中的两处关键代码即可：
+
+- Line `8`： React 项目的特殊处理
+- Line `47-50`： 配置了 `theme-change` 的事件
+
+### 进阶使用：捕获当前主题
+
+参考代码： https://github.com/willin/domain/blob/main/app/%5Blang%5D/background.tsx
+
+```tsx
+'use client';
+import { darkThemes } from '@/lib/themes';
+import { useEffect } from 'react';
+
+export function BackgroundImage() {
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      const theme = document.documentElement.getAttribute('data-theme') || '';
+      const isDark = darkThemes.includes(theme);
+      const elm = document.getElementById('background');
+      if (isDark) {
+        elm?.classList.add('dark');
+      } else {
+        elm?.classList.remove('dark');
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  return <div id='background'></div>;
+}
+```
+
+这里用到了 `MutationObserver` 的 API，来监听页面上的 `data-theme` 属性。当然，也可以参考之前 AntiAdblock 章节，导出一个 `useTheme` 的钩子，来获取当前的主题。
+
+## 环境变量注意点
+
+习惯性的，我们会创建一个类似的配置文件：
+
+```ts
+export const AdminId = process.env.ADMIN_ID || 'default';
+```
+
+其中，会用到 `process.env.XXX` 这样的环境变量。但在组件中使用的时候，会有一些意想不到的情况发生。
+
+```tsx
+export function Component() {
+  // 省略一些代码
+  const user = useUser();
+  return (
+    <div>
+      <div>一些内容</div>
+      {AdminId === user.id && <ComponentB />}
+    </div>
+  );
+}
+```
+
+这里的 `AdminId` 会被编译成 `default`，而不是我们期望的 `process.env.ADMIN_ID`，这是因为 `AdminId` 是一个常量，编译时就已经被赋值了。所以只能在以下情况下使用系统的环境变量：
+
+- Server Actions （`'use server;'` 标记的文件）
+- API Routes （`import 'server-only';`标记的文件）
+- 一些封装的方法，只被以上两种情况调用
+
+## 在 Vercel 上使用 Cloudflare KV
+
+目前我的免费域名申请管理系统是使用的 Next.js 部署在 Vercel 上，最初也是打算部署到 Cloudflare Pages 上的，毕竟有可观的免费用量。但是 Cloudflare Wrangler 对于 Next.js 真心不太友好，而最近的几个项目都是用 Next.js， 所以就偷懒没去折腾 Remix 了。
+
+参考博客文章： [remote-cloudflare-kv 在 Vercel 上使用 Cloudflare KV](https://willin.wang/zh/blog/remote-cloudflare-kv)

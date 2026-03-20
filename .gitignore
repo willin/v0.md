@@ -2,6 +2,7 @@
 /.agents
 /.claude
 /public/content
+/.demo
 
 # dependencies
 /node_modules
