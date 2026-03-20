@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const matter = require('gray-matter');
+const readingTime = require('reading-time');
 
 const srcBlogDirectory = path.join(__dirname, '../src/content/blog');
 const publicBlogDirectory = path.join(__dirname, '../public/content/blog');
@@ -63,12 +64,18 @@ function extractMetadata(filename, srcBlogDirectory) {
   try {
     const content = fs.readFileSync(srcPath, 'utf-8');
     const { data } = matter(content);
+    const time = readingTime(content);
     return {
       title: data.title || '',
       description: data.description || '',
       categories: data.categories || [],
       tags: data.tags || [],
       cover: data.cover || null,
+      readingTime: {
+        minutes: Math.round(time.minutes),
+        words: Math.round(time.words),
+        text: time.text,
+      },
     };
   } catch (error) {
     console.warn(`Warning: Could not extract metadata from ${filename}:`, error.message);
@@ -113,6 +120,7 @@ for (const file of files) {
       categories: fileMetadata.categories,
       tags: fileMetadata.tags,
       cover: fileMetadata.cover,
+      readingTime: fileMetadata.readingTime,
     });
   }
 }
