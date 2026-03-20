@@ -183,6 +183,16 @@ export async function getAllPosts(): Promise<BlogPostSummary[]> {
         (m) => m.slug === parsed.slug && m.locale === parsed.locale
       );
       if (metadata) {
+        // 处理 cover 字段：可能是 string 或 { image: string, alt: string } 对象
+        let coverValue: { image: string; alt: string } | undefined = undefined;
+        if (metadata.cover) {
+          if (typeof metadata.cover === 'string') {
+            coverValue = { image: metadata.cover, alt: '' };
+          } else if (typeof metadata.cover === 'object' && metadata.cover !== null) {
+            coverValue = { image: (metadata.cover as any).image || '', alt: (metadata.cover as any).alt || '' };
+          }
+        }
+
         posts.push({
           slug: parsed.slug,
           title: metadata.title,
@@ -191,7 +201,7 @@ export async function getAllPosts(): Promise<BlogPostSummary[]> {
           locale: parsed.locale,
           tags: metadata.tags,
           categories: metadata.categories,
-          cover: metadata.cover ? { image: metadata.cover, alt: '' } : undefined,
+          cover: coverValue,
           readingTime: { minutes: 0, words: 0, text: '0 min read' }, // 元数据中不包含阅读时间，需要时再计算
           hasTranslation: Object.keys(translations).length > 0,
         });

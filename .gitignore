@@ -2,6 +2,8 @@
 /.agents
 /.claude
 /public/content
+/public/blog-metadata.json
+/public/content/blog/index.json
 /.demo
 
 # dependencies
