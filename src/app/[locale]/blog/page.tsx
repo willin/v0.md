@@ -1,8 +1,10 @@
 import { getAllPosts, getAllCategories, getAllTags, getBlogStats } from '@/lib/blog';
 import { BlogList } from '@/components/blog/BlogList';
+import { BlogListSkeleton } from '@/components/blog/BlogListSkeleton';
 import { HeaderNav } from '@/components/blog/HeaderNav';
 import { getDictionary } from '@/i18n/config';
 import { Locale } from '@/i18n/config';
+import { Suspense } from 'react';
 
 export async function generateMetadata({
   params,
@@ -18,12 +20,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function BlogPage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
+async function BlogContent({ locale }: { locale: string }) {
   const dictionary = await getDictionary(locale as Locale);
   const posts = await getAllPosts();
   const categories = await getAllCategories();
@@ -35,9 +32,23 @@ export default async function BlogPage({
   const filteredPosts = posts.filter((post) => post.locale === locale);
 
   return (
+    <BlogList posts={filteredPosts} categories={categories} tags={tags} locale={locale} stats={stats} />
+  );
+}
+
+export default async function BlogPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  return (
     <>
-      <HeaderNav locale={locale as 'zh' | 'en'} dictionary={dictionary as any} />
-      <BlogList posts={filteredPosts} categories={categories} tags={tags} locale={locale} stats={stats} />
+      <HeaderNav locale={locale as 'zh' | 'en'} dictionary={{}} />
+      <Suspense fallback={<BlogListSkeleton />}>
+        <BlogContent locale={locale} />
+      </Suspense>
     </>
   );
 }

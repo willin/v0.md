@@ -813,6 +813,55 @@ pnpm add lucide-react
 
 ---
 
+## 阶段 1.12：博客性能优化
+
+> **目标**: 优化博客列表页和详情页加载速度，添加页面过渡动画
+> **优先级**: 高
+> **状态**: 已完成 ✅
+> **完成日期**: 2026-03-20
+
+### 任务清单
+- [x] 1.72 修改 prepare-deploy.js 提取 frontmatter 元数据（title, description, categories, tags, cover）
+- [x] 1.73 在 blog.ts 中添加 getCloudflareBlogMetadata() 函数读取元数据缓存
+- [x] 1.74 修改 getAllPosts() 使用元数据缓存（Cloudflare 环境）代替读取所有 MDX 文件
+- [x] 1.75 创建 BlogListSkeleton 骨架屏组件
+- [x] 1.76 创建 ArticleDetailSkeleton 骨架屏组件
+- [x] 1.77 在博客列表页添加 Suspense 边界
+- [x] 1.78 在文章详情页添加 Suspense 边界
+- [x] 1.79 增强 View Transitions 动画效果
+
+### 验收标准
+- [x] 构建时生成 public/blog-metadata.json 包含所有文章 frontmatter 信息
+- [x] Cloudflare 环境下博客列表页不再读取所有 MDX 文件
+- [x] 博客列表页加载时显示骨架屏动画
+- [x] 文章详情页加载时显示骨架屏动画
+- [x] 页面切换时有平滑的过渡动画效果
+
+### 实施总结
+
+**修改文件**:
+- `scripts/prepare-deploy.js` - 添加 extractMetadata() 函数提取 frontmatter
+- `src/lib/blog.ts` - 添加 getCloudflareBlogMetadata() 函数，修改 getAllPosts() 使用缓存
+- `src/app/[locale]/blog/page.tsx` - 添加 Suspense 边界和骨架屏
+- `src/app/[locale]/blog/[slug]/page.tsx` - 添加 Suspense 边界和骨架屏
+- `src/app/globals.css` - 增强 View Transitions 动画
+
+**新增文件**:
+- `src/components/blog/BlogListSkeleton.tsx` - 博客列表页骨架屏
+- `src/components/blog/ArticleDetailSkeleton.tsx` - 文章详情页骨架屏
+
+**关键实现**:
+1. 构建时生成元数据缓存 (O(1) JSON 读取) 替代运行时读取所有 MDX 文件 (O(n) 文件读取)
+2. 使用 React Suspense 实现流式加载，骨架屏提供视觉反馈
+3. View Transitions API 添加页面切换动画 (fade-in/fade-out)
+
+**性能提升**:
+- 博客列表页：从读取 89+ MDX 文件减少到 1 次 JSON 读取
+- 首次加载时间显著降低（尤其是文章数量增长时优势更明显）
+- 页面切换动画提供流畅的用户体验
+
+---
+
 ## 阶段 2：向量化管道
 
 > **目标**: 博客文章可以自动向量化并存储到 Vectorize

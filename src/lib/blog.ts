@@ -64,6 +64,29 @@ async function readCloudflareFile(filename: string): Promise<string> {
 }
 
 /**
+ * 在 Cloudflare Workers 环境中获取博客元数据缓存
+ * 通过读取构建时生成的 blog-metadata.json 文件来获取文章元数据
+ */
+async function getCloudflareBlogMetadata(): Promise<Array<{
+  slug: string;
+  locale: string;
+  date: string;
+  title: string;
+  description: string;
+  categories: string[];
+  tags: string[];
+  cover: string | null;
+}>> {
+  const { env } = getCloudflareContext();
+  const response = await (env as any).ASSETS.fetch(new URL('/blog-metadata.json', 'https://assets.local'));
+  if (!response.ok) {
+    throw new Error('Failed to read blog-metadata.json');
+  }
+  const data = await response.json();
+  return data.posts || [];
+}
+
+/**
  * 生成 SEO 数据
  */
 function generateSeo(frontmatter: BlogFrontmatter): { keywords: string[]; ogImage?: string } {
@@ -116,14 +139,24 @@ function findTranslations(
 export async function getAllPosts(): Promise<BlogPostSummary[]> {
   let files: string[];
   let cloudflareFiles: Array<{ filename: string; slug: string; locale: string }> = [];
+  let cloudflareMetadata: Array<{
+    slug: string;
+    locale: string;
+    date: string;
+    title: string;
+    description: string;
+    categories: string[];
+    tags: string[];
+    cover: string | null;
+  }> = [];
 
   // 判断是否在 Cloudflare Workers 环境
   const isCloudflare = typeof globalThis !== 'undefined' && 'caches' in globalThis;
 
   if (isCloudflare) {
-    // Cloudflare Workers 环境：使用 ASSETS binding
-    const cfFiles = await getCloudflareBlogFiles();
-    cloudflareFiles = cfFiles.map(f => ({ filename: f.filename, slug: f.slug, locale: f.locale }));
+    // Cloudflare Workers 环境：使用 ASSETS binding 读取元数据缓存
+    cloudflareMetadata = await getCloudflareBlogMetadata();
+    cloudflareFiles = await getCloudflareBlogFileIndex();
     files = cloudflareFiles.map(f => f.filename);
   } else {
     // 本地开发环境：使用 fs
@@ -138,34 +171,49 @@ export async function getAllPosts(): Promise<BlogPostSummary[]> {
     const parsed = parseFilename(file);
     if (!parsed) continue;
 
-    let fileContent: string;
-    if (isCloudflare) {
-      fileContent = await readCloudflareFile(file);
-    } else {
-      const filePath = path.join(localBlogDirectory, file);
-      fileContent = readFileSync(filePath, 'utf-8');
-    }
-
-    const { data } = matter(fileContent);
-
     // 查找翻译版本
     const translations = findTranslations(parsed.slug, cloudflareFiles.length > 0 ? cloudflareFiles : files.map(f => {
       const p = parseFilename(f);
       return p ? { slug: p.slug, locale: p.locale } : null;
     }).filter(Boolean) as Array<{ slug: string; locale: string }>);
 
-    posts.push({
-      slug: parsed.slug,
-      title: data.title || 'Untitled',
-      description: data.description || '',
-      date: parsed.date,
-      locale: parsed.locale,
-      tags: data.tags || [],
-      categories: data.categories || [],
-      cover: data.cover,
-      readingTime: readingTime(fileContent),
-      hasTranslation: Object.keys(translations).length > 0,
-    });
+    // 在 Cloudflare 环境下，使用元数据缓存；本地环境读取文件
+    if (isCloudflare) {
+      const metadata = cloudflareMetadata.find(
+        (m) => m.slug === parsed.slug && m.locale === parsed.locale
+      );
+      if (metadata) {
+        posts.push({
+          slug: parsed.slug,
+          title: metadata.title,
+          description: metadata.description,
+          date: parsed.date,
+          locale: parsed.locale,
+          tags: metadata.tags,
+          categories: metadata.categories,
+          cover: metadata.cover,
+          readingTime: { minutes: 0, words: 0, text: '0 min read' }, // 元数据中不包含阅读时间，需要时再计算
+          hasTranslation: Object.keys(translations).length > 0,
+        });
+      }
+    } else {
+      const filePath = path.join(localBlogDirectory, file);
+      const fileContent = readFileSync(filePath, 'utf-8');
+      const { data } = matter(fileContent);
+
+      posts.push({
+        slug: parsed.slug,
+        title: data.title || 'Untitled',
+        description: data.description || '',
+        date: parsed.date,
+        locale: parsed.locale,
+        tags: data.tags || [],
+        categories: data.categories || [],
+        cover: data.cover,
+        readingTime: readingTime(fileContent),
+        hasTranslation: Object.keys(translations).length > 0,
+      });
+    }
   }
 
   // 按日期倒序排序

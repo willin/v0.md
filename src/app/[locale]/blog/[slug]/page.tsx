@@ -4,11 +4,13 @@ import { BlogDetailSidebar } from '@/components/blog/BlogDetailSidebar';
 import { HeaderNav } from '@/components/blog/HeaderNav';
 import { ReadingProgress } from '@/components/blog/ReadingProgress';
 import { AISummary } from '@/components/blog/AISummary';
+import { ArticleDetailSkeleton } from '@/components/blog/ArticleDetailSkeleton';
 import Link from 'next/link';
 import MDXContent from './MDXContent';
 import { getDictionary } from '@/i18n/config';
 import { PostHero } from '@/components/blog/PostHero';
 import { Locale } from '@/i18n/config';
+import { Suspense } from 'react';
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();
@@ -45,12 +47,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function BlogPostPage({
-  params,
-}: {
-  params: Promise<{ locale: string; slug: string }>;
-}) {
-  const { locale, slug } = await params;
+async function ArticleContent({ locale, slug }: { locale: string; slug: string }) {
   const dictionary = await getDictionary(locale as Locale);
   const post = await getPostBySlug(slug, locale as Locale);
 
@@ -333,5 +330,19 @@ export default async function BlogPostPage({
         <BlogDetailSidebar categories={categories} tags={tags} locale={locale as Locale} stats={stats} />
       </div>
     </>
+  );
+}
+
+export default async function BlogPostPage({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}) {
+  const { locale, slug } = await params;
+
+  return (
+    <Suspense fallback={<ArticleDetailSkeleton />}>
+      <ArticleContent locale={locale} slug={slug} />
+    </Suspense>
   );
 }
